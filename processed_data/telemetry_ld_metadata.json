@@ -1,0 +1,19 @@
+{
+  "n_files": 5,
+  "n_successful": 5,
+  "n_samples": 248922,
+  "n_drivers": 5,
+  "drivers": [
+    "_ALAD201_",
+    "_NIMB230_",
+    "_RINE150_",
+    "_SOMD122_",
+    "_THTH312_"
+  ],
+  "circuits": [
+    "Ks Nurburgring"
+  ],
+  "vehicles": [
+    "Ks Porsche 911 Gt3 Rs"
+  ]
+}

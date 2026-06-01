@@ -1,0 +1,16 @@
+Prediction Result
+============================================================
+
+Input File: raw_data\00f946d7-504b-4a0d-8314-fdbe1d58d4c8.htf
+Model: svm
+Confidence Threshold: 0.6
+
+Predicted Driver: PASZZ20000
+Status: KNOWN
+Confidence: 100.0%
+Vote Percentage: 97.3%
+
+Vote Distribution:
+  CHIPZ26000: 4 votes
+  MAAKZ19001: 1 votes
+  PASZZ20000: 177 votes
