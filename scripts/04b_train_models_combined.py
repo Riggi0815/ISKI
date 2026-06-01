@@ -5,7 +5,16 @@ Train ML models using unified dataset with all drivers
 
 import sys
 from pathlib import Path
-import importlib.util
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.svm import SVC
+from xgboost import XGBClassifier
+from sklearn.preprocessing import StandardScaler, LabelEncoder
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+import joblib
+import json
 
 # Add scripts directory to path for imports
 sys.path.append(str(Path(__file__).parent))
@@ -14,17 +23,203 @@ from utils import (
     get_results_path, load_dataframe
 )
 
-# Import ModelTrainer from 04_train_models.py
-def import_module_from_path(module_name: str, file_path: str):
-    """Import a module from a file path"""
-    spec = importlib.util.spec_from_file_location(module_name, file_path)
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
 
-script_dir = Path(__file__).parent
-train_models = import_module_from_path("train_models", script_dir / "04_train_models.py")
-ModelTrainer = train_models.ModelTrainer
+class ModelTrainer:
+    """Train and evaluate ML models for driver identification"""
+    
+    def __init__(self, features_df: pd.DataFrame):
+        """
+        Initialize trainer with features dataframe
+        
+        Args:
+            features_df: DataFrame with features and driver_id column
+        """
+        self.features_df = features_df
+        self.X = None
+        self.y = None
+        self.X_train = None
+        self.X_test = None
+        self.y_train = None
+        self.y_test = None
+        self.scaler = StandardScaler()
+        self.label_encoder = LabelEncoder()
+        self.models = {}
+        self.results = {}
+        
+    def prepare_data(self, test_size=0.3, random_state=42):
+        """Prepare data for training"""
+        print(f"\n{'='*60}")
+        print("PREPARING DATA")
+        print(f"{'='*60}\n")
+        
+        # Print all columns to debug
+        print(f"All columns: {list(self.features_df.columns)[:10]}...")  # First 10 columns
+        
+        # Separate features and labels - drop ALL non-numeric columns
+        self.y = self.features_df['driver_id']
+        
+        # Drop non-feature columns (driver_id and any index-like columns)
+        columns_to_drop = []
+        for col in self.features_df.columns:
+            if col == 'driver_id' or col.endswith('_index') or 'sample_index' in col:
+                columns_to_drop.append(col)
+            # Also check if column contains string values
+            elif self.features_df[col].dtype == 'object':
+                columns_to_drop.append(col)
+        
+        print(f"Dropping columns: {columns_to_drop}")
+        self.X = self.features_df.drop(columns_to_drop, axis=1)
+        
+        print(f"Features shape: {self.X.shape}")
+        print(f"Number of features: {self.X.shape[1]}")
+        print(f"Number of samples: {len(self.X)}")
+        print(f"Number of drivers: {self.y.nunique()}")
+        
+        # Encode labels
+        self.y = self.label_encoder.fit_transform(self.y)
+        
+        # Train/test split (stratified by driver)
+        self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(
+            self.X, self.y, 
+            test_size=test_size, 
+            random_state=random_state,
+            stratify=self.y
+        )
+        
+        # Scale features
+        self.X_train = self.scaler.fit_transform(self.X_train)
+        self.X_test = self.scaler.transform(self.X_test)
+        
+        print(f"\nTrain set: {len(self.X_train)} samples")
+        print(f"Test set:  {len(self.X_test)} samples")
+        print(f"Split: {(1-test_size)*100:.0f}% train / {test_size*100:.0f}% test")
+        
+    def train_random_forest(self, n_estimators=100, max_depth=10, random_state=42):
+        """Train Random Forest classifier"""
+        print(f"\n{'='*60}")
+        print("TRAINING: Random Forest")
+        print(f"{'='*60}")
+        print(f"Parameters: n_estimators={n_estimators}, max_depth={max_depth}\n")
+        
+        rf = RandomForestClassifier(
+            n_estimators=n_estimators,
+            max_depth=max_depth,
+            random_state=random_state,
+            n_jobs=-1
+        )
+        
+        rf.fit(self.X_train, self.y_train)
+        
+        # Predictions
+        y_train_pred = rf.predict(self.X_train)
+        y_test_pred = rf.predict(self.X_test)
+        
+        # Metrics
+        train_acc = accuracy_score(self.y_train, y_train_pred)
+        test_acc = accuracy_score(self.y_test, y_test_pred)
+        
+        print(f"✓ Training Accuracy:   {train_acc:.4f} ({train_acc*100:.2f}%)")
+        print(f"✓ Test Accuracy:       {test_acc:.4f} ({test_acc*100:.2f}%)")
+        
+        self.models['random_forest'] = rf
+        self.results['random_forest'] = {
+            'train_accuracy': train_acc,
+            'test_accuracy': test_acc,
+            'params': {'n_estimators': n_estimators, 'max_depth': max_depth}
+        }
+        
+    def train_svm(self, C=1.0, kernel='rbf', random_state=42):
+        """Train SVM classifier"""
+        print(f"\n{'='*60}")
+        print("TRAINING: Support Vector Machine (SVM)")
+        print(f"{'='*60}")
+        print(f"Parameters: C={C}, kernel={kernel}\n")
+        
+        svm = SVC(
+            C=C,
+            kernel=kernel,
+            random_state=random_state
+        )
+        
+        svm.fit(self.X_train, self.y_train)
+        
+        # Predictions
+        y_train_pred = svm.predict(self.X_train)
+        y_test_pred = svm.predict(self.X_test)
+        
+        # Metrics
+        train_acc = accuracy_score(self.y_train, y_train_pred)
+        test_acc = accuracy_score(self.y_test, y_test_pred)
+        
+        print(f"✓ Training Accuracy:   {train_acc:.4f} ({train_acc*100:.2f}%)")
+        print(f"✓ Test Accuracy:       {test_acc:.4f} ({test_acc*100:.2f}%)")
+        
+        self.models['svm'] = svm
+        self.results['svm'] = {
+            'train_accuracy': train_acc,
+            'test_accuracy': test_acc,
+            'params': {'C': C, 'kernel': kernel}
+        }
+        
+    def train_xgboost(self, n_estimators=100, max_depth=6, learning_rate=0.1, random_state=42):
+        """Train XGBoost classifier"""
+        print(f"\n{'='*60}")
+        print("TRAINING: XGBoost")
+        print(f"{'='*60}")
+        print(f"Parameters: n_estimators={n_estimators}, max_depth={max_depth}, lr={learning_rate}\n")
+        
+        xgb = XGBClassifier(
+            n_estimators=n_estimators,
+            max_depth=max_depth,
+            learning_rate=learning_rate,
+            random_state=random_state,
+            n_jobs=-1
+        )
+        
+        xgb.fit(self.X_train, self.y_train)
+        
+        # Predictions
+        y_train_pred = xgb.predict(self.X_train)
+        y_test_pred = xgb.predict(self.X_test)
+        
+        # Metrics
+        train_acc = accuracy_score(self.y_train, y_train_pred)
+        test_acc = accuracy_score(self.y_test, y_test_pred)
+        
+        print(f"✓ Training Accuracy:   {train_acc:.4f} ({train_acc*100:.2f}%)")
+        print(f"✓ Test Accuracy:       {test_acc:.4f} ({test_acc*100:.2f}%)")
+        
+        self.models['xgboost'] = xgb
+        self.results['xgboost'] = {
+            'train_accuracy': train_acc,
+            'test_accuracy': test_acc,
+            'params': {'n_estimators': n_estimators, 'max_depth': max_depth, 'learning_rate': learning_rate}
+        }
+        
+    def _create_comparison_report(self):
+        """Create model comparison report"""
+        results_path = get_results_path()
+        report_file = results_path / "04_model_comparison.txt"
+        
+        with open(report_file, 'w', encoding='utf-8') as f:
+            f.write("="*70 + "\n")
+            f.write("MODEL COMPARISON REPORT\n")
+            f.write("="*70 + "\n\n")
+            
+            for model_name, metrics in self.results.items():
+                f.write(f"\n{model_name.upper()}\n")
+                f.write("-"*50 + "\n")
+                f.write(f"Train Accuracy: {metrics['train_accuracy']:.4f} ({metrics['train_accuracy']*100:.2f}%)\n")
+                f.write(f"Test Accuracy:  {metrics['test_accuracy']:.4f} ({metrics['test_accuracy']*100:.2f}%)\n")
+                f.write(f"Parameters: {metrics['params']}\n")
+            
+            f.write(f"\n{'='*70}\n")
+            f.write("SUMMARY\n")
+            f.write(f"{'='*70}\n")
+            
+            best_model = max(self.results.items(), key=lambda x: x[1]['test_accuracy'])
+            f.write(f"\nBest Model: {best_model[0].upper()}\n")
+            f.write(f"Test Accuracy: {best_model[1]['test_accuracy']:.4f} ({best_model[1]['test_accuracy']*100:.2f}%)\n")
 
 
 def main():

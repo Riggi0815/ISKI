@@ -1,12 +1,12 @@
 {
   "holdout_driver": "_NIMB230_",
   "training_drivers": [
+    "PASZZ20000",
     "CHIPZ26000",
+    "TOINZ27000",
     "INBWZ11002",
     "MAAKZ19001",
     "MAMCZ06001",
-    "PASZZ20000",
-    "TOINZ27000",
     "_ALAD201_",
     "_RINE150_",
     "_SOMD122_",
@@ -14,6 +14,6 @@
   ],
   "n_training_samples": 2468,
   "n_holdout_samples": 84,
-  "n_features": 172,
-  "timestamp": "2026-06-01T23:13:59.580903"
+  "n_features": 92,
+  "timestamp": "2026-06-01T23:40:50.724692"
 }

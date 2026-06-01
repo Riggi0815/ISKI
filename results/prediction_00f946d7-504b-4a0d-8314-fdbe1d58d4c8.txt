@@ -2,15 +2,17 @@ Prediction Result
 ============================================================
 
 Input File: raw_data\00f946d7-504b-4a0d-8314-fdbe1d58d4c8.htf
-Model: svm
+File Type: .HTF
+Model: xgboost
 Confidence Threshold: 0.6
 
 Predicted Driver: PASZZ20000
 Status: KNOWN
-Confidence: 100.0%
-Vote Percentage: 97.3%
+Confidence: 91.3%
+Vote Percentage: 91.8%
 
 Vote Distribution:
-  CHIPZ26000: 4 votes
-  MAAKZ19001: 1 votes
-  PASZZ20000: 177 votes
+  CHIPZ26000: 1 votes
+  MAAKZ19001: 11 votes
+  PASZZ20000: 167 votes
+  TOINZ27000: 3 votes

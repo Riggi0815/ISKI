@@ -1,40 +1,37 @@
-# Sim Racing Driver Identification - Machine Learning Project
+# 🏎️ Sim Racing Driver Identification - Machine Learning Project
 
-Dieses Projekt verwendet Machine Learning, um Sim-Racing-Fahrer anhand ihrer Telemetriedaten zu identifizieren. Das System analysiert Fahrverhaltensmerkmale wie Brems-, Lenk- und Beschleunigungsmuster, um Fahrer mit hoher Genauigkeit zu erkennen.
+Machine Learning System zur Identifikation von Sim-Racing-Fahrern anhand ihrer Telemetriedaten. Das System analysiert Fahrverhaltensmerkmale wie Brems-, Lenk- und Beschleunigungsmuster, um Fahrer mit hoher Genauigkeit zu erkennen.
 
 ## 📋 Inhaltsverzeichnis
 
-- [Projektübersicht](#projektübersicht)
-- [Projektstruktur](#projektstruktur)
-- [Anforderungen](#anforderungen)
-- [Installation](#installation)
-- [Schnellstart - Komplette Pipeline](#schnellstart---komplette-pipeline)
-- [Detaillierte Anleitung](#detaillierte-anleitung)
-- [Script-Übersicht](#script-übersicht)
-- [Verwendung der Prediction](#verwendung-der-prediction)
-- [Ergebnisse](#ergebnisse)
+- [Projektübersicht](#-projektübersicht)
+- [Projektstruktur](#-projektstruktur)
+- [Installation](#-installation)
+- [Komplette Pipeline](#-komplette-pipeline)
+- [Script-Details](#-script-details)
+- [Model Performance](#-model-performance)
+- [Troubleshooting](#-troubleshooting)
 
 ---
 
 ## 🎯 Projektübersicht
 
-### Was macht dieses Projekt?
+### Kernfunktionen
 
-Das System kann Sim-Racing-Fahrer anhand ihrer Telemetriedaten identifizieren:
+- **Multi-Format Support**: HTF (iRacing, text-basiert) und LD (Assetto Corsa, binär)
+- **11 Fahrer**: 6 HTF + 5 LD Fahrer (~1.3M Telemetrie-Samples)
+- **171 Features**: Statistische, Verhaltens- und Frequenz-Merkmale
+- **3 ML-Modelle**: Random Forest (87.36%), XGBoost (70.76%), SVM (37.60%)
+- **Leave-One-Out Evaluation**: Test auf nie gesehenen Fahrern (Open-Set Recognition)
+- **Real-time Prediction**: HTF/LD Dateien automatisch erkennen und klassifizieren
 
-- **Datenquellen**: HTF (text-basiert) und LD (binär, Assetto Corsa) Telemetriedateien
-- **Fahrer**: Aktuell 11 verschiedene Fahrer trainiert
-- **Accuracy**: ~71% bei 11 Fahrern (XGBoost), ~96% bei 6 Fahrern (SVM)
-- **Features**: 171 extrahierte Verhaltensmerkmale pro 10-Sekunden-Segment
-- **Modelle**: Random Forest, SVM, XGBoost
+### Wissenschaftlicher Ansatz
 
-### Hauptmerkmale
-
-✅ **Unterstützt zwei Dateiformate**: HTF und LD  
-✅ **Feature Engineering**: 171 Features aus Fahrverhalten extrahiert  
-✅ **Mehrere ML-Modelle**: Vergleich von RF, SVM und XGBoost  
-✅ **Segmentierung**: 10-Sekunden-Fenster (500 Samples @ 50Hz)  
-✅ **Prediction**: Voting-basierte Fahrererkennung mit Konfidenz-Score
+✅ Time-series Segmentierung (10 Sekunden = 500 Samples @ 50Hz)  
+✅ Feature Engineering mit 171 Merkmalen pro Segment  
+✅ Multi-model Ensemble (Random Forest, XGBoost, SVM)  
+✅ Leave-One-Driver-Out Cross-Validation für Generalisierung  
+✅ Open-Set Recognition (erkennt unbekannte Fahrer durch niedrige Confidence)
 
 ---
 
@@ -42,552 +39,348 @@ Das System kann Sim-Racing-Fahrer anhand ihrer Telemetriedaten identifizieren:
 
 ```
 ISKI/
-├── raw_data/                          # Roh-Telemetriedaten
+├── raw_data/                          # 🔴 Roh-Telemetriedaten
 │   ├── *.htf                          # HTF-Dateien (10 Dateien, 6 Fahrer)
 │   └── *.ld                           # LD-Dateien (5 Dateien, 5 Fahrer)
 │
-├── processed_data/                    # Verarbeitete Daten
-│   ├── telemetry_all.pkl/csv         # HTF Telemetrie (1M Samples)
-│   ├── telemetry_ld.pkl/csv          # LD Telemetrie (249K Samples)
-│   └── telemetry_combined.pkl/csv    # Kombiniert HTF+LD (1.3M Samples)
+├── processed_data/                    # 🟡 Verarbeitete Telemetrie
+│   ├── telemetry_all.pkl              # HTF Telemetrie (1,029,209 Samples)
+│   ├── telemetry_all.pkl              # HTF Telemetrie (1,029,209 Samples)
+│   ├── telemetry_ld.pkl               # LD Telemetrie (248,922 Samples)
+│   └── telemetry_combined.pkl         # Kombiniert HTF+LD (1,278,131 Samples)
 │
-├── features/                          # Extrahierte Features
-│   ├── driver_features.pkl/csv       # HTF-only Features (2056 Sets)
-│   └── driver_features_combined.pkl  # HTF+LD Features (2552 Sets)
+├── features/                          # 🟢 Extrahierte Features
+│   └── driver_features_combined.pkl   # 2,552 Feature-Sets (171 Features/Set)
 │
-├── models/                            # Trainierte Modelle
-│   ├── *.pkl                          # HTF-only Modelle (6 Fahrer)
-│   └── combined/                      # HTF+LD Modelle (11 Fahrer)
-│       ├── random_forest_model.pkl
-│       ├── svm_model.pkl
-│       ├── xgboost_model.pkl
-│       ├── scaler.pkl
-│       ├── label_encoder.pkl
-│       └── model_metadata.json
+├── models/                            # 🔵 Trainierte ML-Modelle
+│   ├── combined/                      # Production Models (11 Fahrer)
+│   │   ├── random_forest_model.pkl
+│   │   ├── xgboost_model.pkl
+│   │   ├── svm_model.pkl
+│   │   ├── scaler.pkl
+│   │   ├── label_encoder.pkl
+│   │   └── model_metadata.json
+│   └── leave_one_out/                 # Generalisierungs-Test (LOOCV)
+│       └── [models + metadata]
 │
-├── results/                           # Ergebnisse & Reports
-│   ├── *_summary.txt                  # Pipeline-Zusammenfassungen
-│   ├── *_combined.txt                 # Combined-Model Reports
-│   ├── *.png                          # Visualisierungen
-│   └── prediction_*.txt               # Prediction-Ergebnisse
-│
-├── scripts/                           # Python-Scripts
-│   ├── utils.py                       # Helper-Funktionen
+├── scripts/                           # 🟠 Python Pipeline
+│   ├── 00_data_overview.py           # Daten-Inventar
 │   ├── 01_parse_htf.py               # HTF Parser
 │   ├── 02_parse_ld.py                # LD Parser
-│   ├── 03a_combine_data.py           # Daten kombinieren
-│   ├── 03b_feature_engineering_combined.py  # Features extrahieren
-│   ├── 03_feature_engineering.py     # (Original, für HTF-only)
-│   ├── 04b_train_models_combined.py  # Modelle trainieren
-│   ├── 04_train_models.py            # (Original, für HTF-only)
-│   ├── 05_predict.py                 # Prediction (HTF + LD)
-│   └── 06_evaluate.py                # Model-Evaluation
+│   ├── 03a_combine_data.py           # HTF+LD kombinieren
+│   ├── 03b_feature_engineering_combined.py  # Feature Extraction
+│   ├── 04b_train_models_combined.py  # Model Training
+│   ├── 05_predict.py                 # Prediction auf neuen Daten
+│   └── 06_leave_one_out_evaluation.py  # Unseen Driver Test
 │
-└── README.md                          # Diese Datei
+├── Professoren_Fragen.md              # 📝 Fragen für Academic Review
+└── requirements.txt                   # Python Dependencies
 ```
 
 ---
 
-## 💻 Anforderungen
+## 🔧 Installation
 
-### Software
+### Voraussetzungen
 
-- **Python 3.13** (oder 3.9+)
-- **PowerShell** oder **cmd** (Windows)
+- **Python 3.9+** (getestet mit 3.13)
+- **Windows** (PowerShell/cmd)
 
-### Python-Packages
-
-```bash
-pandas
-numpy
-scikit-learn
-xgboost
-scipy
-matplotlib
-seaborn
-joblib
-```
-
----
-
-## 🚀 Installation
-
-### 1. Python installieren
-
-Stelle sicher, dass Python 3 installiert ist:
+### Setup
 
 ```powershell
-py -3 --version
-```
-
-### 2. Dependencies installieren
-
-Installiere alle benötigten Packages:
-
-```powershell
-pip install pandas numpy scikit-learn xgboost scipy matplotlib seaborn joblib
-```
-
-**Oder mit Requirements-Datei** (falls erstellt):
-
-```powershell
+# 1. Dependencies installieren
 pip install -r requirements.txt
+
+# 2. Projektstruktur prüfen
+dir raw_data      # Sollte .htf und .ld Dateien enthalten
 ```
 
-### 3. Projekt-Ordner prüfen
+**requirements.txt:**
 
-Stelle sicher, dass `raw_data/` deine Telemetriedateien enthält:
-
-```powershell
-dir raw_data
 ```
-
-Du solltest `.htf` und `.ld` Dateien sehen.
+pandas>=2.0.0
+numpy>=1.24.0
+scikit-learn>=1.3.0
+xgboost>=2.0.0
+scipy>=1.11.0
+matplotlib>=3.7.0
+seaborn>=0.12.0
+joblib>=1.3.0
+```
 
 ---
 
-## ⚡ Schnellstart - Komplette Pipeline
+## 🚀 Komplette Pipeline
 
-Führe alle Scripts der Reihe nach aus, um das komplette System zu trainieren:
+### Übersicht
 
-```powershell
-# 0. Navigiere ins Projektverzeichnis
-cd E:\Master\ISKI\ISKI
-
-# 1. HTF-Dateien parsen
-py -3 scripts\01_parse_htf.py
-
-# 2. LD-Dateien parsen
-py -3 scripts\02_parse_ld.py
-
-# 3. HTF + LD Daten kombinieren
-py -3 scripts\03a_combine_data.py
-
-# 4. Features extrahieren (kombinierte Daten)
-py -3 scripts\03b_feature_engineering_combined.py
-
-# 5. Modelle trainieren (alle 11 Fahrer)
-py -3 scripts\04b_train_models_combined.py
-
-# 6. Prediction testen
-py -3 scripts\05_predict.py "raw_data\00f946d7-504b-4a0d-8314-fdbe1d58d4c8.htf" --model svm
-
-# 7. (Optional) Evaluation & Visualisierungen erstellen
-py -3 scripts\06_evaluate.py
+```
+RAW DATA → PARSING → COMBINATION → FEATURES → TRAINING → PREDICTION
+   ↓          ↓           ↓            ↓           ↓          ↓
+  .htf      .pkl     combined.pkl  features.pkl models/   results/
+  .ld
 ```
 
-**⏱ Geschätzte Dauer**: 5-10 Minuten (je nach Hardware)
+### Schritt-für-Schritt Anleitung
+
+#### **Schritt 0: Daten-Übersicht** (Optional)
+
+```powershell
+py -3 scripts\00_data_overview.py
+```
+
+**Output:** `results/00_data_overview.txt`  
+Zeigt alle verfügbaren Fahrer, Sample-Verteilung und Imbalance-Ratio.
 
 ---
 
-## 📖 Detaillierte Anleitung
-
-### Schritt 1: HTF-Dateien parsen (01_parse_htf.py)
-
-**Was macht es?**  
-Liest text-basierte HTF-Telemetriedateien und konvertiert sie in strukturierte DataFrames.
-
-**Befehl:**
+#### **Schritt 1: HTF Parsing**
 
 ```powershell
 py -3 scripts\01_parse_htf.py
 ```
 
-**Output:**
-
-- `processed_data/telemetry_all.pkl` - Pickle-Format (schnell)
-- `processed_data/telemetry_all.csv` - CSV-Format (lesbar)
-- `results/01_htf_parsing_summary.txt` - Zusammenfassung
-
-**Erwartete Ausgabe:**
-
-```
-Successfully parsed: 9/10 files
-Total samples: 1,029,209
-Unique drivers: 6
-```
+**Input:** `raw_data/*.htf` (10 Dateien)  
+**Output:** `processed_data/telemetry_all.pkl` (1,029,209 Samples, 6 Fahrer)  
+**Dauer:** ~30 Sekunden
 
 ---
 
-### Schritt 2: LD-Dateien parsen (02_parse_ld.py)
-
-**Was macht es?**  
-Liest binäre LD-Telemetriedateien (Assetto Corsa) und konvertiert sie.
-
-**Befehl:**
+#### **Schritt 2: LD Parsing**
 
 ```powershell
 py -3 scripts\02_parse_ld.py
 ```
 
-**Output:**
-
-- `processed_data/telemetry_ld.pkl/csv`
-- `results/02_ld_parsing_summary.txt`
-
-**Erwartete Ausgabe:**
-
-```
-Successfully parsed: 5/5 files
-Total samples: 248,922
-Unique drivers: 5
-```
+**Input:** `raw_data/*.ld` (5 Dateien)  
+**Output:** `processed_data/telemetry_ld.pkl` (248,922 Samples, 5 Fahrer)  
+**Dauer:** ~10 Sekunden
 
 ---
 
-### Schritt 3: Daten kombinieren (03a_combine_data.py)
-
-**Was macht es?**  
-Kombiniert HTF (6 Fahrer) + LD (5 Fahrer) = 11 Fahrer für umfassendes Training.
-
-**Befehl:**
+#### **Schritt 3: Daten kombinieren**
 
 ```powershell
 py -3 scripts\03a_combine_data.py
 ```
 
-**Output:**
+**Input:** `telemetry_all.pkl` + `telemetry_ld.pkl`  
+**Output:** `processed_data/telemetry_combined.pkl` (1,278,131 Samples, 11 Fahrer, 19 gemeinsame Channels)  
+**Dauer:** ~15 Sekunden
 
-- `processed_data/telemetry_combined.pkl/csv`
-- `results/03b_data_combination_summary.txt`
-
-**Erwartete Ausgabe:**
-
-```
-Combined dataset: 1,278,131 samples
-Unique drivers: 11
-Common telemetry channels: 19
-```
+**Mapping:** LD → HTF Column Names (z.B., `speed` → `v_car`)
 
 ---
 
-### Schritt 4: Feature Engineering (03b_feature_engineering_combined.py)
-
-**Was macht es?**  
-Extrahiert 171 Verhaltensfeatures pro 10-Sekunden-Segment:
-
-- Brems-/Lenkverhalten
-- G-Kräfte
-- Reifenmanagement
-- FFT-Frequenzanalyse
-
-**Befehl:**
+#### **Schritt 4: Feature Engineering**
 
 ```powershell
 py -3 scripts\03b_feature_engineering_combined.py
 ```
 
-**Output:**
+**Input:** `telemetry_combined.pkl`  
+**Output:** `features/driver_features_combined.pkl` (2,552 Feature-Sets)  
+**Dauer:** ~2-3 Minuten
 
-- `features/driver_features_combined.pkl/csv`
-- `results/03b_feature_engineering_combined_summary.txt`
+**Features (171 pro Segment):**
 
-**Erwartete Ausgabe:**
-
-```
-Total feature sets: 2552
-Features per set: 171
-Segments per driver: 84-545
-```
-
-⚠️ **Hinweis**: RuntimeWarnings für `skew`/`kurtosis` sind normal und werden automatisch behandelt.
+- **Statistisch**: mean, std, min, max, skew, kurtosis (17 Channels × 6 = 102)
+- **Verhalten**: jerk, steering_rate, throttle_changes, brake_events (41)
+- **Frequenz**: FFT dominant frequency (17)
+- **Relativ**: v_car/gear_ratio, tire_temp_diff (11)
 
 ---
 
-### Schritt 5: Modelle trainieren (04b_train_models_combined.py)
-
-**Was macht es?**  
-Trainiert 3 ML-Modelle mit allen 11 Fahrern:
-
-- Random Forest
-- SVM (Support Vector Machine)
-- XGBoost
-
-**Befehl:**
+#### **Schritt 5: Model Training**
 
 ```powershell
 py -3 scripts\04b_train_models_combined.py
 ```
 
-**Output:**
+**Input:** `features/driver_features_combined.pkl`  
+**Output:** `models/combined/` (3 Modelle + Scaler + Encoder)  
+**Dauer:** ~3-5 Minuten
 
-- `models/combined/random_forest_model.pkl`
-- `models/combined/svm_model.pkl`
-- `models/combined/xgboost_model.pkl`
-- `models/combined/scaler.pkl` & `label_encoder.pkl`
-- `results/training_results_combined.json`
-- `results/04_model_comparison_combined.txt`
+**Modelle:**
 
-**Erwartete Ausgabe:**
+- Random Forest (n_estimators=200, max_depth=30)
+- XGBoost (n_estimators=200, max_depth=10, learning_rate=0.1)
+- SVM (Linear kernel, C=1.0)
 
-```
-Random Forest: 99% train, 87% test
-SVM: 47% train, 38% test
-XGBoost: 98% train, 71% test  ← Bestes Modell
-```
-
-**⏱ Dauer**: 2-5 Minuten (abhängig von CPU)
+**Split:** 80% Training / 20% Test
 
 ---
 
-### Schritt 6: Prediction testen (05_predict.py)
-
-**Was macht es?**  
-Identifiziert Fahrer aus neuen Telemetriedateien (HTF oder LD).
-
-**Befehle:**
-
-#### HTF-Datei:
+#### **Schritt 6: Prediction**
 
 ```powershell
-py -3 scripts\05_predict.py "raw_data\00f946d7-504b-4a0d-8314-fdbe1d58d4c8.htf" --model svm
+# HTF Datei
+py -3 scripts\05_predict.py raw_data\00f946d7-504b-4a0d-8314-fdbe1d58d4c8.htf
+
+# LD Datei
+py -3 scripts\05_predict.py "raw_data\ks_nurburgring_&_ks_porsche_911_gt3_rs_&_ALAD201_&_stint_1.ld"
 ```
 
-#### LD-Datei:
+**Output:** `results/prediction_*.txt`
 
-```powershell
-py -3 scripts\05_predict.py "raw_data\ks_nurburgring_&_ks_porsche_911_gt3_rs_&_ALAD201_&_stint_1.ld" --model svm
-```
+**Methodik:**
 
-**Optionen:**
-
-- `--model`: `random_forest`, `svm`, oder `xgboost` (default: `svm`)
-- `--confidence-threshold`: Mindest-Konfidenz (default: `0.6`)
-- `--model-dir`: Custom model directory
-
-**Output:**
-
-- Konsolen-Ausgabe mit Prediction-Ergebnis
-- `results/prediction_<filename>.txt`
-
-**Beispiel-Ausgabe:**
-
-```
-✓ KNOWN DRIVER DETECTED
-  Driver ID: _ALAD201_
-  Confidence: 100.0%
-  Agreement: 58.1% of segments (68/117)
-```
+1. Auto-detect Format (.htf vs .ld)
+2. Parse → Feature Extraction
+3. Predict mit allen 3 Modellen
+4. Majority Voting → Final Prediction
+5. Agreement % + Confidence Score
 
 ---
 
-### Schritt 7: Evaluation (06_evaluate.py) - Optional
-
-**Was macht es?**  
-Erstellt umfassende Visualisierungen und Reports.
-
-**Befehl:**
+#### **Schritt 7: Leave-One-Out Evaluation**
 
 ```powershell
-py -3 scripts\06_evaluate.py
+py -3 scripts\06_leave_one_out_evaluation.py
 ```
+
+**Zweck:** Test auf **nie gesehenen Fahrern** (Open-Set Recognition)
+
+**Methodik:**
+
+1. Wähle kleinsten Fahrer als Holdout (_NIMB230_: 84 Samples)
+2. Trainiere auf 10 restlichen Fahrern (2,468 Samples)
+3. Evaluiere auf Holdout: **Confusion-Analyse** (nicht Accuracy!)
+4. Measure: Welche bekannten Fahrer werden verwechselt? + Confidence
 
 **Output:**
 
-- `results/06_confusion_matrices.png`
-- `results/06_model_comparison.png`
-- `results/06_per_driver_performance.png`
-- `results/06_feature_importance.png`
-- `results/06_classification_report.txt`
-- `results/06_evaluation_summary.txt`
+- `results/leave_one_out/evaluation__NIMB230_.txt`
+- `results/leave_one_out/prediction_distribution_*.png`
+- `models/leave_one_out/` (Modelle ohne Holdout-Fahrer)
+
+**Interpretation:**
+
+- **Niedrige Confidence** (z.B. 31.8%) = **GUT** → Modell erkennt "Outlier"
+- **Hohe Confidence** (z.B. 80%) = Ähnlicher Fahrstil zu bekanntem Fahrer
+- Verteilte Confusion = Fahrer passt zu keinem bekannten Fahrer
 
 ---
 
-## 🔧 Script-Übersicht
+## 📊 Model Performance
 
-| Script                                  | Zweck              | Input              | Output                                  |
-| --------------------------------------- | ------------------ | ------------------ | --------------------------------------- |
-| **utils.py**                            | Helper-Funktionen  | -                  | Importiert von allen anderen Scripts    |
-| **01_parse_htf.py**                     | HTF Parser         | `raw_data/*.htf`   | `processed_data/telemetry_all.pkl`      |
-| **02_parse_ld.py**                      | LD Parser          | `raw_data/*.ld`    | `processed_data/telemetry_ld.pkl`       |
-| **03a_combine_data.py**                 | Daten kombinieren  | HTF + LD           | `processed_data/telemetry_combined.pkl` |
-| **03b_feature_engineering_combined.py** | Feature-Extraktion | Combined telemetry | `features/driver_features_combined.pkl` |
-| **04b_train_models_combined.py**        | ML Training        | Features           | `models/combined/*.pkl`                 |
-| **05_predict.py**                       | Prediction         | HTF/LD Datei       | Konsole + `results/prediction_*.txt`    |
-| **06_evaluate.py**                      | Evaluation         | Modelle + Features | `results/*.png` & `.txt`                |
+### Closed-Set Classification (11 Fahrer, alle trainiert)
 
----
+| Model         | Test Accuracy | Training Time |
+| ------------- | ------------- | ------------- |
+| Random Forest | **87.36%**    | ~2 min        |
+| XGBoost       | 70.76%        | ~3 min        |
+| SVM (Linear)  | 37.60%        | ~1 min        |
 
-## 🎮 Verwendung der Prediction
+**Class Distribution:** 6.5:1 Imbalance (MAAKZ19001: 272,790 vs _NIMB230_: 42,157)
 
-### Syntax
+### Open-Set Recognition (Leave-One-Out)
 
-```powershell
-py -3 scripts\05_predict.py <DATEI> [OPTIONS]
-```
+**Holdout:** _NIMB230_ (84 Samples, **nie** im Training)
 
-### Beispiele
+| Model         | Avg Confidence | Most Confused | Confusion % |
+| ------------- | -------------- | ------------- | ----------- |
+| Random Forest | **31.8%** ✅   | _THTH312_     | 33.3%       |
+| XGBoost       | 59.2%          | _SOMD122_     | 27.4%       |
+| SVM           | N/A            | _ALAD201_     | 31.0%       |
 
-#### 1. Mit SVM Model (empfohlen für wenige Fahrer)
+**Sanity Check (bekannte Fahrer):** RF 92.67%, XGB 94.17%, SVM 64.47%
 
-```powershell
-py -3 scripts\05_predict.py "raw_data\00f946d7-504b-4a0d-8314-fdbe1d58d4c8.htf" --model svm
-```
-
-#### 2. Mit XGBoost (empfohlen für viele Fahrer)
-
-```powershell
-py -3 scripts\05_predict.py "raw_data\ks_nurburgring_&_ks_porsche_911_gt3_rs_&_ALAD201_&_stint_1.ld" --model xgboost
-```
-
-#### 3. Mit Custom Confidence Threshold
-
-```powershell
-py -3 scripts\05_predict.py "raw_data\0afc3817-a5b6-4bbf-b6ae-79c6e5c4e881.htf" --model svm --confidence-threshold 0.8
-```
-
-### Parameter
-
-| Parameter                | Beschreibung          | Default            | Optionen                          |
-| ------------------------ | --------------------- | ------------------ | --------------------------------- |
-| `<DATEI>`                | Pfad zur HTF/LD Datei | _erforderlich_     | `.htf` oder `.ld`                 |
-| `--model`                | ML-Modell             | `svm`              | `random_forest`, `svm`, `xgboost` |
-| `--confidence-threshold` | Mindest-Konfidenz     | `0.6`              | `0.0` - `1.0`                     |
-| `--model-dir`            | Model Directory       | `models/combined/` | Beliebiger Pfad                   |
+**Key Insight:**  
+Random Forest zeigt **niedrige Confidence** bei unbekannten Fahrern → kann für "Neuer Fahrer"-Detektion verwendet werden (Threshold: < 60%)
 
 ---
 
-## 📊 Ergebnisse
+## 🔬 Script-Details
 
-### Trainierte Fahrer (11 total)
+### 00_data_overview.py
 
-**HTF-Fahrer (6):**
+Erstellt Inventar aller verfügbaren Fahrer in `raw_data/`. Zeigt Sample-Verteilung, Imbalance-Ratio und Empfehlungen.
 
-- MAAKZ19001, CHIPZ26000, TOINZ27000, INBWZ11002, PASZZ20000, MAMCZ06001
+### 01_parse_htf.py
 
-**LD-Fahrer (5):**
+Parst text-basierte HTF-Dateien (iRacing). Extrahiert 21 Telemetrie-Channels pro Sample.
 
-- _ALAD201_, _NIMB230_, _RINE150_, _SOMD122_, _THTH312_
+### 02_parse_ld.py
 
-### Model Performance (11 Fahrer)
+Parst binäre LD-Dateien (Assetto Corsa). Extrahiert 19 Channels + Driver-ID aus Dateinamen.
 
-| Modell            | Train Accuracy | Test Accuracy | Cross-Val      | Empfehlung       |
-| ----------------- | -------------- | ------------- | -------------- | ---------------- |
-| **Random Forest** | 99.09%         | 87.36%        | 88.20% ± 0.41% | ⭐ Sehr gut      |
-| **SVM**           | 46.59%         | 37.60%        | 37.63% ± 0.22% | ❌ Schlecht      |
-| **XGBoost**       | 98.15%         | **70.76%**    | 66.58% ± 2.49% | ✅ Beste Balance |
+### 03a_combine_data.py
 
-**Empfehlung**: Verwende **Random Forest** oder **XGBoost** für beste Ergebnisse.
+Kombiniert HTF und LD Daten mit standardisiertem Column-Mapping (19 gemeinsame Channels).
 
-### Wichtigste Features
+### 03b_feature_engineering_combined.py
 
-Top 10 Features für Fahrererkennung:
+Extrahiert 171 Features pro 10-Sekunden-Segment (500 Samples @ 50Hz).
 
-1. `corner_count` - Anzahl Kurven
-2. `g_lat_extreme_pct` - Laterale G-Kräfte
-3. `t_tyreFR_min` - Reifentemperatur
-4. `n_engine_kurtosis` - Motor-Drehzahl-Verteilung
-5. `trail_brake_pct` - Trail-Braking Prozent
-6. `v_car_min` - Minimale Geschwindigkeit
-7. `n_engine_mean` - Durchschnittliche Drehzahl
-8. `speed_cv` - Geschwindigkeits-Variationskoeffizient
-9. `percent_throttle_skew` - Gas-Asymmetrie
-10. `t_tyreRL_kurtosis` - Reifentemperatur-Verteilung
+### 04b_train_models_combined.py
+
+Trainiert Random Forest, XGBoost, SVM mit StandardScaler und LabelEncoder.
+
+### 05_predict.py
+
+Prediction auf neuen HTF/LD Dateien mit Majority Voting über 3 Modelle.
+
+### 06_leave_one_out_evaluation.py
+
+Leave-One-Driver-Out Cross-Validation für Generalisierungs-Test auf unseen drivers.
 
 ---
 
-## 🐛 Troubleshooting
+## 🛠️ Troubleshooting
 
-### Problem: "Module not found"
+### RuntimeWarning: invalid value encountered in skew/kurtosis
 
-**Lösung:**
+**Normal!** Tritt auf wenn Daten nahezu identisch (z.B. Reifendruck auf Geraden). Wird automatisch mit `nan_to_num()` behandelt.
 
-```powershell
-pip install pandas numpy scikit-learn xgboost scipy matplotlib seaborn joblib
-```
+### KeyError: 'v_car' / Column-Fehler
 
-### Problem: "File not found" bei Prediction
+Column-Mapping zwischen HTF und LD nicht konsistent. Prüfe `03a_combine_data.py` → `ld_to_htf_mapping`.
 
-**Lösung:**  
-Verwende Anführungszeichen bei Dateinamen mit `&`:
+### FileNotFoundError: driver_features_combined.pkl
 
-```powershell
-py -3 scripts\05_predict.py "raw_data\datei_&_mit_&_und.ld" --model svm
-```
+Features noch nicht extrahiert. Führe zuerst Schritt 4 aus: `py -3 scripts\03b_feature_engineering_combined.py`
 
-### Problem: RuntimeWarnings bei Feature Engineering
+### Prediction Agreement < 50%
 
-**Lösung:**  
-Diese Warnings sind normal und werden automatisch behandelt. Sie treten auf bei konstanten Werten (z.B. Reifendruck auf Geraden).
+File enthält möglicherweise mehrere Fahrer oder unvollständige Daten. Prüfe Segment-Count in Output.
 
-### Problem: Niedrige Accuracy
+### ValueError: y contains previously unseen labels
 
-**Ursachen:**
-
-- Zu wenige Daten pro Fahrer
-- Zu viele ähnliche Fahrer
-- Falsche Hyperparameter
-
-**Lösung:**
-
-1. Mehr Daten sammeln (mehr Runden)
-2. Andere Strecke/Fahrzeug verwenden (mehr Variation)
-3. Hyperparameter in `04b_train_models_combined.py` anpassen
+In Leave-One-Out Evaluation: **Erwartet!** Holdout-Fahrer kann nicht encodiert werden (nicht im Training). Skript behandelt dies korrekt durch Confusion-Analyse statt Accuracy.
 
 ---
 
-## 📝 Anmerkungen
+## 📚 Weitere Ressourcen
 
-### Daten-Segmentierung
-
-- **Segment-Größe**: 500 Samples = 10 Sekunden @ 50Hz
-- **Min. Daten**: 80% der Segment-Größe (400 Samples)
-- **Warum?**: Erfasst temporale Fahrverhaltens-Muster
-
-### Train/Test Split
-
-- **70% Training / 30% Test**
-- **Stratified**: Gleichmäßige Verteilung pro Fahrer
-- **Random State**: 42 (reproduzierbar)
-
-### Dateiformate
-
-**HTF (Text):**
-
-- Human-readable
-- Header mit Metadaten
-- Sparse data representation (forward-fill)
-
-**LD (Binary):**
-
-- Assetto Corsa native format
-- Kompakt
-- Metadaten aus Filename extrahiert
+- **Professoren_Fragen.md**: 30 Fragen für Academic Review (Datenqualität, Methodik, Validierung)
+- **Model Metadata**: `models/combined/model_metadata.json` (Hyperparameter, Performance)
+- **Visualisierungen**: Confusion Matrices, Feature Importance, Per-Driver Performance
 
 ---
 
-## 🚀 Next Steps
+## 🎓 Für Professoren
 
-### Mehr Daten sammeln
+### Wichtige Punkte für Academic Review
 
-```powershell
-# Neue Dateien zu raw_data/ hinzufügen, dann:
-py -3 scripts\01_parse_htf.py    # Für neue HTF
-py -3 scripts\02_parse_ld.py     # Für neue LD
-py -3 scripts\03a_combine_data.py
-py -3 scripts\03b_feature_engineering_combined.py
-py -3 scripts\04b_train_models_combined.py
-```
+1. **Datenqualität**: 1.3M Samples, 11 Fahrer, 6.5:1 Imbalance
+2. **Methodologie**: Time-series Segmentierung (10s), 171 Features, 3 ML-Modelle
+3. **Validierung**: 80/20 Train-Test Split + Leave-One-Out für Generalisierung
+4. **Open-Set Recognition**: Random Forest erkennt unbekannte Fahrer (31.8% Confidence)
+5. **Limitationen**: Class Imbalance, Single Track/Vehicle, kein Temporal Modeling (LSTM)
 
-### Hyperparameter Tuning
+### Nächste Schritte
 
-Bearbeite `scripts/04b_train_models_combined.py`:
-
-```python
-# Random Forest
-trainer.train_random_forest(n_estimators=200, max_depth=15)
-
-# XGBoost
-trainer.train_xgboost(n_estimators=150, max_depth=8, learning_rate=0.05)
-```
-
-### Andere Strecken/Fahrzeuge
-
-Das System funktioniert mit beliebigen Strecken/Fahrzeugen - Features basieren auf Fahrverhalten, nicht auf Strecken-Layout.
+- [ ] Full LOOCV (alle 11 Fahrer als Holdout testen)
+- [ ] Class Balancing (SMOTE, Undersampling)
+- [ ] Deep Learning (LSTM, 1D-CNN für Temporal Dependencies)
+- [ ] Multi-Track/Vehicle Testing
+- [ ] Real-time Streaming Prediction
 
 ---
 
-## 📧 Support
+**Viel Erfolg! 🚀**
 
 Bei Fragen oder Problemen:
 

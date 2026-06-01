@@ -33,7 +33,7 @@ script_dir = Path(__file__).parent
 # Import HTFParser, LDParser and FeatureEngineer
 parse_htf = import_module_from_path("parse_htf", script_dir / "01_parse_htf.py")
 parse_ld = import_module_from_path("parse_ld", script_dir / "02_parse_ld.py")
-feature_engineering = import_module_from_path("feature_engineering", script_dir / "03_feature_engineering.py")
+feature_engineering = import_module_from_path("feature_engineering", script_dir / "03b_feature_engineering_combined.py")
 
 HTFParser = parse_htf.HTFParser
 LDParser = parse_ld.LDParser
@@ -52,7 +52,8 @@ class DriverPredictor:
         """
         self.model_name = model_name
         self.project_root = get_project_root()
-        self.models_dir = get_models_path()
+        # Use combined models directory
+        self.models_dir = get_models_path() / "combined"
         
         print(f"{'='*60}")
         print(f"DRIVER PREDICTOR - Loading {model_name.upper()} Model")
@@ -184,8 +185,15 @@ class DriverPredictor:
         
         print(f"  ✓ Extracted {len(features_df)} feature sets")
         
-        # Prepare features for prediction
-        X = features_df.drop(['driver_id', 'segment_idx'], axis=1)
+        # Prepare features for prediction - drop all non-numeric columns
+        columns_to_drop = []
+        for col in features_df.columns:
+            if col == 'driver_id' or '_id' in col or 'index' in col or 'segment' in col:
+                columns_to_drop.append(col)
+            elif features_df[col].dtype == 'object':
+                columns_to_drop.append(col)
+        
+        X = features_df.drop(columns_to_drop, axis=1, errors='ignore')
         X_scaled = self.scaler.transform(X)
         
         # Predict for each segment
@@ -264,8 +272,15 @@ class DriverPredictor:
         
         print(f"  ✓ Extracted {len(features_df)} feature sets")
         
-        # Prepare features for prediction
-        X = features_df.drop(['driver_id', 'segment_idx'], axis=1)
+        # Prepare features for prediction - drop all non-numeric columns
+        columns_to_drop = []
+        for col in features_df.columns:
+            if col == 'driver_id' or '_id' in col or 'index' in col or 'segment' in col:
+                columns_to_drop.append(col)
+            elif features_df[col].dtype == 'object':
+                columns_to_drop.append(col)
+        
+        X = features_df.drop(columns_to_drop, axis=1, errors='ignore')
         X_scaled = self.scaler.transform(X)
         
         # Predict for each segment

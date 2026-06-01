@@ -4,7 +4,7 @@ FEATURE ENGINEERING SUMMARY - Combined HTF+LD Data
 
 Input samples: 1,278,131
 Output feature sets: 2,552
-Features per set: 171
+Features per set: 92
 Segment size: 500 samples (10 seconds at 50Hz)
 
 Feature sets per driver:
