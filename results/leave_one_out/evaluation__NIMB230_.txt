@@ -1,0 +1,102 @@
+======================================================================
+LEAVE-ONE-DRIVER-OUT EVALUATION
+======================================================================
+
+Date: 2026-06-01 23:13:59
+Holdout Driver: _NIMB230_ (UNSEEN during training)
+
+======================================================================
+DATA SPLIT
+======================================================================
+
+Training Drivers (10):
+  CHIPZ26000: 459 samples
+  INBWZ11002: 363 samples
+  MAAKZ19001: 545 samples
+  MAMCZ06001: 133 samples
+  PASZZ20000: 182 samples
+  TOINZ27000: 374 samples
+  _ALAD201_: 117 samples
+  _RINE150_: 91 samples
+  _SOMD122_: 93 samples
+  _THTH312_: 111 samples
+
+Holdout Driver:
+  _NIMB230_: 84 samples (NEVER seen during training)
+
+======================================================================
+RESULTS ON UNSEEN DRIVER (Open-Set Recognition)
+======================================================================
+
+⚠ IMPORTANT: The holdout driver was NEVER seen during training.
+   The model CANNOT correctly identify them.
+   We measure: Which KNOWN drivers is the UNKNOWN driver confused with?
+
+RANDOM_FOREST:
+  Average Confidence: 31.8%
+  (Low = model uncertain = good for unknown driver)
+
+  Most Confused With: _THTH312_ (33.3%)
+
+  Full Distribution:
+    _THTH312_:   28 ( 33.3%)
+    _ALAD201_:   26 ( 31.0%)
+    _SOMD122_:   22 ( 26.2%)
+    _RINE150_:    8 (  9.5%)
+
+XGBOOST:
+  Average Confidence: 59.2%
+  (Low = model uncertain = good for unknown driver)
+
+  Most Confused With: _SOMD122_ (27.4%)
+
+  Full Distribution:
+    _SOMD122_:   23 ( 27.4%)
+    _THTH312_:   23 ( 27.4%)
+    _RINE150_:   20 ( 23.8%)
+    _ALAD201_:   18 ( 21.4%)
+
+SVM:
+  Most Confused With: _ALAD201_ (31.0%)
+
+  Full Distribution:
+    _ALAD201_:   26 ( 31.0%)
+    _SOMD122_:   23 ( 27.4%)
+    _THTH312_:   16 ( 19.0%)
+    _RINE150_:   11 ( 13.1%)
+    INBWZ11002:    3 (  3.6%)
+    MAMCZ06001:    3 (  3.6%)
+    CHIPZ26000:    2 (  2.4%)
+
+======================================================================
+INTERPRETATION
+======================================================================
+
+Most Uncertain Model: RANDOM_FOREST
+  Average Confidence: 31.8%
+
+What does this mean?
+
+✓ EXCELLENT: Model shows high uncertainty for unknown driver!
+  This is GOOD - it recognizes the driver is different from training.
+  Low confidence suggests the model could detect 'outliers'.
+
+Confusion Analysis:
+  Distributed confusion (max 33.3%)
+  → Unknown driver doesn't match any single known driver well
+
+======================================================================
+RECOMMENDATIONS
+======================================================================
+
+Model shows promise for detecting unknown drivers!
+1. Use confidence scores to reject uncertain predictions
+2. Set threshold (e.g., reject if confidence < 60%)
+3. Consider this for 'new driver' detection
+
+Scientific Context:
+This is an 'Open-Set Recognition' problem:
+- Closed-Set: All test classes seen in training (normal classification)
+- Open-Set: Test samples may be from UNKNOWN classes
+- Real-world scenario: New drivers not in training set
+- Solution: Use confidence/probability thresholds or specialized models

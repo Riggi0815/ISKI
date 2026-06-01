@@ -34,7 +34,7 @@ Das System kann Sim-Racing-Fahrer anhand ihrer Telemetriedaten identifizieren:
 ✅ **Feature Engineering**: 171 Features aus Fahrverhalten extrahiert  
 ✅ **Mehrere ML-Modelle**: Vergleich von RF, SVM und XGBoost  
 ✅ **Segmentierung**: 10-Sekunden-Fenster (500 Samples @ 50Hz)  
-✅ **Prediction**: Voting-basierte Fahrererkennung mit Konfidenz-Score  
+✅ **Prediction**: Voting-basierte Fahrererkennung mit Konfidenz-Score
 
 ---
 
@@ -194,11 +194,13 @@ py -3 scripts\01_parse_htf.py
 ```
 
 **Output:**
+
 - `processed_data/telemetry_all.pkl` - Pickle-Format (schnell)
 - `processed_data/telemetry_all.csv` - CSV-Format (lesbar)
 - `results/01_htf_parsing_summary.txt` - Zusammenfassung
 
 **Erwartete Ausgabe:**
+
 ```
 Successfully parsed: 9/10 files
 Total samples: 1,029,209
@@ -219,10 +221,12 @@ py -3 scripts\02_parse_ld.py
 ```
 
 **Output:**
+
 - `processed_data/telemetry_ld.pkl/csv`
 - `results/02_ld_parsing_summary.txt`
 
 **Erwartete Ausgabe:**
+
 ```
 Successfully parsed: 5/5 files
 Total samples: 248,922
@@ -243,10 +247,12 @@ py -3 scripts\03a_combine_data.py
 ```
 
 **Output:**
+
 - `processed_data/telemetry_combined.pkl/csv`
 - `results/03b_data_combination_summary.txt`
 
 **Erwartete Ausgabe:**
+
 ```
 Combined dataset: 1,278,131 samples
 Unique drivers: 11
@@ -259,6 +265,7 @@ Common telemetry channels: 19
 
 **Was macht es?**  
 Extrahiert 171 Verhaltensfeatures pro 10-Sekunden-Segment:
+
 - Brems-/Lenkverhalten
 - G-Kräfte
 - Reifenmanagement
@@ -271,10 +278,12 @@ py -3 scripts\03b_feature_engineering_combined.py
 ```
 
 **Output:**
+
 - `features/driver_features_combined.pkl/csv`
 - `results/03b_feature_engineering_combined_summary.txt`
 
 **Erwartete Ausgabe:**
+
 ```
 Total feature sets: 2552
 Features per set: 171
@@ -289,6 +298,7 @@ Segments per driver: 84-545
 
 **Was macht es?**  
 Trainiert 3 ML-Modelle mit allen 11 Fahrern:
+
 - Random Forest
 - SVM (Support Vector Machine)
 - XGBoost
@@ -300,6 +310,7 @@ py -3 scripts\04b_train_models_combined.py
 ```
 
 **Output:**
+
 - `models/combined/random_forest_model.pkl`
 - `models/combined/svm_model.pkl`
 - `models/combined/xgboost_model.pkl`
@@ -308,6 +319,7 @@ py -3 scripts\04b_train_models_combined.py
 - `results/04_model_comparison_combined.txt`
 
 **Erwartete Ausgabe:**
+
 ```
 Random Forest: 99% train, 87% test
 SVM: 47% train, 38% test
@@ -338,15 +350,18 @@ py -3 scripts\05_predict.py "raw_data\ks_nurburgring_&_ks_porsche_911_gt3_rs_&_A
 ```
 
 **Optionen:**
+
 - `--model`: `random_forest`, `svm`, oder `xgboost` (default: `svm`)
 - `--confidence-threshold`: Mindest-Konfidenz (default: `0.6`)
 - `--model-dir`: Custom model directory
 
 **Output:**
+
 - Konsolen-Ausgabe mit Prediction-Ergebnis
 - `results/prediction_<filename>.txt`
 
 **Beispiel-Ausgabe:**
+
 ```
 ✓ KNOWN DRIVER DETECTED
   Driver ID: _ALAD201_
@@ -368,6 +383,7 @@ py -3 scripts\06_evaluate.py
 ```
 
 **Output:**
+
 - `results/06_confusion_matrices.png`
 - `results/06_model_comparison.png`
 - `results/06_per_driver_performance.png`
@@ -379,16 +395,16 @@ py -3 scripts\06_evaluate.py
 
 ## 🔧 Script-Übersicht
 
-| Script | Zweck | Input | Output |
-|--------|-------|-------|--------|
-| **utils.py** | Helper-Funktionen | - | Importiert von allen anderen Scripts |
-| **01_parse_htf.py** | HTF Parser | `raw_data/*.htf` | `processed_data/telemetry_all.pkl` |
-| **02_parse_ld.py** | LD Parser | `raw_data/*.ld` | `processed_data/telemetry_ld.pkl` |
-| **03a_combine_data.py** | Daten kombinieren | HTF + LD | `processed_data/telemetry_combined.pkl` |
+| Script                                  | Zweck              | Input              | Output                                  |
+| --------------------------------------- | ------------------ | ------------------ | --------------------------------------- |
+| **utils.py**                            | Helper-Funktionen  | -                  | Importiert von allen anderen Scripts    |
+| **01_parse_htf.py**                     | HTF Parser         | `raw_data/*.htf`   | `processed_data/telemetry_all.pkl`      |
+| **02_parse_ld.py**                      | LD Parser          | `raw_data/*.ld`    | `processed_data/telemetry_ld.pkl`       |
+| **03a_combine_data.py**                 | Daten kombinieren  | HTF + LD           | `processed_data/telemetry_combined.pkl` |
 | **03b_feature_engineering_combined.py** | Feature-Extraktion | Combined telemetry | `features/driver_features_combined.pkl` |
-| **04b_train_models_combined.py** | ML Training | Features | `models/combined/*.pkl` |
-| **05_predict.py** | Prediction | HTF/LD Datei | Konsole + `results/prediction_*.txt` |
-| **06_evaluate.py** | Evaluation | Modelle + Features | `results/*.png` & `.txt` |
+| **04b_train_models_combined.py**        | ML Training        | Features           | `models/combined/*.pkl`                 |
+| **05_predict.py**                       | Prediction         | HTF/LD Datei       | Konsole + `results/prediction_*.txt`    |
+| **06_evaluate.py**                      | Evaluation         | Modelle + Features | `results/*.png` & `.txt`                |
 
 ---
 
@@ -422,12 +438,12 @@ py -3 scripts\05_predict.py "raw_data\0afc3817-a5b6-4bbf-b6ae-79c6e5c4e881.htf" 
 
 ### Parameter
 
-| Parameter | Beschreibung | Default | Optionen |
-|-----------|-------------|---------|----------|
-| `<DATEI>` | Pfad zur HTF/LD Datei | *erforderlich* | `.htf` oder `.ld` |
-| `--model` | ML-Modell | `svm` | `random_forest`, `svm`, `xgboost` |
-| `--confidence-threshold` | Mindest-Konfidenz | `0.6` | `0.0` - `1.0` |
-| `--model-dir` | Model Directory | `models/combined/` | Beliebiger Pfad |
+| Parameter                | Beschreibung          | Default            | Optionen                          |
+| ------------------------ | --------------------- | ------------------ | --------------------------------- |
+| `<DATEI>`                | Pfad zur HTF/LD Datei | _erforderlich_     | `.htf` oder `.ld`                 |
+| `--model`                | ML-Modell             | `svm`              | `random_forest`, `svm`, `xgboost` |
+| `--confidence-threshold` | Mindest-Konfidenz     | `0.6`              | `0.0` - `1.0`                     |
+| `--model-dir`            | Model Directory       | `models/combined/` | Beliebiger Pfad                   |
 
 ---
 
@@ -436,24 +452,27 @@ py -3 scripts\05_predict.py "raw_data\0afc3817-a5b6-4bbf-b6ae-79c6e5c4e881.htf" 
 ### Trainierte Fahrer (11 total)
 
 **HTF-Fahrer (6):**
+
 - MAAKZ19001, CHIPZ26000, TOINZ27000, INBWZ11002, PASZZ20000, MAMCZ06001
 
 **LD-Fahrer (5):**
+
 - _ALAD201_, _NIMB230_, _RINE150_, _SOMD122_, _THTH312_
 
 ### Model Performance (11 Fahrer)
 
-| Modell | Train Accuracy | Test Accuracy | Cross-Val | Empfehlung |
-|--------|----------------|---------------|-----------|------------|
-| **Random Forest** | 99.09% | 87.36% | 88.20% ± 0.41% | ⭐ Sehr gut |
-| **SVM** | 46.59% | 37.60% | 37.63% ± 0.22% | ❌ Schlecht |
-| **XGBoost** | 98.15% | **70.76%** | 66.58% ± 2.49% | ✅ Beste Balance |
+| Modell            | Train Accuracy | Test Accuracy | Cross-Val      | Empfehlung       |
+| ----------------- | -------------- | ------------- | -------------- | ---------------- |
+| **Random Forest** | 99.09%         | 87.36%        | 88.20% ± 0.41% | ⭐ Sehr gut      |
+| **SVM**           | 46.59%         | 37.60%        | 37.63% ± 0.22% | ❌ Schlecht      |
+| **XGBoost**       | 98.15%         | **70.76%**    | 66.58% ± 2.49% | ✅ Beste Balance |
 
 **Empfehlung**: Verwende **Random Forest** oder **XGBoost** für beste Ergebnisse.
 
 ### Wichtigste Features
 
 Top 10 Features für Fahrererkennung:
+
 1. `corner_count` - Anzahl Kurven
 2. `g_lat_extreme_pct` - Laterale G-Kräfte
 3. `t_tyreFR_min` - Reifentemperatur
@@ -494,11 +513,13 @@ Diese Warnings sind normal und werden automatisch behandelt. Sie treten auf bei 
 ### Problem: Niedrige Accuracy
 
 **Ursachen:**
+
 - Zu wenige Daten pro Fahrer
 - Zu viele ähnliche Fahrer
 - Falsche Hyperparameter
 
 **Lösung:**
+
 1. Mehr Daten sammeln (mehr Runden)
 2. Andere Strecke/Fahrzeug verwenden (mehr Variation)
 3. Hyperparameter in `04b_train_models_combined.py` anpassen
@@ -522,11 +543,13 @@ Diese Warnings sind normal und werden automatisch behandelt. Sie treten auf bei 
 ### Dateiformate
 
 **HTF (Text):**
+
 - Human-readable
 - Header mit Metadaten
 - Sparse data representation (forward-fill)
 
 **LD (Binary):**
+
 - Assetto Corsa native format
 - Kompakt
 - Metadaten aus Filename extrahiert
@@ -567,6 +590,7 @@ Das System funktioniert mit beliebigen Strecken/Fahrzeugen - Features basieren a
 ## 📧 Support
 
 Bei Fragen oder Problemen:
+
 1. Prüfe `results/*_summary.txt` für Details
 2. Lies Troubleshooting-Section
 3. Kontaktiere Projekt-Maintainer
