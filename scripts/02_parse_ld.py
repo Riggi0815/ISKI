@@ -14,7 +14,7 @@ from datetime import datetime
 # Add scripts directory to path for imports
 sys.path.append(str(Path(__file__).parent))
 from utils import (
-    get_project_root, get_raw_data_path, get_processed_data_path,
+    get_project_root, get_training_data_path, get_processed_data_path,
     get_results_path, save_dataframe, extract_driver_from_filename
 )
 
@@ -192,24 +192,24 @@ class LDParser:
 
 def parse_all_ld_files() -> Tuple[pd.DataFrame, Dict]:
     """
-    Parse all .ld files in raw_data directory
+    Parse all .ld files in training_data directory
     
     Returns:
         Tuple of (combined_dataframe, metadata_dict)
     """
     project_root = get_project_root()
-    raw_data_path = get_raw_data_path()
+    training_data_path = get_training_data_path()
     
     print(f"{'='*60}")
     print(f"PARSING LD FILES")
     print(f"{'='*60}")
-    print(f"Raw data path: {raw_data_path}\n")
+    print(f"Training data path: {training_data_path}\n")
     
     # Find all .ld files
-    ld_files = list(raw_data_path.glob("*.ld"))
+    ld_files = list(training_data_path.glob("*.ld"))
     
     if not ld_files:
-        print("No .ld files found!")
+        print("No .ld files found in training_data!")
         return pd.DataFrame(), {}
     
     print(f"Found {len(ld_files)} .ld files\n")

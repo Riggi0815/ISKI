@@ -39,21 +39,28 @@ Machine Learning System zur Identifikation von Sim-Racing-Fahrern anhand ihrer T
 
 ```
 ISKI/
-├── raw_data/                          # 🔴 Roh-Telemetriedaten
+├── raw_data/                          # 🔴 Original Roh-Telemetriedaten
 │   ├── *.htf                          # HTF-Dateien (10 Dateien, 6 Fahrer)
 │   └── *.ld                           # LD-Dateien (5 Dateien, 5 Fahrer)
 │
+├── training_data/                     # 🟣 Training Split (80%)
+│   ├── *.htf                          # 8 HTF Dateien
+│   └── *.ld                           # 4 LD Dateien
+│
+├── test_data/                         # 🟤 Test Split (20%)
+│   ├── *.htf                          # 2 HTF Dateien
+│   └── *.ld                           # 1 LD Datei
+│
 ├── processed_data/                    # 🟡 Verarbeitete Telemetrie
-│   ├── telemetry_all.pkl              # HTF Telemetrie (1,029,209 Samples)
-│   ├── telemetry_all.pkl              # HTF Telemetrie (1,029,209 Samples)
-│   ├── telemetry_ld.pkl               # LD Telemetrie (248,922 Samples)
-│   └── telemetry_combined.pkl         # Kombiniert HTF+LD (1,278,131 Samples)
+│   ├── telemetry_all.pkl              # HTF Telemetrie (von training_data/)
+│   ├── telemetry_ld.pkl               # LD Telemetrie (von training_data/)
+│   └── telemetry_combined.pkl         # Kombiniert HTF+LD
 │
 ├── features/                          # 🟢 Extrahierte Features
-│   └── driver_features_combined.pkl   # 2,552 Feature-Sets (171 Features/Set)
+│   └── driver_features_combined.pkl   # Feature-Sets (92 Features/Set)
 │
 ├── models/                            # 🔵 Trainierte ML-Modelle
-│   ├── combined/                      # Production Models (11 Fahrer)
+│   ├── combined/                      # Production Models (Training Data)
 │   │   ├── random_forest_model.pkl
 │   │   ├── xgboost_model.pkl
 │   │   ├── svm_model.pkl
@@ -63,15 +70,22 @@ ISKI/
 │   └── leave_one_out/                 # Generalisierungs-Test (LOOCV)
 │       └── [models + metadata]
 │
+├── results/                           # 📊 Evaluationsergebnisse
+│   ├── 00_data_overview.txt
+│   ├── test_evaluation_*.txt          # Test Data Performance
+│   └── leave_one_out/
+│
 ├── scripts/                           # 🟠 Python Pipeline
+│   ├── 00_split_raw_data.py          # ⚡ NEU: Train/Test Split
 │   ├── 00_data_overview.py           # Daten-Inventar
-│   ├── 01_parse_htf.py               # HTF Parser
-│   ├── 02_parse_ld.py                # LD Parser
+│   ├── 01_parse_htf.py               # HTF Parser (training_data/)
+│   ├── 02_parse_ld.py                # LD Parser (training_data/)
 │   ├── 03a_combine_data.py           # HTF+LD kombinieren
 │   ├── 03b_feature_engineering_combined.py  # Feature Extraction
 │   ├── 04b_train_models_combined.py  # Model Training
 │   ├── 05_predict.py                 # Prediction auf neuen Daten
-│   └── 06_leave_one_out_evaluation.py  # Unseen Driver Test
+│   ├── 06_leave_one_out_evaluation.py  # Unseen Driver Test
+│   └── 07_test_evaluation.py         # ⚡ NEU: Test Set Evaluation
 │
 ├── Professoren_Fragen.md              # 📝 Fragen für Academic Review
 └── requirements.txt                   # Python Dependencies
@@ -116,15 +130,32 @@ joblib>=1.3.0
 ### Übersicht
 
 ```
-RAW DATA → PARSING → COMBINATION → FEATURES → TRAINING → PREDICTION
-   ↓          ↓           ↓            ↓           ↓          ↓
-  .htf      .pkl     combined.pkl  features.pkl models/   results/
-  .ld
+RAW DATA → SPLIT → PARSING → COMBINATION → FEATURES → TRAINING → TEST
+   ↓        ↓        ↓           ↓            ↓           ↓        ↓
+  .htf    train/   .pkl     combined.pkl  features.pkl models/  results/
+  .ld     test/
 ```
 
 ### Schritt-für-Schritt Anleitung
 
-#### **Schritt 0: Daten-Übersicht** (Optional)
+#### **Schritt 0a: Train/Test Split** ⚡ NEU
+
+```powershell
+py -3 scripts\00_split_raw_data.py
+```
+
+**Input:** `raw_data/*.htf` und `*.ld` (15 Dateien)  
+**Output:**
+
+- `training_data/` (80%): 8 HTF + 4 LD = 12 Dateien
+- `test_data/` (20%): 2 HTF + 1 LD = 3 Dateien
+
+**Dauer:** ~5 Sekunden  
+**Wichtig:** Kopiert Dateien (raw_data bleibt intakt), deterministische Sortierung
+
+---
+
+#### **Schritt 0b: Daten-Übersicht** (Optional)
 
 ```powershell
 py -3 scripts\00_data_overview.py
@@ -141,9 +172,9 @@ Zeigt alle verfügbaren Fahrer, Sample-Verteilung und Imbalance-Ratio.
 py -3 scripts\01_parse_htf.py
 ```
 
-**Input:** `raw_data/*.htf` (10 Dateien)  
-**Output:** `processed_data/telemetry_all.pkl` (1,029,209 Samples, 6 Fahrer)  
-**Dauer:** ~30 Sekunden
+**Input:** `training_data/*.htf` (8 Dateien)  
+**Output:** `processed_data/telemetry_all.pkl` (Training HTF Samples)  
+**Dauer:** ~20 Sekunden
 
 ---
 
@@ -153,9 +184,9 @@ py -3 scripts\01_parse_htf.py
 py -3 scripts\02_parse_ld.py
 ```
 
-**Input:** `raw_data/*.ld` (5 Dateien)  
-**Output:** `processed_data/telemetry_ld.pkl` (248,922 Samples, 5 Fahrer)  
-**Dauer:** ~10 Sekunden
+**Input:** `training_data/*.ld` (4 Dateien)  
+**Output:** `processed_data/telemetry_ld.pkl` (Training LD Samples)  
+**Dauer:** ~8 Sekunden
 
 ---
 
@@ -166,7 +197,7 @@ py -3 scripts\03a_combine_data.py
 ```
 
 **Input:** `telemetry_all.pkl` + `telemetry_ld.pkl`  
-**Output:** `processed_data/telemetry_combined.pkl` (1,278,131 Samples, 11 Fahrer, 19 gemeinsame Channels)  
+**Output:** `processed_data/telemetry_combined.pkl` (11 Fahrer, 19 gemeinsame Channels)  
 **Dauer:** ~15 Sekunden
 
 **Mapping:** LD → HTF Column Names (z.B., `speed` → `v_car`)
@@ -180,15 +211,15 @@ py -3 scripts\03b_feature_engineering_combined.py
 ```
 
 **Input:** `telemetry_combined.pkl`  
-**Output:** `features/driver_features_combined.pkl` (2,552 Feature-Sets)  
+**Output:** `features/driver_features_combined.pkl` (Feature-Sets)  
 **Dauer:** ~2-3 Minuten
 
-**Features (171 pro Segment):**
+**Features (92 pro Segment):**
 
 - **Statistisch**: mean, std, min, max, skew, kurtosis (17 Channels × 6 = 102)
 - **Verhalten**: jerk, steering_rate, throttle_changes, brake_events (41)
 - **Frequenz**: FFT dominant frequency (17)
-- **Relativ**: v_car/gear_ratio, tire_temp_diff (11)
+- **Relativ**: gear ratios, tire temp/pressure differences (11)
 
 ---
 
@@ -212,7 +243,7 @@ py -3 scripts\04b_train_models_combined.py
 
 ---
 
-#### **Schritt 6: Prediction**
+#### **Schritt 6: Prediction auf einzelnen Dateien**
 
 ```powershell
 # HTF Datei
@@ -220,6 +251,9 @@ py -3 scripts\05_predict.py raw_data\00f946d7-504b-4a0d-8314-fdbe1d58d4c8.htf
 
 # LD Datei
 py -3 scripts\05_predict.py "raw_data\ks_nurburgring_&_ks_porsche_911_gt3_rs_&_ALAD201_&_stint_1.ld"
+
+# Mit Model-Auswahl
+py -3 scripts\05_predict.py raw_data\file.htf --model xgboost
 ```
 
 **Output:** `results/prediction_*.txt`
@@ -228,13 +262,39 @@ py -3 scripts\05_predict.py "raw_data\ks_nurburgring_&_ks_porsche_911_gt3_rs_&_A
 
 1. Auto-detect Format (.htf vs .ld)
 2. Parse → Feature Extraction
-3. Predict mit allen 3 Modellen
-4. Majority Voting → Final Prediction
+3. Predict mit gewähltem Modell (default: XGBoost)
+4. Segment-wise Voting → Final Prediction
 5. Agreement % + Confidence Score
 
 ---
 
-#### **Schritt 7: Leave-One-Out Evaluation**
+#### **Schritt 7: Test Set Evaluation** ⚡ NEU
+
+```powershell
+# Evaluiere XGBoost (default)
+py -3 scripts\07_test_evaluation.py
+
+# Andere Modelle
+py -3 scripts\07_test_evaluation.py --model random_forest
+py -3 scripts\07_test_evaluation.py --model svm
+```
+
+**Input:** `test_data/*.htf` und `*.ld` (3 Dateien, nie im Training gesehen)  
+**Output:** `results/test_evaluation_*.txt`
+
+**Zweck:** Performance auf **echten Holdout-Daten** messen
+
+**Methodik:**
+
+1. Parse alle Test-Dateien
+2. Feature Extraction
+3. Predict mit trainiertem Modell
+4. Berechne Accuracy, Confidence, Agreement pro Datei
+5. Overall Statistics
+
+---
+
+#### **Schritt 8: Leave-One-Driver-Out Evaluation**
 
 ```powershell
 py -3 scripts\06_leave_one_out_evaluation.py

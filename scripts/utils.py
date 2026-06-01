@@ -21,6 +21,16 @@ def get_raw_data_path() -> Path:
     return get_project_root() / "raw_data"
 
 
+def get_training_data_path() -> Path:
+    """Get the training_data directory path"""
+    return get_project_root() / "training_data"
+
+
+def get_test_data_path() -> Path:
+    """Get the test_data directory path"""
+    return get_project_root() / "test_data"
+
+
 def get_processed_data_path() -> Path:
     """Get the processed_data directory path"""
     return get_project_root() / "processed_data"
@@ -51,6 +61,30 @@ def list_ld_files() -> List[Path]:
     """List all .ld files in raw_data directory"""
     raw_data_path = get_raw_data_path()
     return sorted(raw_data_path.glob("*.ld"))
+
+
+def list_training_htf_files() -> List[Path]:
+    """List all .htf files in training_data directory"""
+    training_data_path = get_training_data_path()
+    return sorted(training_data_path.glob("*.htf"))
+
+
+def list_training_ld_files() -> List[Path]:
+    """List all .ld files in training_data directory"""
+    training_data_path = get_training_data_path()
+    return sorted(training_data_path.glob("*.ld"))
+
+
+def list_test_htf_files() -> List[Path]:
+    """List all .htf files in test_data directory"""
+    test_data_path = get_test_data_path()
+    return sorted(test_data_path.glob("*.htf"))
+
+
+def list_test_ld_files() -> List[Path]:
+    """List all .ld files in test_data directory"""
+    test_data_path = get_test_data_path()
+    return sorted(test_data_path.glob("*.ld"))
 
 
 def save_dataframe(df: pd.DataFrame, filename: str, directory: str = "processed_data"):
