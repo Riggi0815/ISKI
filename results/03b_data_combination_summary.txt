@@ -1,0 +1,49 @@
+======================================================================
+HTF + LD DATA COMBINATION SUMMARY
+======================================================================
+
+Total samples: 1,278,131
+Total drivers: 11
+Total columns: 25
+
+Samples by data source:
+  HTF: 1,029,209 samples
+  LD: 248,922 samples
+
+Samples per driver:
+  MAAKZ19001: 272,790 samples (HTF:272790)
+  CHIPZ26000: 229,796 samples (HTF:229796)
+  TOINZ27000: 187,266 samples (HTF:187266)
+  INBWZ11002: 181,685 samples (HTF:181685)
+  PASZZ20000: 91,059 samples (HTF:91059)
+  MAMCZ06001: 66,613 samples (HTF:66613)
+  _ALAD201_: 58,765 samples (LD:58765)
+  _THTH312_: 55,870 samples (LD:55870)
+  _SOMD122_: 46,616 samples (LD:46616)
+  _RINE150_: 45,514 samples (LD:45514)
+  _NIMB230_: 42,157 samples (LD:42157)
+
+Circuits: Nürburgring, Lausitzring, Ks Nurburgring
+Vehicles: xBloks - Lotus Exige V6 Cup, xBloks - Porsche 911 GT3 RS, Ks Porsche 911 Gt3 Rs
+
+Telemetry channels:
+  Total: 19 channels
+    - a_steering
+    - g_lat
+    - g_long
+    - n_engine
+    - p_brakeF
+    - p_tyreFL
+    - p_tyreFR
+    - p_tyreRL
+    - p_tyreRR
+    - percent_throttle
+    - t_tyreFL
+    - t_tyreFR
+    - t_tyreRL
+    - t_tyreRR
+    - v_car
+    - v_tyreFL
+    - v_tyreFR
+    - v_tyreRL
+    - v_tyreRR
