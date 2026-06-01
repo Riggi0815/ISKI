@@ -1,0 +1,71 @@
+======================================================================
+DATA SUMMARY REPORT
+======================================================================
+Total Files Processed: 9
+Total Samples: 1029209
+Unique Drivers: 6
+Unique Circuits: 2
+Unique Vehicles: 2
+Date Range: 2022-01-31 to 2022-07-12
+Total Columns: 49
+Telemetry Channels: 43
+
+Drivers:
+  MAAKZ19001: 272790
+  CHIPZ26000: 229796
+  TOINZ27000: 187266
+  INBWZ11002: 181685
+  PASZZ20000: 91059
+  MAMCZ06001: 66613
+
+Column Names:
+  - driver_id
+  - circuit
+  - vehicle
+  - recording_date
+  - simulation_setup
+  - sample_index
+  - t_time
+  - t_laptime
+  - t_last_laptime
+  - t_fastest_laptime
+  - n_lap_number
+  - bool_pit_speed_limiter
+  - n_engine
+  - n_gear
+  - v_car
+  - percent_throttle
+  - p_brakeF
+  - a_steering
+  - g_long
+  - g_lat
+  - g_vertical
+  - w_yaw
+  - p_boost
+  - t_ambient
+  - p_clutch
+  - ratio_brake_bias
+  - t_brakeFL
+  - t_brakeFR
+  - t_brakeRL
+  - t_brakeRR
+  - s_damperFL
+  - s_damperFR
+  - s_damperRL
+  - s_damperRR
+  - p_tyreFL
+  - p_tyreFR
+  - p_tyreRL
+  - p_tyreRR
+  - t_tyreFL
+  - t_tyreFR
+  - t_tyreRL
+  - t_tyreRR
+  - v_tyreFL
+  - v_tyreFR
+  - v_tyreRL
+  - v_tyreRR
+  - bool_abs
+  - bool_tc
+  - v_fuel_level
+======================================================================

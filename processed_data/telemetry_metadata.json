@@ -1,0 +1,74 @@
+[
+  {
+    "filename": "00f946d7-504b-4a0d-8314-fdbe1d58d4c8.htf",
+    "driver_id": "PASZZ20000",
+    "circuit": "N\u00fcrburgring",
+    "vehicle": "xBloks - Lotus Exige V6 Cup",
+    "recording_date": "2022-06-27",
+    "samples": 91059
+  },
+  {
+    "filename": "0afc3817-a5b6-4bbf-b6ae-79c6e5c4e881.htf",
+    "driver_id": "CHIPZ26000",
+    "circuit": "Lausitzring",
+    "vehicle": "xBloks - Lotus Exige V6 Cup",
+    "recording_date": "2022-02-21",
+    "samples": 135995
+  },
+  {
+    "filename": "0b1b546d-5853-4750-bd30-667a012a83dd.htf",
+    "driver_id": "CHIPZ26000",
+    "circuit": "Lausitzring",
+    "vehicle": "xBloks - Lotus Exige V6 Cup",
+    "recording_date": "2022-04-04",
+    "samples": 93801
+  },
+  {
+    "filename": "0b523882-a986-4c63-8aed-0dcecab36b1a.htf",
+    "driver_id": "TOINZ27000",
+    "circuit": "N\u00fcrburgring",
+    "vehicle": "xBloks - Porsche 911 GT3 RS",
+    "recording_date": "2022-02-07",
+    "samples": 187266
+  },
+  {
+    "filename": "0c87d8b3-acd5-4b46-bcdb-32e866d694d1.htf",
+    "driver_id": "INBWZ11002",
+    "circuit": "N\u00fcrburgring",
+    "vehicle": "xBloks - Porsche 911 GT3 RS",
+    "recording_date": "2022-01-31",
+    "samples": 181685
+  },
+  {
+    "filename": "0da24048-b541-4876-b6fc-00f52d5555ff.htf",
+    "driver_id": "MAAKZ19001",
+    "circuit": "N\u00fcrburgring",
+    "vehicle": "xBloks - Porsche 911 GT3 RS",
+    "recording_date": "2022-02-28",
+    "samples": 94052
+  },
+  {
+    "filename": "1a4d7a3b-b160-46a7-9206-5d13d9dd99c7.htf",
+    "driver_id": "MAAKZ19001",
+    "circuit": "N\u00fcrburgring",
+    "vehicle": "xBloks - Porsche 911 GT3 RS",
+    "recording_date": "2022-03-21",
+    "samples": 90397
+  },
+  {
+    "filename": "1a63c863-e881-4564-bce0-1f6e64ec141f.htf",
+    "driver_id": "MAMCZ06001",
+    "circuit": "Lausitzring",
+    "vehicle": "xBloks - Lotus Exige V6 Cup",
+    "recording_date": "2022-07-12",
+    "samples": 66613
+  },
+  {
+    "filename": "1a658cf3-07cb-4b16-a57c-4c5ab576c04e.htf",
+    "driver_id": "MAAKZ19001",
+    "circuit": "N\u00fcrburgring",
+    "vehicle": "xBloks - Porsche 911 GT3 RS",
+    "recording_date": "2022-02-14",
+    "samples": 88341
+  }
+]
