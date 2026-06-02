@@ -1,0 +1,18 @@
+# IDE
+.idea/
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Large data files
+*.pkl
+*.ld
+*.htf
+
+# OS
+.DS_Store
+Thumbs.db

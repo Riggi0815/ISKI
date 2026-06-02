@@ -1,0 +1,63 @@
+{
+  "feature_names": [
+    "v_car_mean",
+    "v_car_std",
+    "v_car_min",
+    "v_car_max",
+    "speed_cv",
+    "g_lat_mean",
+    "g_lat_std",
+    "g_lat_min",
+    "g_lat_max",
+    "g_lat_extreme_pct",
+    "corner_count",
+    "g_long_mean",
+    "g_long_std",
+    "g_long_min",
+    "g_long_max",
+    "jerk_mean",
+    "jerk_max",
+    "percent_throttle_mean",
+    "percent_throttle_std",
+    "throttle_changes",
+    "throttle_smoothness",
+    "throttle_aggressive",
+    "n_engine_mean",
+    "n_engine_std",
+    "n_engine_max",
+    "gear_ratio_mean",
+    "gear_ratio_std",
+    "tire_temp_diff_fr",
+    "tire_pressure_diff_lr"
+  ],
+  "driver_names": [
+    "CHIPZ26000",
+    "INBWZ11002",
+    "MAAKZ19001",
+    "MAMCZ06001",
+    "PASZZ20000",
+    "TOINZ27000",
+    "_ALAD201_",
+    "_NIMB230_",
+    "_RINE150_",
+    "_SOMD122_",
+    "_THTH312_"
+  ],
+  "n_features": 29,
+  "n_drivers": 11,
+  "data_source": "HTF + LD combined",
+  "train_rounds": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    8
+  ],
+  "test_rounds": [
+    6,
+    7
+  ],
+  "train_accuracy": 0.9652,
+  "test_accuracy": 0.8147
+}

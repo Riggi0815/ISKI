@@ -20,18 +20,18 @@ Machine Learning System zur Identifikation von Sim-Racing-Fahrern anhand ihrer T
 
 - **Multi-Format Support**: HTF (iRacing, text-basiert) und LD (Assetto Corsa, binär)
 - **11 Fahrer**: 6 HTF + 5 LD Fahrer (~1.3M Telemetrie-Samples)
-- **171 Features**: Statistische, Verhaltens- und Frequenz-Merkmale
-- **3 ML-Modelle**: Random Forest (87.36%), XGBoost (70.76%), SVM (37.60%)
+- **92 Features**: Statistische, Verhaltens- und Frequenz-Merkmale
+- **Random Forest**: 81.47% Test-Accuracy (Runden-basierter Split)
 - **Leave-One-Out Evaluation**: Test auf nie gesehenen Fahrern (Open-Set Recognition)
 - **Real-time Prediction**: HTF/LD Dateien automatisch erkennen und klassifizieren
 
 ### Wissenschaftlicher Ansatz
 
 ✅ Time-series Segmentierung (10 Sekunden = 500 Samples @ 50Hz)  
-✅ Feature Engineering mit 171 Merkmalen pro Segment  
-✅ Multi-model Ensemble (Random Forest, XGBoost, SVM)  
-✅ Leave-One-Driver-Out Cross-Validation für Generalisierung  
-✅ Open-Set Recognition (erkennt unbekannte Fahrer durch niedrige Confidence)
+✅ Feature Engineering mit 92 Merkmalen pro Segment  
+✅ Random Forest Classifier (kein Scaling nötig, eingebaute Feature Importance)  
+✅ Runden-basierter Train/Test Split (Runden 1,2,3,4,5,8 / Runden 6,7)  
+✅ Confusion Matrix + Feature Importance Visualisierung
 
 ---
 
@@ -233,13 +233,11 @@ py -3 scripts\04b_train_models_combined.py
 **Output:** `models/combined/` (3 Modelle + Scaler + Encoder)  
 **Dauer:** ~3-5 Minuten
 
-**Modelle:**
+**Modell:**
 
-- Random Forest (n_estimators=200, max_depth=30)
-- XGBoost (n_estimators=200, max_depth=10, learning_rate=0.1)
-- SVM (Linear kernel, C=1.0)
+- Random Forest (n_estimators=200, max_depth=None, class_weight=balanced)
 
-**Split:** 80% Training / 20% Test
+**Split:** Runden-basiert — Runden 1,2,3,4,5,8 Training (~75%) / Runden 6,7 Test (~25%)
 
 ---
 
@@ -327,13 +325,13 @@ py -3 scripts\06_leave_one_out_evaluation.py
 
 ### Closed-Set Classification (11 Fahrer, alle trainiert)
 
-| Model         | Test Accuracy | Training Time |
-| ------------- | ------------- | ------------- |
-| Random Forest | **87.36%**    | ~2 min        |
-| XGBoost       | 70.76%        | ~3 min        |
-| SVM (Linear)  | 37.60%        | ~1 min        |
+| Model         | Test Accuracy | Split |
+| ------------- | ------------- | ----- |
+| Random Forest | **81.47%**    | Runden 1-5,8 / 6,7 |
 
-**Class Distribution:** 6.5:1 Imbalance (MAAKZ19001: 272,790 vs _NIMB230_: 42,157)
+**Hinweis:** HTF-Fahrer erreichen 91–98% Accuracy. LD-Fahrer (~0–25%) werden schlecht erkannt, da der LD-Parser fehlerhafte Telemetriewerte liefert (Größenordnung 10^34) — bekanntes offenes Problem.
+
+**Class Distribution:** 2.552 Segmente, 84–545 pro Fahrer
 
 ### Open-Set Recognition (Leave-One-Out)
 
@@ -376,7 +374,7 @@ Extrahiert 171 Features pro 10-Sekunden-Segment (500 Samples @ 50Hz).
 
 ### 04b_train_models_combined.py
 
-Trainiert Random Forest, XGBoost, SVM mit StandardScaler und LabelEncoder.
+Trainiert Random Forest (kein Scaler) mit runden-basiertem Split. Speichert Confusion Matrix und Feature Importance als PNG.
 
 ### 05_predict.py
 
@@ -426,7 +424,7 @@ In Leave-One-Out Evaluation: **Erwartet!** Holdout-Fahrer kann nicht encodiert w
 
 1. **Datenqualität**: 1.3M Samples, 11 Fahrer, 6.5:1 Imbalance
 2. **Methodologie**: Time-series Segmentierung (10s), 171 Features, 3 ML-Modelle
-3. **Validierung**: 80/20 Train-Test Split + Leave-One-Out für Generalisierung
+3. **Validierung**: Runden-basierter Train/Test Split (75/25) + Leave-One-Out für Generalisierung
 4. **Open-Set Recognition**: Random Forest erkennt unbekannte Fahrer (31.8% Confidence)
 5. **Limitationen**: Class Imbalance, Single Track/Vehicle, kein Temporal Modeling (LSTM)
 

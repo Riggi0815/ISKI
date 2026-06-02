@@ -1,338 +1,387 @@
 """
-Step 4b: Train Models on Combined HTF+LD Data
-Train ML models using unified dataset with all drivers
+Step 4b: Train Random Forest on Combined HTF+LD Data
+Driver identification: predict which of the 5 drivers is at the wheel.
+
+Train/Test Split:
+  - Training: Rounds 1, 2, 3, 4, 5, 8  (inferred from sequential segment order)
+  - Test:     Rounds 6, 7
+
+Evaluation:
+  - Accuracy
+  - Confusion Matrix
+  - Feature Importance
 """
 
 import sys
 from pathlib import Path
 import pandas as pd
 import numpy as np
-from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.svm import SVC
-from xgboost import XGBClassifier
-from sklearn.preprocessing import StandardScaler, LabelEncoder
-from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+from sklearn.preprocessing import LabelEncoder
+from sklearn.metrics import (
+    accuracy_score, classification_report,
+    confusion_matrix, ConfusionMatrixDisplay
+)
+import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use('Agg')
 import joblib
 import json
 
-# Add scripts directory to path for imports
 sys.path.append(str(Path(__file__).parent))
-from utils import (
-    get_project_root, get_features_path, get_models_path, 
-    get_results_path, load_dataframe
-)
+from utils import get_project_root, get_features_path, get_models_path, get_results_path
 
 
-class ModelTrainer:
-    """Train and evaluate ML models for driver identification"""
-    
-    def __init__(self, features_df: pd.DataFrame):
-        """
-        Initialize trainer with features dataframe
-        
-        Args:
-            features_df: DataFrame with features and driver_id column
-        """
-        self.features_df = features_df
-        self.X = None
-        self.y = None
-        self.X_train = None
-        self.X_test = None
-        self.y_train = None
-        self.y_test = None
-        self.scaler = StandardScaler()
-        self.label_encoder = LabelEncoder()
-        self.models = {}
-        self.results = {}
-        
-    def prepare_data(self, test_size=0.3, random_state=42):
-        """Prepare data for training"""
-        print(f"\n{'='*60}")
-        print("PREPARING DATA")
-        print(f"{'='*60}\n")
-        
-        # Print all columns to debug
-        print(f"All columns: {list(self.features_df.columns)[:10]}...")  # First 10 columns
-        
-        # Separate features and labels - drop ALL non-numeric columns
-        self.y = self.features_df['driver_id']
-        
-        # Drop non-feature columns (driver_id and any index-like columns)
-        columns_to_drop = []
-        for col in self.features_df.columns:
-            if col == 'driver_id' or col.endswith('_index') or 'sample_index' in col:
-                columns_to_drop.append(col)
-            # Also check if column contains string values
-            elif self.features_df[col].dtype == 'object':
-                columns_to_drop.append(col)
-        
-        print(f"Dropping columns: {columns_to_drop}")
-        self.X = self.features_df.drop(columns_to_drop, axis=1)
-        
-        print(f"Features shape: {self.X.shape}")
-        print(f"Number of features: {self.X.shape[1]}")
-        print(f"Number of samples: {len(self.X)}")
-        print(f"Number of drivers: {self.y.nunique()}")
-        
-        # Encode labels
-        self.y = self.label_encoder.fit_transform(self.y)
-        
-        # Train/test split (stratified by driver)
-        self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(
-            self.X, self.y, 
-            test_size=test_size, 
-            random_state=random_state,
-            stratify=self.y
-        )
-        
-        # Scale features
-        self.X_train = self.scaler.fit_transform(self.X_train)
-        self.X_test = self.scaler.transform(self.X_test)
-        
-        print(f"\nTrain set: {len(self.X_train)} samples")
-        print(f"Test set:  {len(self.X_test)} samples")
-        print(f"Split: {(1-test_size)*100:.0f}% train / {test_size*100:.0f}% test")
-        
-    def train_random_forest(self, n_estimators=100, max_depth=10, random_state=42):
-        """Train Random Forest classifier"""
-        print(f"\n{'='*60}")
-        print("TRAINING: Random Forest")
-        print(f"{'='*60}")
-        print(f"Parameters: n_estimators={n_estimators}, max_depth={max_depth}\n")
-        
-        rf = RandomForestClassifier(
-            n_estimators=n_estimators,
-            max_depth=max_depth,
-            random_state=random_state,
-            n_jobs=-1
-        )
-        
-        rf.fit(self.X_train, self.y_train)
-        
-        # Predictions
-        y_train_pred = rf.predict(self.X_train)
-        y_test_pred = rf.predict(self.X_test)
-        
-        # Metrics
-        train_acc = accuracy_score(self.y_train, y_train_pred)
-        test_acc = accuracy_score(self.y_test, y_test_pred)
-        
-        print(f"✓ Training Accuracy:   {train_acc:.4f} ({train_acc*100:.2f}%)")
-        print(f"✓ Test Accuracy:       {test_acc:.4f} ({test_acc*100:.2f}%)")
-        
-        self.models['random_forest'] = rf
-        self.results['random_forest'] = {
-            'train_accuracy': train_acc,
-            'test_accuracy': test_acc,
-            'params': {'n_estimators': n_estimators, 'max_depth': max_depth}
-        }
-        
-    def train_svm(self, C=1.0, kernel='rbf', random_state=42):
-        """Train SVM classifier"""
-        print(f"\n{'='*60}")
-        print("TRAINING: Support Vector Machine (SVM)")
-        print(f"{'='*60}")
-        print(f"Parameters: C={C}, kernel={kernel}\n")
-        
-        svm = SVC(
-            C=C,
-            kernel=kernel,
-            random_state=random_state
-        )
-        
-        svm.fit(self.X_train, self.y_train)
-        
-        # Predictions
-        y_train_pred = svm.predict(self.X_train)
-        y_test_pred = svm.predict(self.X_test)
-        
-        # Metrics
-        train_acc = accuracy_score(self.y_train, y_train_pred)
-        test_acc = accuracy_score(self.y_test, y_test_pred)
-        
-        print(f"✓ Training Accuracy:   {train_acc:.4f} ({train_acc*100:.2f}%)")
-        print(f"✓ Test Accuracy:       {test_acc:.4f} ({test_acc*100:.2f}%)")
-        
-        self.models['svm'] = svm
-        self.results['svm'] = {
-            'train_accuracy': train_acc,
-            'test_accuracy': test_acc,
-            'params': {'C': C, 'kernel': kernel}
-        }
-        
-    def train_xgboost(self, n_estimators=100, max_depth=6, learning_rate=0.1, random_state=42):
-        """Train XGBoost classifier"""
-        print(f"\n{'='*60}")
-        print("TRAINING: XGBoost")
-        print(f"{'='*60}")
-        print(f"Parameters: n_estimators={n_estimators}, max_depth={max_depth}, lr={learning_rate}\n")
-        
-        xgb = XGBClassifier(
-            n_estimators=n_estimators,
-            max_depth=max_depth,
-            learning_rate=learning_rate,
-            random_state=random_state,
-            n_jobs=-1
-        )
-        
-        xgb.fit(self.X_train, self.y_train)
-        
-        # Predictions
-        y_train_pred = xgb.predict(self.X_train)
-        y_test_pred = xgb.predict(self.X_test)
-        
-        # Metrics
-        train_acc = accuracy_score(self.y_train, y_train_pred)
-        test_acc = accuracy_score(self.y_test, y_test_pred)
-        
-        print(f"✓ Training Accuracy:   {train_acc:.4f} ({train_acc*100:.2f}%)")
-        print(f"✓ Test Accuracy:       {test_acc:.4f} ({test_acc*100:.2f}%)")
-        
-        self.models['xgboost'] = xgb
-        self.results['xgboost'] = {
-            'train_accuracy': train_acc,
-            'test_accuracy': test_acc,
-            'params': {'n_estimators': n_estimators, 'max_depth': max_depth, 'learning_rate': learning_rate}
-        }
-        
-    def _create_comparison_report(self):
-        """Create model comparison report"""
-        results_path = get_results_path()
-        report_file = results_path / "04_model_comparison.txt"
-        
-        with open(report_file, 'w', encoding='utf-8') as f:
-            f.write("="*70 + "\n")
-            f.write("MODEL COMPARISON REPORT\n")
-            f.write("="*70 + "\n\n")
-            
-            for model_name, metrics in self.results.items():
-                f.write(f"\n{model_name.upper()}\n")
-                f.write("-"*50 + "\n")
-                f.write(f"Train Accuracy: {metrics['train_accuracy']:.4f} ({metrics['train_accuracy']*100:.2f}%)\n")
-                f.write(f"Test Accuracy:  {metrics['test_accuracy']:.4f} ({metrics['test_accuracy']*100:.2f}%)\n")
-                f.write(f"Parameters: {metrics['params']}\n")
-            
-            f.write(f"\n{'='*70}\n")
-            f.write("SUMMARY\n")
-            f.write(f"{'='*70}\n")
-            
-            best_model = max(self.results.items(), key=lambda x: x[1]['test_accuracy'])
-            f.write(f"\nBest Model: {best_model[0].upper()}\n")
-            f.write(f"Test Accuracy: {best_model[1]['test_accuracy']:.4f} ({best_model[1]['test_accuracy']*100:.2f}%)\n")
+# ---------------------------------------------------------------------------
+# Feature columns used for training
+# Mapped to actual column names present in driver_features_combined
+# ---------------------------------------------------------------------------
+FEATURE_COLUMNS = [
+    # Vehicle speed before / in / after corner
+    'v_car_mean', 'v_car_std', 'v_car_min', 'v_car_max',
+    # Speed variation (how much the driver varies speed through a segment)
+    'speed_cv',
+
+    # Lateral G-force (Querbeschleunigung)
+    'g_lat_mean', 'g_lat_std', 'g_lat_min', 'g_lat_max',
+    'g_lat_extreme_pct',    # fraction of time with >1G lateral
+    'corner_count',          # how many corners per segment
+
+    # Longitudinal G / Brake behaviour (wann und wie hart gebremst wird)
+    'g_long_mean', 'g_long_std', 'g_long_min', 'g_long_max',
+    'jerk_mean', 'jerk_max',   # rate of change of longitudinal G
+
+    # Throttle application (aggressiv vs. smooth aus der Kurve)
+    'percent_throttle_mean', 'percent_throttle_std',
+    'throttle_changes',      # number of throttle transitions
+    'throttle_smoothness',   # std of throttle change rate
+    'throttle_aggressive',   # large, rapid throttle inputs
+
+    # Engine RPM behaviour (jeder Fahrer schaltet bei anderen RPM)
+    'n_engine_mean', 'n_engine_std', 'n_engine_max',
+
+    # Gear-ratio proxy: speed / RPM → encodes driving-line and shift style
+    'gear_ratio_mean', 'gear_ratio_std',
+
+    # Tyre temperature differential (front vs rear — driving style signature)
+    'tire_temp_diff_fr',
+    # Tyre pressure differential (left vs right — cornering asymmetry)
+    'tire_pressure_diff_lr',
+]
+
+
+def split_by_rounds(
+    features_df: pd.DataFrame,
+    train_rounds: list = [1, 2, 3, 4, 5, 8],
+    test_rounds: list = [6, 7],
+    n_rounds: int = 8,
+) -> tuple:
+    """
+    Divide each driver's segments into n_rounds equal-sized groups,
+    then assign groups to train or test according to round numbers.
+
+    Round numbering is 1-based; segments are ordered sequentially as
+    recorded (the order already present in the DataFrame for each driver).
+
+    Returns:
+        (train_indices, test_indices) — list of DataFrame index values
+    """
+    train_idx, test_idx = [], []
+
+    for driver_id in features_df['driver_id'].unique():
+        mask = features_df['driver_id'] == driver_id
+        driver_idx = features_df.index[mask].tolist()
+        n_segs = len(driver_idx)
+
+        segs_per_round = max(1, n_segs // n_rounds)
+
+        for pos, idx in enumerate(driver_idx):
+            # Clamp to n_rounds so the tail goes into round 8
+            round_num = min(pos // segs_per_round + 1, n_rounds)
+            if round_num in train_rounds:
+                train_idx.append(idx)
+            else:
+                test_idx.append(idx)
+
+    return train_idx, test_idx
+
+
+def prepare_features(features_df: pd.DataFrame, feature_cols: list) -> tuple:
+    """
+    Select and clean the feature matrix.
+    Returns (X, valid_feature_cols) — only columns that actually exist.
+    Values are clipped to float32-safe range to avoid sklearn overflow errors.
+    """
+    available = [c for c in feature_cols if c in features_df.columns]
+    missing = [c for c in feature_cols if c not in features_df.columns]
+    if missing:
+        print(f"  Note: {len(missing)} requested features not in data: {missing}")
+    X = features_df[available].copy()
+    X = X.replace([np.inf, -np.inf], np.nan).fillna(0)
+    # Clip to float32 range so sklearn doesn't overflow during tree building
+    float32_max = np.finfo(np.float32).max * 0.9
+    X = X.clip(lower=-float32_max, upper=float32_max)
+    return X, available
+
+
+def train_random_forest(X_train, y_train, n_estimators: int = 200, random_state: int = 42):
+    """Train Random Forest — no scaling needed (tree-based model)."""
+    rf = RandomForestClassifier(
+        n_estimators=n_estimators,
+        max_depth=None,        # let trees grow fully for expressive power
+        min_samples_leaf=2,    # slight regularisation against overfitting
+        class_weight='balanced',
+        random_state=random_state,
+        n_jobs=-1,
+    )
+    rf.fit(X_train, y_train)
+    return rf
+
+
+def plot_confusion_matrix(y_true, y_pred, class_names: list, save_path: Path):
+    """Save a labelled confusion-matrix heatmap."""
+    cm = confusion_matrix(y_true, y_pred)
+    fig, ax = plt.subplots(figsize=(10, 8))
+    disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=class_names)
+    disp.plot(ax=ax, colorbar=True, cmap='Blues')
+    ax.set_title('Confusion Matrix - Random Forest\n(Test: Rounds 6 & 7)', fontsize=13)
+    # Rotate x-axis labels 90 degrees, right-aligned so they don't overlap
+    ax.set_xticklabels(ax.get_xticklabels(), rotation=90, ha='right', fontsize=9)
+    ax.set_yticklabels(ax.get_yticklabels(), fontsize=9)
+    plt.tight_layout()
+    fig.savefig(save_path, dpi=150, bbox_inches='tight')
+    plt.close(fig)
+    print(f"  Saved: {save_path.name}")
+
+
+def plot_feature_importance(rf_model, feature_names: list, save_path: Path, top_n: int = 20):
+    """Save a horizontal bar chart of the top-N most important features."""
+    importances = rf_model.feature_importances_
+    indices = np.argsort(importances)[::-1][:top_n]
+    top_features = [feature_names[i] for i in indices]
+    top_importances = importances[indices]
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+    y_pos = np.arange(len(top_features))
+    bars = ax.barh(y_pos, top_importances[::-1], color='steelblue', edgecolor='white')
+    ax.set_yticks(y_pos)
+    ax.set_yticklabels(top_features[::-1], fontsize=9)
+    ax.set_xlabel('Mean Decrease in Impurity (Feature Importance)')
+    ax.set_title(f'Top {top_n} Feature Importances — Random Forest\n(Which features best identify the driver?)',
+                 fontsize=12)
+    ax.grid(axis='x', alpha=0.3)
+    plt.tight_layout()
+    fig.savefig(save_path, dpi=150, bbox_inches='tight')
+    plt.close(fig)
+    print(f"  Saved: {save_path.name}")
+
+    return list(zip(top_features, top_importances))
+
+
+def save_text_report(report_lines: list, save_path: Path):
+    with open(save_path, 'w', encoding='utf-8') as f:
+        f.write('\n'.join(report_lines))
+    print(f"  Saved: {save_path.name}")
 
 
 def main():
-    """Main execution function"""
     project_root = get_project_root()
     features_path = get_features_path()
     models_path = get_models_path()
     results_path = get_results_path()
-    
-    print(f"{'='*70}")
-    print(f"ML MODEL TRAINING - Combined HTF+LD Data (All Drivers)")
-    print(f"{'='*70}\n")
-    
-    # Load combined features
-    print("Loading combined features...")
-    features_file = features_path / "driver_features_combined"
-    features_df = load_dataframe(features_file)
-    
-    if features_df is None or len(features_df) == 0:
-        print("\n⚠ No combined features found!")
-        print("Please run: py -3 scripts\\03b_feature_engineering_combined.py first")
+
+    print('=' * 70)
+    print('RANDOM FOREST — Driver Identification (Combined HTF+LD)')
+    print('Train: Rounds 1,2,3,4,5,8  |  Test: Rounds 6,7')
+    print('=' * 70)
+
+    # -----------------------------------------------------------------------
+    # 1. Load features
+    # -----------------------------------------------------------------------
+    print('\n[1] Loading features...')
+    features_file = features_path / 'driver_features_combined'
+
+    pkl = features_path / 'driver_features_combined.pkl'
+    csv = features_path / 'driver_features_combined.csv'
+    if pkl.exists():
+        features_df = pd.read_pickle(pkl)
+        print(f'  Loaded from pickle: {pkl.name}')
+    elif csv.exists():
+        features_df = pd.read_csv(csv)
+        print(f'  Loaded from CSV: {csv.name}')
+    else:
+        print('ERROR: No combined feature file found.')
+        print('Run: py -3 scripts\\03b_feature_engineering_combined.py first')
         return
-    
-    print(f"✓ Loaded features for {len(features_df)} segments")
-    print(f"  Features per segment: {len(features_df.columns) - 2}")
-    print(f"  Unique drivers: {features_df['driver_id'].nunique()}")
-    
-    # Initialize trainer with combined features
-    trainer = ModelTrainer(features_df)
-    
-    # Prepare data (70% train / 30% test, stratified)
-    trainer.prepare_data(test_size=0.3, random_state=42)
-    
-    # Train all models
-    print(f"\n{'='*60}")
-    print("TRAINING MODELS")
-    print(f"{'='*60}\n")
-    
-    trainer.train_random_forest(n_estimators=100, max_depth=10)
-    trainer.train_svm(C=10.0, kernel='rbf')
-    trainer.train_xgboost(n_estimators=100, max_depth=6, learning_rate=0.1)
-    
-    # Save models with "_combined" suffix to distinguish from single-source models
-    print(f"\n{'='*60}")
-    print("SAVING MODELS")
-    print(f"{'='*60}")
-    
-    # Save models to models_combined/ subdirectory
-    combined_models_path = models_path / "combined"
+
+    print(f'  Rows: {len(features_df):,}  |  Columns: {len(features_df.columns)}')
+    print(f'  Drivers ({features_df["driver_id"].nunique()}): {sorted(features_df["driver_id"].unique())}')
+    print()
+    for drv, cnt in features_df['driver_id'].value_counts().items():
+        print(f'    {drv}: {cnt} segments')
+
+    # -----------------------------------------------------------------------
+    # 2. Round-based train / test split
+    # -----------------------------------------------------------------------
+    print('\n[2] Splitting by rounds (8 rounds per driver)...')
+    TRAIN_ROUNDS = [1, 2, 3, 4, 5, 8]
+    TEST_ROUNDS  = [6, 7]
+
+    train_idx, test_idx = split_by_rounds(
+        features_df,
+        train_rounds=TRAIN_ROUNDS,
+        test_rounds=TEST_ROUNDS,
+        n_rounds=8,
+    )
+
+    train_df = features_df.loc[train_idx]
+    test_df  = features_df.loc[test_idx]
+
+    print(f'  Train segments: {len(train_df):,}  ({len(train_df)/len(features_df)*100:.1f}%)')
+    print(f'  Test  segments: {len(test_df):,}  ({len(test_df)/len(features_df)*100:.1f}%)')
+
+    # Per-driver breakdown
+    print()
+    for drv in sorted(features_df['driver_id'].unique()):
+        n_tr = (train_df['driver_id'] == drv).sum()
+        n_te = (test_df['driver_id'] == drv).sum()
+        print(f'    {drv}: train={n_tr}  test={n_te}')
+
+    # -----------------------------------------------------------------------
+    # 3. Prepare feature matrices
+    # -----------------------------------------------------------------------
+    print('\n[3] Preparing features...')
+    X_train, valid_features = prepare_features(train_df, FEATURE_COLUMNS)
+    X_test,  _              = prepare_features(test_df,  valid_features)
+
+    le = LabelEncoder()
+    y_train = le.fit_transform(train_df['driver_id'])
+    y_test  = le.transform(test_df['driver_id'])
+    class_names = list(le.classes_)
+
+    print(f'  Using {len(valid_features)} features')
+    print(f'  Classes: {class_names}')
+
+    # -----------------------------------------------------------------------
+    # 4. Train Random Forest
+    # -----------------------------------------------------------------------
+    print('\n[4] Training Random Forest (n_estimators=200)...')
+    rf = train_random_forest(X_train.values, y_train, n_estimators=200)
+
+    y_train_pred = rf.predict(X_train.values)
+    y_test_pred  = rf.predict(X_test.values)
+
+    train_acc = accuracy_score(y_train, y_train_pred)
+    test_acc  = accuracy_score(y_test,  y_test_pred)
+
+    print(f'  Train Accuracy: {train_acc:.4f} ({train_acc*100:.2f}%)')
+    print(f'  Test  Accuracy: {test_acc:.4f} ({test_acc*100:.2f}%)')
+
+    # -----------------------------------------------------------------------
+    # 5. Detailed evaluation
+    # -----------------------------------------------------------------------
+    print('\n[5] Evaluation:')
+    clf_report = classification_report(y_test, y_test_pred, target_names=class_names)
+    print(clf_report)
+
+    # -----------------------------------------------------------------------
+    # 6. Save plots
+    # -----------------------------------------------------------------------
+    print('\n[6] Saving plots...')
+    results_path.mkdir(exist_ok=True)
+
+    # Confusion Matrix
+    cm_path = results_path / 'confusion_matrix_rf.png'
+    plot_confusion_matrix(y_test, y_test_pred, class_names, cm_path)
+
+    # Feature Importance
+    fi_path = results_path / 'feature_importance_rf.png'
+    top_features = plot_feature_importance(rf, valid_features, fi_path, top_n=20)
+
+    # -----------------------------------------------------------------------
+    # 7. Save model
+    # -----------------------------------------------------------------------
+    print('\n[7] Saving model...')
+    combined_models_path = models_path / 'combined'
     combined_models_path.mkdir(exist_ok=True)
-    
-    # Save with custom paths
-    import joblib
-    joblib.dump(trainer.models['random_forest'], combined_models_path / "random_forest_model.pkl")
-    print(f"✓ Saved: {combined_models_path / 'random_forest_model.pkl'}")
-    
-    joblib.dump(trainer.models['svm'], combined_models_path / "svm_model.pkl")
-    print(f"✓ Saved: {combined_models_path / 'svm_model.pkl'}")
-    
-    joblib.dump(trainer.models['xgboost'], combined_models_path / "xgboost_model.pkl")
-    print(f"✓ Saved: {combined_models_path / 'xgboost_model.pkl'}")
-    
-    joblib.dump(trainer.scaler, combined_models_path / "scaler.pkl")
-    joblib.dump(trainer.label_encoder, combined_models_path / "label_encoder.pkl")
-    print(f"✓ Saved: scaler.pkl and label_encoder.pkl")
-    
-    # Save metadata
+
+    joblib.dump(rf, combined_models_path / 'random_forest_model.pkl')
+    joblib.dump(le, combined_models_path / 'label_encoder.pkl')
+
     metadata = {
-        'feature_names': trainer.X.columns.tolist() if hasattr(trainer.X, 'columns') else [],
-        'driver_names': trainer.label_encoder.classes_.tolist(),
-        'n_features': trainer.X.shape[1],
-        'n_drivers': len(trainer.label_encoder.classes_),
-        'data_source': 'HTF + LD combined'
+        'feature_names': valid_features,
+        'driver_names': class_names,
+        'n_features': len(valid_features),
+        'n_drivers': len(class_names),
+        'data_source': 'HTF + LD combined',
+        'train_rounds': TRAIN_ROUNDS,
+        'test_rounds': TEST_ROUNDS,
+        'train_accuracy': round(train_acc, 4),
+        'test_accuracy': round(test_acc, 4),
     }
-    
-    import json
-    with open(combined_models_path / "model_metadata.json", 'w') as f:
+    with open(combined_models_path / 'model_metadata.json', 'w') as f:
         json.dump(metadata, f, indent=2)
-    print(f"✓ Saved: model_metadata.json")
-    
-    # Save results
-    results = trainer.results
-    
-    with open(results_path / "training_results_combined.json", 'w') as f:
-        json.dump(results, f, indent=2)
-    print(f"✓ Saved JSON: {results_path / 'training_results_combined.json'}")
-    
-    # Create comparison report
-    trainer._create_comparison_report()
-    
-    # Rename to combined version
-    import shutil
-    if (results_path / "04_model_comparison.txt").exists():
-        shutil.move(
-            str(results_path / "04_model_comparison.txt"),
-            str(results_path / "04_model_comparison_combined.txt")
-        )
-        print(f"✓ Saved: {results_path / '04_model_comparison_combined.txt'}")
-    
-    print(f"\n{'='*60}")
-    print("✓ TRAINING COMPLETE")
-    print(f"{'='*60}")
-    print(f"Models saved in: {combined_models_path}")
-    print(f"Results saved in: {results_path}")
-    
-    print(f"\nAll drivers trained:")
-    for driver in sorted(trainer.label_encoder.classes_):
-        print(f"  - {driver}")
-    
-    print(f"\nBest model: ", end="")
-    best_model = max(results.items(), key=lambda x: x[1]['test_accuracy'])
-    print(f"{best_model[0].upper()} ({best_model[1]['test_accuracy']:.2%})")
+
+    print(f'  Saved model + metadata to: {combined_models_path}')
+
+    # -----------------------------------------------------------------------
+    # 8. Text report
+    # -----------------------------------------------------------------------
+    cm = confusion_matrix(y_test, y_test_pred)
+    report_lines = [
+        '=' * 70,
+        'RANDOM FOREST — Driver Identification Report',
+        '=' * 70,
+        '',
+        f'Train/Test Split:',
+        f'  Training rounds : {TRAIN_ROUNDS}',
+        f'  Test rounds     : {TEST_ROUNDS}',
+        f'  Train segments  : {len(train_df):,}',
+        f'  Test  segments  : {len(test_df):,}',
+        '',
+        f'Model: RandomForestClassifier (n_estimators=200, balanced class weights)',
+        f'Features: {len(valid_features)}',
+        '',
+        f'Train Accuracy : {train_acc:.4f} ({train_acc*100:.2f}%)',
+        f'Test  Accuracy : {test_acc:.4f} ({test_acc*100:.2f}%)',
+        '',
+        'Classification Report (Test Set):',
+        '-' * 50,
+        clf_report,
+        '',
+        'Confusion Matrix (Test Set):',
+        '  Rows = True Driver, Columns = Predicted Driver',
+        f'  Classes: {class_names}',
+        '',
+        str(cm),
+        '',
+        'Top 20 Feature Importances:',
+        '-' * 50,
+    ]
+    for i, (feat, imp) in enumerate(top_features, 1):
+        report_lines.append(f'  {i:2d}. {feat:<45s} {imp:.4f}')
+
+    report_lines += ['', '=' * 70]
+
+    report_path = results_path / '04b_rf_driver_identification_report.txt'
+    save_text_report(report_lines, report_path)
+
+    # -----------------------------------------------------------------------
+    # Summary
+    # -----------------------------------------------------------------------
+    print()
+    print('=' * 70)
+    print('DONE')
+    print('=' * 70)
+    print(f'Test Accuracy  : {test_acc:.2%}')
+    print(f'Confusion Matrix   -> {cm_path.name}')
+    print(f'Feature Importance -> {fi_path.name}')
+    print(f'Full Report        -> {report_path.name}')
+    print()
+    print('Top 5 most identifying features:')
+    for feat, imp in top_features[:5]:
+        print(f'  {feat}: {imp:.4f}')
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
