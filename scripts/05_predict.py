@@ -75,6 +75,14 @@ class DriverPredictor:
         self.label_encoder = joblib.load(encoder_path)
         print(f"✓ Loaded label encoder: {encoder_path.name}")
         
+        # Load metadata to get feature names
+        import json
+        metadata_path = self.models_dir / "model_metadata.json"
+        with open(metadata_path, 'r') as f:
+            metadata = json.load(f)
+        self.feature_names = metadata['feature_names']
+        print(f"✓ Loaded feature names: {len(self.feature_names)} features")
+        
         print(f"\nKnown drivers: {', '.join(self.label_encoder.classes_)}")
         print()
     
@@ -130,7 +138,7 @@ class DriverPredictor:
         
         # Parse HTF file
         print("Parsing telemetry data...")
-        parser = HTFParser(htf_path)
+        parser = HTFParser(str(htf_path))
         header, telemetry_df = parser.parse()
         
         if telemetry_df is None or len(telemetry_df) == 0:
@@ -156,15 +164,18 @@ class DriverPredictor:
         
         print(f"  ✓ Extracted {len(features_df)} feature sets")
         
-        # Prepare features for prediction - drop all non-numeric columns
-        columns_to_drop = []
-        for col in features_df.columns:
-            if col == 'driver_id' or '_id' in col or 'index' in col or 'segment' in col:
-                columns_to_drop.append(col)
-            elif features_df[col].dtype == 'object':
-                columns_to_drop.append(col)
+        # Select only the features used during training
+        missing_features = [f for f in self.feature_names if f not in features_df.columns]
+        if missing_features:
+            print(f"⚠ Warning: {len(missing_features)} features missing: {missing_features[:5]}...")
+            return {
+                'success': False,
+                'error': f'Missing features: {missing_features}',
+                'file': str(htf_path)
+            }
         
-        X = features_df.drop(columns_to_drop, axis=1, errors='ignore')
+        X = features_df[self.feature_names].copy()
+        X = X.replace([np.inf, -np.inf], np.nan).fillna(0)
         X_scaled = self.scaler.transform(X)
         
         # Predict for each segment

@@ -1,0 +1,24 @@
+============================================================
+TEST DATA EVALUATION - RANDOM_FOREST
+============================================================
+
+Files evaluated: 3
+Correct predictions: 0/3
+Accuracy: 0.0%
+Average confidence: 28.1%
+Average agreement: 98.6%
+
+Per-file results:
+────────────────────────────────────────────────────────────
+✗ RINE150.htf
+  True: RINE150, Predicted: ALAD201
+  Segments: 46, Agreement: 97.8%, Confidence: 27.1%
+
+✗ SOMD122.htf
+  True: SOMD122, Predicted: ALAD201
+  Segments: 47, Agreement: 97.9%, Confidence: 27.8%
+
+✗ THTH312.htf
+  True: THTH312, Predicted: ALAD201
+  Segments: 56, Agreement: 100.0%, Confidence: 29.5%
+

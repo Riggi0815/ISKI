@@ -1,0 +1,16 @@
+Prediction Result
+============================================================
+
+Input File: test_data\RINE150.htf
+File Type: .HTF
+Model: random_forest
+Confidence Threshold: 0.6
+
+Predicted Driver: ALAD201
+Status: UNKNOWN
+Confidence: 27.0%
+Vote Percentage: 97.8%
+
+Vote Distribution:
+  ALAD201: 45 votes
+  CHIPZ26000: 1 votes

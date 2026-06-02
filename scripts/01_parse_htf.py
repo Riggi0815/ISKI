@@ -24,8 +24,8 @@ from utils import (
 class HTFParser:
     """Parser for HTF telemetry files"""
     
-    def __init__(self, file_path: Path):
-        self.file_path = file_path
+    def __init__(self, file_path):
+        self.file_path = Path(file_path) if not isinstance(file_path, Path) else file_path
         self.header_data = {}
         self.channel_data = {}
         
@@ -71,21 +71,30 @@ class HTFParser:
         channel_pattern = r'\((.*?);(.*?);(.*?);(.*?)\)(.*?)(?=\(|$)'
         
         for match in re.finditer(channel_pattern, content, re.DOTALL):
-            channel_name = match.group(1).strip()
-            unit = match.group(2).strip()
-            sampling_rate = int(match.group(3))
-            data_count = int(match.group(4))
-            data_str = match.group(5).strip()
-            
-            # Parse data values
-            values = self._parse_channel_data(data_str, data_count)
-            
-            self.channel_data[channel_name] = {
-                'unit': unit,
-                'sampling_rate': sampling_rate,
-                'data_count': data_count,
-                'values': values
-            }
+            try:
+                channel_name = match.group(1).strip()
+                unit = match.group(2).strip()
+                sampling_rate_str = match.group(3).strip()
+                data_count_str = match.group(4).strip()
+                
+                # Try to parse sampling rate and data count
+                sampling_rate = int(sampling_rate_str)
+                data_count = int(data_count_str)
+                
+                data_str = match.group(5).strip()
+                
+                # Parse data values
+                values = self._parse_channel_data(data_str, data_count)
+                
+                self.channel_data[channel_name] = {
+                    'unit': unit,
+                    'sampling_rate': sampling_rate,
+                    'data_count': data_count,
+                    'values': values
+                }
+            except (ValueError, IndexError) as e:
+                # Skip channels that can't be parsed properly
+                continue
         
         print(f"  Channels: {len(self.channel_data)} parsed")
     

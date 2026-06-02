@@ -2,20 +2,25 @@
 HTF DATA PREPARATION SUMMARY
 ======================================================================
 
-Total samples: 74,794
-Total drivers: 3
-Total columns: 52
+Total samples: 1,080,376
+Total drivers: 8
+Total columns: 55
 
 Samples per driver:
+  MAAKZ19001: 272,790 samples
+  CHIPZ26000: 229,796 samples
+  TOINZ27000: 187,266 samples
+  INBWZ11002: 181,685 samples
+  PASZZ20000: 91,059 samples
+  MAMCZ06001: 66,613 samples
   ALAD201: 29,809 samples
-  SOMD122: 23,627 samples
   NIMB230: 21,358 samples
 
-Circuits: Nürburgring
-Vehicles: xBloks - Porsche 911 GT3 RS
+Circuits: Nürburgring, Lausitzring
+Vehicles: xBloks - Lotus Exige V6 Cup, xBloks - Porsche 911 GT3 RS
 
 Telemetry channels:
-  Total: 45 channels
+  Total: 48 channels
     - a_steering
     - bool_abs
     - bool_pit_speed_limiter
@@ -29,6 +34,7 @@ Telemetry channels:
     - n_gear
     - n_lap_number
     - p_boost
+    - p_brakeF
     - p_clutch
     - p_tyreFL
     - p_tyreFR
@@ -48,7 +54,9 @@ Telemetry channels:
     - t_delta_time
     - t_fastest_laptime
     - t_laptime
+    - t_last_laptime
     - t_split_time
+    - t_time
     - t_timestamp
     - t_tyreFL
     - t_tyreFR

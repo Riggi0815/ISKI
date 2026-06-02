@@ -19,9 +19,9 @@ Machine Learning System zur Identifikation von Sim-Racing-Fahrern anhand ihrer T
 ### Kernfunktionen
 
 - **HTF Format**: HTF (iRacing, text-basiert) Telemetriedaten
-- **5 Fahrer**: ALAD201, NIMB230, RINE150, SOMD122, THTH312 (~75K Telemetrie-Samples)
-- **92 Features**: Statistische, Verhaltens- und Frequenz-Merkmale
-- **Random Forest**: 100% Test-Accuracy (Runden-basierter Split)
+- **8 Fahrer**: ALAD201, CHIPZ26000, INBWZ11002, MAAKZ19001, MAMCZ06001, NIMB230, PASZZ20000, TOINZ27000 (~1.08M Telemetrie-Samples)
+- **29 Features**: Statistische, Verhaltens- und Frequenz-Merkmale (aus 92 extrahierten)
+- **Random Forest**: 96.24% Test-Accuracy (Runden-basierter Split)
 - **Leave-One-Out Evaluation**: Test auf nie gesehenen Fahrern (Open-Set Recognition)
 - **Real-time Prediction**: HTF Dateien automatisch verarbeiten und klassifizieren
 
@@ -40,13 +40,13 @@ Machine Learning System zur Identifikation von Sim-Racing-Fahrern anhand ihrer T
 ```
 ISKI/
 ├── raw_data/                          # 🔴 Original Roh-Telemetriedaten
-│   └── *.htf                          # HTF-Dateien (5 Dateien, 5 Fahrer)
+│   └── *.htf                          # HTF-Dateien (15 Dateien, 8 Fahrer)
 │
 ├── training_data/                     # 🟣 Training Split (80%)
-│   └── *.htf                          # 4 HTF Dateien
+│   └── *.htf                          # 12 HTF Dateien
 │
 ├── test_data/                         # 🟤 Test Split (20%)
-│   └── *.htf                          # 1 HTF Datei
+│   └── *.htf                          # 3 HTF Dateien (RINE150, SOMD122, THTH312)
 │
 ├── processed_data/                    # 🟡 Verarbeitete Telemetrie
 │   ├── telemetry_all.pkl              # HTF Telemetrie (von training_data/)
@@ -139,11 +139,11 @@ RAW DATA → SPLIT → PARSING → PREPARATION → FEATURES → TRAINING → TES
 py -3 scripts\00_split_raw_data.py
 ```
 
-**Input:** `raw_data/*.htf` (5 Dateien)  
+**Input:** `raw_data/*.htf` (15 Dateien)  
 **Output:**
 
-- `training_data/` (80%): 4 HTF Dateien
-- `test_data/` (20%): 1 HTF Datei
+- `training_data/` (80%): 12 HTF Dateien
+- `test_data/` (20%): 3 HTF Dateien (RINE150, SOMD122, THTH312)
 
 **Dauer:** ~5 Sekunden  
 **Wichtig:** Kopiert Dateien (raw_data bleibt intakt), deterministische Sortierung
@@ -167,9 +167,9 @@ Zeigt alle verfügbaren Fahrer, Sample-Verteilung und Imbalance-Ratio.
 py -3 scripts\01_parse_htf.py
 ```
 
-**Input:** `training_data/*.htf` (8 Dateien)  
-**Output:** `processed_data/telemetry_all.pkl` (Training HTF Samples)  
-**Dauer:** ~20 Sekunden
+**Input:** `training_data/*.htf` (12 Dateien)  
+**Output:** `processed_data/telemetry_all.pkl` (~1.08M Training HTF Samples, 8 Fahrer)  
+**Dauer:** ~20-30 Sekunden
 
 ---
 
@@ -180,10 +180,10 @@ py -3 scripts\03a_combine_data.py
 ```
 
 **Input:** `telemetry_all.pkl`  
-**Output:** `processed_data/telemetry_combined.pkl` (3-5 Fahrer, alle HTF Channels)  
-**Dauer:** ~5 Sekunden
+**Output:** `processed_data/telemetry_combined.pkl` (8 Fahrer, alle HTF Channels)  
+**Dauer:** ~5-10 Sekunden
 
-**Funktion:** Bereitet HTF-Daten für Feature Engineering vor
+**Funktion:** Bereitet HTF-Daten für Feature Engineering vor, fügt data_source Spalte hinzu
 
 ---
 
@@ -194,15 +194,19 @@ py -3 scripts\03b_feature_engineering_combined.py
 ```
 
 **Input:** `telemetry_combined.pkl`  
-**Output:** `features/driver_features_combined.pkl` (Feature-Sets)  
+**Output:** `features/driver_features_combined.pkl` (2,157 Feature-Sets, 92 Features)  
 **Dauer:** ~2-3 Minuten
+
+**Segment-Größe:** 500 Samples (10 Sekunden @ 50Hz)
 
 **Features (92 pro Segment):**
 
-- **Statistisch**: mean, std, min, max, skew, kurtosis (17 Channels × 6 = 102)
-- **Verhalten**: jerk, steering_rate, throttle_changes, brake_events (41)
-- **Frequenz**: FFT dominant frequency (17)
-- **Relativ**: gear ratios, tire temp/pressure differences (11)
+- **Geschwindigkeit**: mean, std, min, max, CV
+- **Lateral/Longitudinal G**: mean, std, min, max, extreme_pct, corner_count
+- **Throttle/Brake**: mean, std, changes, smoothness, aggressive
+- **Motor**: mean, std, max RPM
+- **Reifen**: Temperatur- und Druckdifferenzen (front/rear, left/right)
+- **Gear Ratio**: Fahrweise-Signatur (speed/RPM)
 
 ---
 
@@ -213,36 +217,62 @@ py -3 scripts\04b_train_models_combined.py
 ```
 
 **Input:** `features/driver_features_combined.pkl`  
-**Output:** `models/combined/` (3 Modelle + Scaler + Encoder)  
-**Dauer:** ~3-5 Minuten
+**Output:** `models/combined/` (Modell + Scaler + Encoder + Metadata)  
+**Dauer:** ~1-2 Minuten
 
 **Modell:**
 
 - Random Forest (n_estimators=200, max_depth=None, class_weight=balanced)
+- **29 Features** werden tatsächlich verwendet (wichtigste aus 92)
 
-**Split:** Runden-basiert — Runden 1,2,3,4,5,8 Training (~75%) / Runden 6,7 Test (~25%)
+**Split:** Runden-basiert — Runden 1,2,3,4,5,8 Training (75.3%) / Runden 6,7 Test (24.7%)
+
+**Output-Dateien:**
+
+- `random_forest_model.pkl`
+- `scaler.pkl` (StandardScaler für Test-Kompatibilität)
+- `label_encoder.pkl` (8 Fahrer)
+- `model_metadata.json` (Feature-Namen, Hyperparameter, Performance)
 
 ---
 
 #### **Schritt 6: Prediction auf einzelnen Dateien**
 
 ```powershell
-# HTF Datei
-py -3 scripts\05_predict.py raw_data\ALAD201.htf
+# Bekannter Fahrer aus Training-Daten testen
+py -3 scripts\05_predict.py training_data\ALAD201.htf --model random_forest
 
-# Mit Model-Auswahl
-py -3 scripts\05_predict.py raw_data\ALAD201.htf --model random_forest
+# Unbekannter Fahrer aus Test-Daten (nie im Training gesehen)
+py -3 scripts\05_predict.py test_data\RINE150.htf --model random_forest
+py -3 scripts\05_predict.py test_data\SOMD122.htf --model random_forest
+py -3 scripts\05_predict.py test_data\THTH312.htf --model random_forest
+
+# Beliebige HTF-Datei (auch aus raw_data/)
+py -3 scripts\05_predict.py raw_data\NIMB230.htf --model random_forest
 ```
+
+**Verfügbare Modelle:**
+
+- `--model random_forest` (Standard, beste Performance)
+- `--model xgboost` (falls trainiert)
+- `--model svm` (falls trainiert)
 
 **Output:** `results/prediction_*.txt`
 
 **Methodik:**
 
-1. Parse HTF file
-2. Feature Extraction
-3. Predict mit gewähltem Modell (default: random_forest)
-4. Segment-wise Voting → Final Prediction
-5. Agreement % + Confidence Score
+1. Parse HTF file → Telemetrie-Daten
+2. Feature Extraction → 29 Features pro Segment (500 Samples)
+3. Segment-wise Prediction → Jedes 10s-Fenster wird klassifiziert
+4. Majority Voting → Häufigste Vorhersage gewinnt
+5. Confidence Score → Durchschnittliche Modell-Sicherheit
+6. Agreement % → Wie viele Segmente stimmen überein
+
+**Interpretation:**
+
+- **Confidence > 60%** + **Agreement > 80%**: Bekannter Fahrer (RICHTIG)
+- **Confidence < 30%** + **Agreement > 95%**: Unbekannter Fahrer (wird zu ähnlichstem Fahrer zugeordnet)
+- **Verteilte Predictions**: Datei enthält mehrere Fahrer oder schlechte Datenqualität
 
 ---
 
@@ -257,10 +287,10 @@ py -3 scripts\07_test_evaluation.py --model random_forest
 py -3 scripts\07_test_evaluation.py --model svm
 ```
 
-**Input:** `test_data/*.htf` (1 Datei, nie im Training gesehen)  
+**Input:** `test_data/*.htf` (3 Dateien: RINE150, SOMD122, THTH312 — nie im Training gesehen)  
 **Output:** `results/test_evaluation_*.txt`
 
-**Zweck:** Performance auf **echten Holdout-Daten** messen
+**Zweck:** Performance auf **echten Holdout-Daten** messen (externe Validierung)
 
 **Methodik:**
 
@@ -282,16 +312,18 @@ py -3 scripts\06_leave_one_out_evaluation.py
 
 **Methodik:**
 
-1. Wähle kleinsten Fahrer als Holdout (_NIMB230_: 84 Samples)
-2. Trainiere auf 10 restlichen Fahrern (2,468 Samples)
+1. Wähle kleinsten Fahrer als Holdout (_NIMB230_: 42 Segmente)
+2. Trainiere auf 7 restlichen Fahrern (2,115 Segmente)
 3. Evaluiere auf Holdout: **Confusion-Analyse** (nicht Accuracy!)
 4. Measure: Welche bekannten Fahrer werden verwechselt? + Confidence
+5. Sanity Check: Teste auf bekannten Fahrern (sollte >95% sein)
 
 **Output:**
 
-- `results/leave_one_out/evaluation__NIMB230_.txt`
-- `results/leave_one_out/prediction_distribution_*.png`
-- `models/leave_one_out/` (Modelle ohne Holdout-Fahrer)
+- `results/leave_one_out/evaluation_NIMB230.txt`
+- `results/leave_one_out/prediction_distribution_random_forest_NIMB230.png`
+- `models/leave_one_out/` (Modelle ohne Holdout-Fahrer: RF, XGBoost, SVM)
+- `models/leave_one_out/metadata.json` (Holdout-Info, Performance)
 
 **Interpretation:**
 
@@ -303,27 +335,38 @@ py -3 scripts\06_leave_one_out_evaluation.py
 
 ## 📊 Model Performance
 
-### Closed-Set Classification (3-5 Fahrer, alle trainiert)
+### Closed-Set Classification (8 Fahrer, alle trainiert)
 
-| Model         | Test Accuracy | Split              |
-| ------------- | ------------- | ------------------ |
-| Random Forest | **100%**      | Runden 1-5,8 / 6,7 |
+| Model         | Train Accuracy | Test Accuracy | Split              |
+| ------------- | -------------- | ------------- | ------------------ |
+| Random Forest | **99.69%**     | **96.24%**    | Runden 1-5,8 / 6,7 |
 
-**Hinweis:** HTF-Daten sind hochqualitativ und liefern konsistente Telemetriewerte.
+**Train/Test Split:**
 
-**Class Distribution:** 148 Segmente aus 3 Fahrern (ALAD201, NIMB230, SOMD122)
+- Training: 1,625 Segmente (75.3%)
+- Test: 532 Segmente (24.7%)
+
+**Hinweis:** Sehr gute Generalisierung auf ungesehene Runden derselben Fahrer.
+
+**Top Features:**
+
+1. tire_temp_diff_fr (10.0%)
+2. n_engine_mean (9.9%)
+3. n_engine_max (9.8%)
+4. throttle_smoothness (9.5%)
+5. throttle_changes (8.1%)
 
 ### Open-Set Recognition (Leave-One-Out)
 
-**Holdout:** _NIMB230_ (84 Samples, **nie** im Training)
+**Holdout:** _NIMB230_ (42 Segmente, **nie** im Training)
 
-| Model         | Avg Confidence | Most Confused | Confusion % |
-| ------------- | -------------- | ------------- | ----------- |
-| Random Forest | **31.8%** ✅   | _THTH312_     | 33.3%       |
-| XGBoost       | 59.2%          | _SOMD122_     | 27.4%       |
-| SVM           | N/A            | _ALAD201_     | 31.0%       |
+| Model         | Avg Confidence | Most Confused | Confusion % | Known Accuracy |
+| ------------- | -------------- | ------------- | ----------- | -------------- |
+| Random Forest | **50.9%** ✅   | _MAAKZ19001_  | 100.0%      | 99.05%         |
+| XGBoost       | **98.2%**      | _ALAD201_     | 100.0%      | 99.48%         |
+| SVM           | N/A            | _ALAD201_     | 100.0%      | 98.39%         |
 
-**Sanity Check (bekannte Fahrer):** RF 92.67%, XGB 94.17%, SVM 64.47%
+**Sanity Check (bekannte 7 Fahrer):** Alle Modelle >98% → korrekt trainiert
 
 **Key Insight:**  
 Random Forest zeigt **niedrige Confidence** bei unbekannten Fahrern → kann für "Neuer Fahrer"-Detektion verwendet werden (Threshold: < 60%)
@@ -346,7 +389,7 @@ Bereitet HTF-Daten für Feature Engineering vor. Lädt `telemetry_all.pkl` und e
 
 ### 03b_feature_engineering_combined.py
 
-Extrahiert 171 Features pro 10-Sekunden-Segment (500 Samples @ 50Hz).
+Extrahiert 92 Features pro 10-Sekunden-Segment (500 Samples @ 50Hz). Training nutzt die 29 wichtigsten Features.
 
 ### 04b_train_models_combined.py
 
@@ -354,7 +397,9 @@ Trainiert Random Forest (kein Scaler) mit runden-basiertem Split. Speichert Conf
 
 ### 05_predict.py
 
-Prediction auf neuen HTF/LD Dateien mit Majority Voting über 3 Modelle.
+Prediction auf neuen HTF-Dateien mit segment-wise voting. Unterstützt Random Forest, XGBoost und SVM.
+
+**Wichtig:** Test-Dateien (RINE150, SOMD122, THTH312) waren NICHT im Training und werden als "unbekannt" erkannt (niedrige Confidence).
 
 ### 06_leave_one_out_evaluation.py
 
@@ -398,19 +443,21 @@ In Leave-One-Out Evaluation: **Erwartet!** Holdout-Fahrer kann nicht encodiert w
 
 ### Wichtige Punkte für Academic Review
 
-1. **Datenqualität**: ~75K Samples, 3-5 Fahrer (nur HTF-Daten)
-2. **Methodologie**: Time-series Segmentierung (10s), 92 Features, Random Forest
-3. **Validierung**: Runden-basierter Train/Test Split (77/23) + Leave-One-Out für Generalisierung
-4. **Open-Set Recognition**: Random Forest erkennt unbekannte Fahrer basierend auf Confidence
-5. **Limitationen**: Kleine Datenmenge, Single Track/Vehicle, kein Temporal Modeling (LSTM)
+1. **Datenqualität**: ~1.08M Samples, 8 Fahrer (nur HTF-Daten, eine Datei nicht parsebar)
+2. **Methodologie**: Time-series Segmentierung (10s), 29 ausgewählte Features, Random Forest
+3. **Validierung**: Runden-basierter Train/Test Split (75/25) + Leave-One-Out + Test-Set Evaluation
+4. **Open-Set Recognition**: Random Forest zeigt niedrige Confidence bei unbekannten Fahrern
+5. **Limitationen**: Single Track/Vehicle, kein Temporal Modeling (LSTM), geschlossene Fahrer-Menge
 
 ### Nächste Schritte
 
-- [ ] Full LOOCV (alle 11 Fahrer als Holdout testen)
-- [ ] Class Balancing (SMOTE, Undersampling)
+- [ ] Full LOOCV (alle 8 Fahrer als Holdout testen)
+- [ ] Class Balancing (SMOTE, Undersampling für kleinere Fahrer)
 - [ ] Deep Learning (LSTM, 1D-CNN für Temporal Dependencies)
-- [ ] Multi-Track/Vehicle Testing
+- [ ] Multi-Track/Vehicle Testing (verschiedene Strecken/Autos)
 - [ ] Real-time Streaming Prediction
+- [ ] Feature-Selection Optimierung (aktuell 29/92 Features)
+- [ ] Ensemble-Methods (Voting/Stacking von RF, XGBoost, SVM)
 
 ---
 

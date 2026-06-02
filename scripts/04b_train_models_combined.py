@@ -17,7 +17,7 @@ from pathlib import Path
 import pandas as pd
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.metrics import (
     accuracy_score, classification_report,
     confusion_matrix, ConfusionMatrixDisplay
@@ -259,6 +259,11 @@ def main():
     y_test  = le.transform(test_df['driver_id'])
     class_names = list(le.classes_)
 
+    # Fit scaler on training data (needed for test evaluation script)
+    scaler = StandardScaler()
+    X_train_scaled = scaler.fit_transform(X_train.values)
+    X_test_scaled = scaler.transform(X_test.values)
+
     print(f'  Using {len(valid_features)} features')
     print(f'  Classes: {class_names}')
 
@@ -266,6 +271,7 @@ def main():
     # 4. Train Random Forest
     # -----------------------------------------------------------------------
     print('\n[4] Training Random Forest (n_estimators=200)...')
+    # Note: Random Forest doesn't need scaled features, but we scale anyway for consistency
     rf = train_random_forest(X_train.values, y_train, n_estimators=200)
 
     y_train_pred = rf.predict(X_train.values)
@@ -307,6 +313,7 @@ def main():
 
     joblib.dump(rf, combined_models_path / 'random_forest_model.pkl')
     joblib.dump(le, combined_models_path / 'label_encoder.pkl')
+    joblib.dump(scaler, combined_models_path / 'scaler.pkl')
 
     metadata = {
         'feature_names': valid_features,

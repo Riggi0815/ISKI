@@ -71,6 +71,14 @@ class TestEvaluator:
         self.label_encoder = joblib.load(encoder_path)
         print(f"✓ Loaded label encoder: {encoder_path.name}")
         
+        # Load metadata to get feature names
+        import json
+        metadata_path = self.models_dir / "model_metadata.json"
+        with open(metadata_path, 'r') as f:
+            metadata = json.load(f)
+        self.feature_names = metadata['feature_names']
+        print(f"✓ Loaded feature names: {len(self.feature_names)} features")
+        
         print(f"\nTrained on: {', '.join(self.label_encoder.classes_)}")
         print()
     
@@ -90,8 +98,8 @@ class TestEvaluator:
         # Parse HTF file
         if file_path.suffix == '.htf':
             parser = HTFParser(str(file_path))
-            telemetry_df = parser.parse()
-            true_driver = parser.header.get('driver', 'UNKNOWN')
+            header_dict, telemetry_df = parser.parse()
+            true_driver = header_dict.get('driver_pseudonym_code', 'UNKNOWN')
         else:
             return {'success': False, 'error': f"Unsupported file type: {file_path.suffix}. Only HTF files supported."}
         
@@ -102,23 +110,22 @@ class TestEvaluator:
         print(f"Samples: {len(telemetry_df):,}")
         
         # Extract features
-        engineer = FeatureEngineer(segment_size=500)
-        features_df = engineer.extract_all_features(telemetry_df)
+        engineer = FeatureEngineer(telemetry_df, segment_size=500)
+        features_df = engineer.extract_all_features()
         
         if features_df is None or len(features_df) == 0:
             return {'success': False, 'error': 'No features extracted'}
         
         print(f"Segments: {len(features_df)}")
         
-        # Prepare features
-        columns_to_drop = []
-        for col in features_df.columns:
-            if col == 'driver_id' or '_id' in col or 'index' in col or 'segment' in col:
-                columns_to_drop.append(col)
-            elif features_df[col].dtype == 'object':
-                columns_to_drop.append(col)
+        # Select only the features used during training
+        missing_features = [f for f in self.feature_names if f not in features_df.columns]
+        if missing_features:
+            print(f"⚠ Warning: {len(missing_features)} features missing: {missing_features[:5]}...")
+            return {'success': False, 'error': f'Missing features: {missing_features}'}
         
-        X = features_df.drop(columns_to_drop, axis=1, errors='ignore')
+        X = features_df[self.feature_names].copy()
+        X = X.replace([np.inf, -np.inf], np.nan).fillna(0)
         X_scaled = self.scaler.transform(X)
         
         # Predict

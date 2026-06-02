@@ -15,6 +15,7 @@ __pycache__/
 
 # Data directories
 processed_data/
+features/
 models/
 raw_data/*.htf
 training_data/*.htf
