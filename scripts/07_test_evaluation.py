@@ -1,6 +1,6 @@
 """
 Step 7: Evaluate Models on Test Data
-Tests trained models on held-out test data that was never seen during training
+Tests trained models on held-out HTF test data that was never seen during training
 """
 
 import sys
@@ -29,13 +29,11 @@ def import_module_from_path(module_name: str, file_path: str):
 # Get script directory
 script_dir = Path(__file__).parent
 
-# Import parsers and feature engineer
+# Import HTFParser and FeatureEngineer
 parse_htf = import_module_from_path("parse_htf", script_dir / "01_parse_htf.py")
-parse_ld = import_module_from_path("parse_ld", script_dir / "02_parse_ld.py")
 feature_engineering = import_module_from_path("feature_engineering", script_dir / "03b_feature_engineering_combined.py")
 
 HTFParser = parse_htf.HTFParser
-LDParser = parse_ld.LDParser
 FeatureEngineer = feature_engineering.FeatureEngineer
 
 
@@ -78,10 +76,10 @@ class TestEvaluator:
     
     def evaluate_file(self, file_path: Path) -> Dict:
         """
-        Evaluate model on a single test file
+        Evaluate model on a single HTF test file
         
         Args:
-            file_path: Path to HTF or LD file
+            file_path: Path to HTF file
         
         Returns:
             Dictionary with evaluation results
@@ -89,19 +87,13 @@ class TestEvaluator:
         print(f"\nProcessing: {file_path.name}")
         print(f"{'─'*60}")
         
-        # Parse file based on extension
+        # Parse HTF file
         if file_path.suffix == '.htf':
             parser = HTFParser(str(file_path))
             telemetry_df = parser.parse()
             true_driver = parser.header.get('driver', 'UNKNOWN')
-        elif file_path.suffix == '.ld':
-            parser = LDParser(str(file_path))
-            header, telemetry_df = parser.parse()
-            # Extract driver from filename
-            parts = file_path.stem.split('_&_')
-            true_driver = f"_{parts[2]}_" if len(parts) > 2 else "UNKNOWN"
         else:
-            return {'success': False, 'error': f"Unknown file type: {file_path.suffix}"}
+            return {'success': False, 'error': f"Unsupported file type: {file_path.suffix}. Only HTF files supported."}
         
         if telemetry_df is None or len(telemetry_df) == 0:
             return {'success': False, 'error': 'Failed to parse file'}

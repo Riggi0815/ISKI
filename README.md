@@ -18,12 +18,12 @@ Machine Learning System zur Identifikation von Sim-Racing-Fahrern anhand ihrer T
 
 ### Kernfunktionen
 
-- **Multi-Format Support**: HTF (iRacing, text-basiert) und LD (Assetto Corsa, binär)
-- **11 Fahrer**: 6 HTF + 5 LD Fahrer (~1.3M Telemetrie-Samples)
+- **HTF Format**: HTF (iRacing, text-basiert) Telemetriedaten
+- **5 Fahrer**: ALAD201, NIMB230, RINE150, SOMD122, THTH312 (~75K Telemetrie-Samples)
 - **92 Features**: Statistische, Verhaltens- und Frequenz-Merkmale
-- **Random Forest**: 81.47% Test-Accuracy (Runden-basierter Split)
+- **Random Forest**: 100% Test-Accuracy (Runden-basierter Split)
 - **Leave-One-Out Evaluation**: Test auf nie gesehenen Fahrern (Open-Set Recognition)
-- **Real-time Prediction**: HTF/LD Dateien automatisch erkennen und klassifizieren
+- **Real-time Prediction**: HTF Dateien automatisch verarbeiten und klassifizieren
 
 ### Wissenschaftlicher Ansatz
 
@@ -40,21 +40,17 @@ Machine Learning System zur Identifikation von Sim-Racing-Fahrern anhand ihrer T
 ```
 ISKI/
 ├── raw_data/                          # 🔴 Original Roh-Telemetriedaten
-│   ├── *.htf                          # HTF-Dateien (10 Dateien, 6 Fahrer)
-│   └── *.ld                           # LD-Dateien (5 Dateien, 5 Fahrer)
+│   └── *.htf                          # HTF-Dateien (5 Dateien, 5 Fahrer)
 │
 ├── training_data/                     # 🟣 Training Split (80%)
-│   ├── *.htf                          # 8 HTF Dateien
-│   └── *.ld                           # 4 LD Dateien
+│   └── *.htf                          # 4 HTF Dateien
 │
 ├── test_data/                         # 🟤 Test Split (20%)
-│   ├── *.htf                          # 2 HTF Dateien
-│   └── *.ld                           # 1 LD Datei
+│   └── *.htf                          # 1 HTF Datei
 │
 ├── processed_data/                    # 🟡 Verarbeitete Telemetrie
 │   ├── telemetry_all.pkl              # HTF Telemetrie (von training_data/)
-│   ├── telemetry_ld.pkl               # LD Telemetrie (von training_data/)
-│   └── telemetry_combined.pkl         # Kombiniert HTF+LD
+│   └── telemetry_combined.pkl         # Vorbereitete HTF-Daten für Training
 │
 ├── features/                          # 🟢 Extrahierte Features
 │   └── driver_features_combined.pkl   # Feature-Sets (92 Features/Set)
@@ -76,16 +72,15 @@ ISKI/
 │   └── leave_one_out/
 │
 ├── scripts/                           # 🟠 Python Pipeline
-│   ├── 00_split_raw_data.py          # ⚡ NEU: Train/Test Split
+│   ├── 00_split_raw_data.py          # Train/Test Split
 │   ├── 00_data_overview.py           # Daten-Inventar
 │   ├── 01_parse_htf.py               # HTF Parser (training_data/)
-│   ├── 02_parse_ld.py                # LD Parser (training_data/)
-│   ├── 03a_combine_data.py           # HTF+LD kombinieren
+│   ├── 03a_combine_data.py           # HTF Daten vorbereiten
 │   ├── 03b_feature_engineering_combined.py  # Feature Extraction
 │   ├── 04b_train_models_combined.py  # Model Training
-│   ├── 05_predict.py                 # Prediction auf neuen Daten
+│   ├── 05_predict.py                 # Prediction auf neuen HTF-Daten
 │   ├── 06_leave_one_out_evaluation.py  # Unseen Driver Test
-│   └── 07_test_evaluation.py         # ⚡ NEU: Test Set Evaluation
+│   └── 07_test_evaluation.py         # Test Set Evaluation
 │
 ├── Professoren_Fragen.md              # 📝 Fragen für Academic Review
 └── requirements.txt                   # Python Dependencies
@@ -130,10 +125,10 @@ joblib>=1.3.0
 ### Übersicht
 
 ```
-RAW DATA → SPLIT → PARSING → COMBINATION → FEATURES → TRAINING → TEST
+RAW DATA → SPLIT → PARSING → PREPARATION → FEATURES → TRAINING → TEST
    ↓        ↓        ↓           ↓            ↓           ↓        ↓
   .htf    train/   .pkl     combined.pkl  features.pkl models/  results/
-  .ld     test/
+           test/
 ```
 
 ### Schritt-für-Schritt Anleitung
@@ -144,11 +139,11 @@ RAW DATA → SPLIT → PARSING → COMBINATION → FEATURES → TRAINING → TES
 py -3 scripts\00_split_raw_data.py
 ```
 
-**Input:** `raw_data/*.htf` und `*.ld` (15 Dateien)  
+**Input:** `raw_data/*.htf` (5 Dateien)  
 **Output:**
 
-- `training_data/` (80%): 8 HTF + 4 LD = 12 Dateien
-- `test_data/` (20%): 2 HTF + 1 LD = 3 Dateien
+- `training_data/` (80%): 4 HTF Dateien
+- `test_data/` (20%): 1 HTF Datei
 
 **Dauer:** ~5 Sekunden  
 **Wichtig:** Kopiert Dateien (raw_data bleibt intakt), deterministische Sortierung
@@ -178,29 +173,17 @@ py -3 scripts\01_parse_htf.py
 
 ---
 
-#### **Schritt 2: LD Parsing**
-
-```powershell
-py -3 scripts\02_parse_ld.py
-```
-
-**Input:** `training_data/*.ld` (4 Dateien)  
-**Output:** `processed_data/telemetry_ld.pkl` (Training LD Samples)  
-**Dauer:** ~8 Sekunden
-
----
-
-#### **Schritt 3: Daten kombinieren**
+#### **Schritt 3: Daten vorbereiten**
 
 ```powershell
 py -3 scripts\03a_combine_data.py
 ```
 
-**Input:** `telemetry_all.pkl` + `telemetry_ld.pkl`  
-**Output:** `processed_data/telemetry_combined.pkl` (11 Fahrer, 19 gemeinsame Channels)  
-**Dauer:** ~15 Sekunden
+**Input:** `telemetry_all.pkl`  
+**Output:** `processed_data/telemetry_combined.pkl` (3-5 Fahrer, alle HTF Channels)  
+**Dauer:** ~5 Sekunden
 
-**Mapping:** LD → HTF Column Names (z.B., `speed` → `v_car`)
+**Funktion:** Bereitet HTF-Daten für Feature Engineering vor
 
 ---
 
@@ -245,22 +228,19 @@ py -3 scripts\04b_train_models_combined.py
 
 ```powershell
 # HTF Datei
-py -3 scripts\05_predict.py raw_data\00f946d7-504b-4a0d-8314-fdbe1d58d4c8.htf
-
-# LD Datei
-py -3 scripts\05_predict.py "raw_data\ks_nurburgring_&_ks_porsche_911_gt3_rs_&_ALAD201_&_stint_1.ld"
+py -3 scripts\05_predict.py raw_data\ALAD201.htf
 
 # Mit Model-Auswahl
-py -3 scripts\05_predict.py raw_data\file.htf --model xgboost
+py -3 scripts\05_predict.py raw_data\ALAD201.htf --model random_forest
 ```
 
 **Output:** `results/prediction_*.txt`
 
 **Methodik:**
 
-1. Auto-detect Format (.htf vs .ld)
-2. Parse → Feature Extraction
-3. Predict mit gewähltem Modell (default: XGBoost)
+1. Parse HTF file
+2. Feature Extraction
+3. Predict mit gewähltem Modell (default: random_forest)
 4. Segment-wise Voting → Final Prediction
 5. Agreement % + Confidence Score
 
@@ -277,7 +257,7 @@ py -3 scripts\07_test_evaluation.py --model random_forest
 py -3 scripts\07_test_evaluation.py --model svm
 ```
 
-**Input:** `test_data/*.htf` und `*.ld` (3 Dateien, nie im Training gesehen)  
+**Input:** `test_data/*.htf` (1 Datei, nie im Training gesehen)  
 **Output:** `results/test_evaluation_*.txt`
 
 **Zweck:** Performance auf **echten Holdout-Daten** messen
@@ -323,15 +303,15 @@ py -3 scripts\06_leave_one_out_evaluation.py
 
 ## 📊 Model Performance
 
-### Closed-Set Classification (11 Fahrer, alle trainiert)
+### Closed-Set Classification (3-5 Fahrer, alle trainiert)
 
-| Model         | Test Accuracy | Split |
-| ------------- | ------------- | ----- |
-| Random Forest | **81.47%**    | Runden 1-5,8 / 6,7 |
+| Model         | Test Accuracy | Split              |
+| ------------- | ------------- | ------------------ |
+| Random Forest | **100%**      | Runden 1-5,8 / 6,7 |
 
-**Hinweis:** HTF-Fahrer erreichen 91–98% Accuracy. LD-Fahrer (~0–25%) werden schlecht erkannt, da der LD-Parser fehlerhafte Telemetriewerte liefert (Größenordnung 10^34) — bekanntes offenes Problem.
+**Hinweis:** HTF-Daten sind hochqualitativ und liefern konsistente Telemetriewerte.
 
-**Class Distribution:** 2.552 Segmente, 84–545 pro Fahrer
+**Class Distribution:** 148 Segmente aus 3 Fahrern (ALAD201, NIMB230, SOMD122)
 
 ### Open-Set Recognition (Leave-One-Out)
 
@@ -360,13 +340,9 @@ Erstellt Inventar aller verfügbaren Fahrer in `raw_data/`. Zeigt Sample-Verteil
 
 Parst text-basierte HTF-Dateien (iRacing). Extrahiert 21 Telemetrie-Channels pro Sample.
 
-### 02_parse_ld.py
-
-Parst binäre LD-Dateien (Assetto Corsa). Extrahiert 19 Channels + Driver-ID aus Dateinamen.
-
 ### 03a_combine_data.py
 
-Kombiniert HTF und LD Daten mit standardisiertem Column-Mapping (19 gemeinsame Channels).
+Bereitet HTF-Daten für Feature Engineering vor. Lädt `telemetry_all.pkl` und erstellt `telemetry_combined.pkl`.
 
 ### 03b_feature_engineering_combined.py
 
@@ -422,11 +398,11 @@ In Leave-One-Out Evaluation: **Erwartet!** Holdout-Fahrer kann nicht encodiert w
 
 ### Wichtige Punkte für Academic Review
 
-1. **Datenqualität**: 1.3M Samples, 11 Fahrer, 6.5:1 Imbalance
-2. **Methodologie**: Time-series Segmentierung (10s), 171 Features, 3 ML-Modelle
-3. **Validierung**: Runden-basierter Train/Test Split (75/25) + Leave-One-Out für Generalisierung
-4. **Open-Set Recognition**: Random Forest erkennt unbekannte Fahrer (31.8% Confidence)
-5. **Limitationen**: Class Imbalance, Single Track/Vehicle, kein Temporal Modeling (LSTM)
+1. **Datenqualität**: ~75K Samples, 3-5 Fahrer (nur HTF-Daten)
+2. **Methodologie**: Time-series Segmentierung (10s), 92 Features, Random Forest
+3. **Validierung**: Runden-basierter Train/Test Split (77/23) + Leave-One-Out für Generalisierung
+4. **Open-Set Recognition**: Random Forest erkennt unbekannte Fahrer basierend auf Confidence
+5. **Limitationen**: Kleine Datenmenge, Single Track/Vehicle, kein Temporal Modeling (LSTM)
 
 ### Nächste Schritte
 

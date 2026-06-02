@@ -1,0 +1,63 @@
+======================================================================
+HTF DATA PREPARATION SUMMARY
+======================================================================
+
+Total samples: 74,794
+Total drivers: 3
+Total columns: 52
+
+Samples per driver:
+  ALAD201: 29,809 samples
+  SOMD122: 23,627 samples
+  NIMB230: 21,358 samples
+
+Circuits: Nürburgring
+Vehicles: xBloks - Porsche 911 GT3 RS
+
+Telemetry channels:
+  Total: 45 channels
+    - a_steering
+    - bool_abs
+    - bool_pit_speed_limiter
+    - bool_tc
+    - g_lat
+    - g_long
+    - g_vertical
+    - gps_lat
+    - gps_long
+    - n_engine
+    - n_gear
+    - n_lap_number
+    - p_boost
+    - p_clutch
+    - p_tyreFL
+    - p_tyreFR
+    - p_tyreRL
+    - p_tyreRR
+    - percent_throttle
+    - ratio_brake_bias
+    - s_damperFL
+    - s_damperFR
+    - s_damperRL
+    - s_damperRR
+    - t_ambient
+    - t_brakeFL
+    - t_brakeFR
+    - t_brakeRL
+    - t_brakeRR
+    - t_delta_time
+    - t_fastest_laptime
+    - t_laptime
+    - t_split_time
+    - t_timestamp
+    - t_tyreFL
+    - t_tyreFR
+    - t_tyreRL
+    - t_tyreRR
+    - v_car
+    - v_fuel_level
+    - v_tyreFL
+    - v_tyreFR
+    - v_tyreRL
+    - v_tyreRR
+    - w_yaw

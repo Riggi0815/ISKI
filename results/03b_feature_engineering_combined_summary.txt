@@ -1,0 +1,13 @@
+============================================================
+FEATURE ENGINEERING SUMMARY - Combined HTF+LD Data
+============================================================
+
+Input samples: 74,794
+Output feature sets: 148
+Features per set: 92
+Segment size: 500 samples (10 seconds at 50Hz)
+
+Feature sets per driver:
+  ALAD201: 59 segments
+  SOMD122: 47 segments
+  NIMB230: 42 segments

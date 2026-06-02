@@ -1,0 +1,70 @@
+======================================================================
+DATA SUMMARY REPORT
+======================================================================
+Total Files Processed: 3
+Total Samples: 74794
+Unique Drivers: 3
+Unique Circuits: 1
+Unique Vehicles: 1
+Date Range: 2026-05-19 to 2026-05-19
+Total Columns: 51
+Telemetry Channels: 45
+
+Drivers:
+  ALAD201: 29809
+  SOMD122: 23627
+  NIMB230: 21358
+
+Column Names:
+  - driver_id
+  - circuit
+  - vehicle
+  - recording_date
+  - simulation_setup
+  - sample_index
+  - t_timestamp
+  - bool_abs
+  - t_ambient
+  - t_delta_time
+  - t_fastest_laptime
+  - ratio_brake_bias
+  - t_brakeFL
+  - t_brakeFR
+  - t_brakeRL
+  - t_brakeRR
+  - g_lat
+  - g_long
+  - g_vertical
+  - gps_long
+  - gps_lat
+  - w_yaw
+  - p_clutch
+  - n_engine
+  - v_fuel_level
+  - n_gear
+  - v_car
+  - bool_pit_speed_limiter
+  - t_laptime
+  - t_split_time
+  - n_lap_number
+  - a_steering
+  - s_damperFL
+  - s_damperFR
+  - s_damperRL
+  - s_damperRR
+  - bool_tc
+  - percent_throttle
+  - p_tyreFL
+  - p_tyreFR
+  - p_tyreRL
+  - p_tyreRR
+  - t_tyreFL
+  - t_tyreFR
+  - t_tyreRL
+  - t_tyreRR
+  - p_boost
+  - v_tyreFL
+  - v_tyreFR
+  - v_tyreRL
+  - v_tyreRR
+======================================================================

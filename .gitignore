@@ -13,6 +13,13 @@ __pycache__/
 *.ld
 *.htf
 
+# Data directories
+processed_data/
+models/
+raw_data/*.htf
+training_data/*.htf
+test_data/*.htf
+
 # OS
 .DS_Store
 Thumbs.db

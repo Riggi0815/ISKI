@@ -1,6 +1,6 @@
 """
 Step 5: Predict Driver from New Telemetry Data
-Loads trained model and predicts driver identity from new HTF files
+Loads trained model and predicts driver identity from HTF files
 """
 
 import sys
@@ -30,13 +30,11 @@ def import_module_from_path(module_name: str, file_path: str):
 # Get script directory
 script_dir = Path(__file__).parent
 
-# Import HTFParser, LDParser and FeatureEngineer
+# Import HTFParser and FeatureEngineer
 parse_htf = import_module_from_path("parse_htf", script_dir / "01_parse_htf.py")
-parse_ld = import_module_from_path("parse_ld", script_dir / "02_parse_ld.py")
 feature_engineering = import_module_from_path("feature_engineering", script_dir / "03b_feature_engineering_combined.py")
 
 HTFParser = parse_htf.HTFParser
-LDParser = parse_ld.LDParser
 FeatureEngineer = feature_engineering.FeatureEngineer
 
 
@@ -83,11 +81,10 @@ class DriverPredictor:
     def predict_from_file(self, file_path: str, 
                          confidence_threshold: float = 0.6) -> Dict:
         """
-        Predict driver from telemetry file (HTF or LD)
-        Automatically detects file type based on extension
+        Predict driver from HTF telemetry file
         
         Args:
-            file_path: Path to HTF or LD file
+            file_path: Path to HTF file
             confidence_threshold: Minimum confidence to consider prediction valid
         
         Returns:
@@ -98,130 +95,17 @@ class DriverPredictor:
         if not path.exists():
             raise FileNotFoundError(f"File not found: {path}")
         
-        # Detect file type by extension
+        # Check file type
         file_ext = path.suffix.lower()
         
         if file_ext == '.htf':
             return self.predict_from_htf_file(str(path), confidence_threshold)
-        elif file_ext == '.ld':
-            return self.predict_from_ld_file(str(path), confidence_threshold)
         else:
             return {
                 'success': False,
-                'error': f'Unsupported file type: {file_ext}. Use .htf or .ld files.',
+                'error': f'Unsupported file type: {file_ext}. Use .htf files only.',
                 'file': str(path)
             }
-    
-    def predict_from_ld_file(self, ld_file_path: str, 
-                            confidence_threshold: float = 0.6) -> Dict:
-        """
-        Predict driver from LD file
-        
-        Args:
-            ld_file_path: Path to LD file
-            confidence_threshold: Minimum confidence to consider prediction valid
-        
-        Returns:
-            Dictionary with prediction results
-        """
-        ld_path = Path(ld_file_path)
-        
-        if not ld_path.exists():
-            raise FileNotFoundError(f"LD file not found: {ld_path}")
-        
-        print(f"{'='*60}")
-        print(f"Processing: {ld_path.name}")
-        print(f"{'='*60}\n")
-        
-        # Parse LD file
-        print("Parsing telemetry data...")
-        parser = LDParser(ld_path)
-        header, telemetry_df = parser.parse()
-        
-        if telemetry_df is None or len(telemetry_df) == 0:
-            return {
-                'success': False,
-                'error': 'Failed to parse LD file',
-                'file': str(ld_path)
-            }
-        
-        print(f"  ✓ Parsed {len(telemetry_df)} telemetry samples")
-        
-        # Standardize LD column names to match HTF format
-        print("  Standardizing column names...")
-        column_mapping = {
-            'throttle': 'percent_throttle',
-            'brake': 'p_brakeF',
-            'steering': 'a_steering',
-            'speed': 'v_car',
-            'rpm': 'n_engine',
-            'tire_FL_pressure': 'p_tyreFL',
-            'tire_FR_pressure': 'p_tyreFR',
-            'tire_RL_pressure': 'p_tyreRL',
-            'tire_RR_pressure': 'p_tyreRR',
-            'tire_FL_temp': 't_tyreFL',
-            'tire_FR_temp': 't_tyreFR',
-            'tire_RL_temp': 't_tyreRL',
-            'tire_RR_temp': 't_tyreRR',
-            'tire_FL_vel': 'v_tyreFL',
-            'tire_FR_vel': 'v_tyreFR',
-            'tire_RL_vel': 'v_tyreRL',
-            'tire_RR_vel': 'v_tyreRR',
-        }
-        telemetry_df = telemetry_df.rename(columns=column_mapping)
-        print(f"  ✓ Standardized columns to HTF format")
-        
-        # Extract features
-        print("\nExtracting features from telemetry segments...")
-        feature_engineer = FeatureEngineer(telemetry_df, segment_size=500)
-        features_df = feature_engineer.extract_all_features()
-        
-        if len(features_df) == 0:
-            return {
-                'success': False,
-                'error': 'No features extracted (file may be too short)',
-                'file': str(ld_path)
-            }
-        
-        print(f"  ✓ Extracted {len(features_df)} feature sets")
-        
-        # Prepare features for prediction - drop all non-numeric columns
-        columns_to_drop = []
-        for col in features_df.columns:
-            if col == 'driver_id' or '_id' in col or 'index' in col or 'segment' in col:
-                columns_to_drop.append(col)
-            elif features_df[col].dtype == 'object':
-                columns_to_drop.append(col)
-        
-        X = features_df.drop(columns_to_drop, axis=1, errors='ignore')
-        X_scaled = self.scaler.transform(X)
-        
-        # Predict for each segment
-        print("\nMaking predictions...")
-        predictions = self.model.predict(X_scaled)
-        
-        # Get prediction probabilities
-        if hasattr(self.model, 'predict_proba'):
-            probabilities = self.model.predict_proba(X_scaled)
-            max_probas = probabilities.max(axis=1)
-        else:
-            # For models without predict_proba, use decision function
-            max_probas = np.ones(len(predictions))
-        
-        # Decode predictions
-        predicted_drivers = self.label_encoder.inverse_transform(predictions)
-        
-        # Aggregate predictions across segments
-        results = self._aggregate_predictions(
-            predicted_drivers, max_probas, confidence_threshold
-        )
-        
-        results['file'] = str(ld_path)
-        results['n_segments'] = len(features_df)
-        results['n_samples'] = len(telemetry_df)
-        results['success'] = True
-        
-        return results
     
     def predict_from_htf_file(self, htf_file_path: str, 
                               confidence_threshold: float = 0.6) -> Dict:
@@ -383,12 +267,12 @@ class DriverPredictor:
 def main():
     """Main execution function"""
     parser = argparse.ArgumentParser(
-        description="Predict driver identity from telemetry data (HTF or LD)"
+        description="Predict driver identity from HTF telemetry data"
     )
     parser.add_argument(
         'file',
         type=str,
-        help='Path to telemetry file (.htf or .ld)'
+        help='Path to HTF telemetry file (.htf)'
     )
     parser.add_argument(
         '--model',
