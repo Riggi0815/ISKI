@@ -1,0 +1,15 @@
+Prediction Result
+============================================================
+
+Input File: raw_data/ks_nurburgring_&_ks_porsche_911_gt3_rs_&_NIMB230_&_stint_1.ld
+File Type: .LD
+Model: random_forest
+Confidence Threshold: 0.6
+
+Predicted Driver: _NIMB230_
+Status: KNOWN
+Confidence: 70.7%
+Vote Percentage: 100.0%
+
+Vote Distribution:
+  _NIMB230_: 10 votes
