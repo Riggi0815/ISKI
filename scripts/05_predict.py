@@ -12,12 +12,16 @@ from typing import Dict, List, Tuple
 import argparse
 import importlib.util
 
+sys.stdout.reconfigure(encoding='utf-8')
+
 # Add scripts directory to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent))
 sys.path.append(str(Path(__file__).parent))
 from utils import (
     get_project_root, get_models_path, get_results_path,
-    print_dataframe_info
+    print_dataframe_info, extract_driver_from_filename
 )
+from ldparser import ldData
 
 # Import modules with numeric prefixes using importlib
 def import_module_from_path(module_name: str, file_path: str):
@@ -108,10 +112,12 @@ class DriverPredictor:
         
         if file_ext == '.htf':
             return self.predict_from_htf_file(str(path), confidence_threshold)
+        elif file_ext == '.ld':
+            return self.predict_from_ld_file(str(path), confidence_threshold)
         else:
             return {
                 'success': False,
-                'error': f'Unsupported file type: {file_ext}. Use .htf files only.',
+                'error': f'Unsupported file type: {file_ext}. Use .htf or .ld files.',
                 'file': str(path)
             }
     
@@ -205,6 +211,106 @@ class DriverPredictor:
         
         return results
     
+    def predict_from_ld_file(self, ld_file_path: str,
+                             confidence_threshold: float = 0.6) -> Dict:
+        """Predict driver from MoTeC .ld file"""
+        ld_path = Path(ld_file_path)
+
+        print(f"{'='*60}")
+        print(f"Processing: {ld_path.name}")
+        print(f"{'='*60}\n")
+
+        ld = ldData.fromfile(str(ld_path))
+        available = list(ld)
+
+        CHANNEL_MAP = {
+            'Ground Speed': 'v_car', 'Throttle Pos': 'percent_throttle',
+            'Brake Pos': 'percent_brake', 'Steering Angle': 'steering_angle',
+            'CG Accel Lateral': 'g_lat', 'CG Accel Longitudinal': 'g_long',
+            'CG Accel Vertical': 'g_vert', 'Engine RPM': 'n_engine',
+            'Tire Temp Core FR': 't_tyreFR', 'Tire Temp Core FL': 't_tyreFL',
+            'Tire Temp Core RR': 't_tyreRR', 'Tire Temp Core RL': 't_tyreRL',
+            'Tire Pressure FR': 'p_tyreFR', 'Tire Pressure FL': 'p_tyreFL',
+            'Tire Pressure RR': 'p_tyreRR', 'Tire Pressure RL': 'p_tyreRL',
+            'Chassis Velocity X': 'v_x', 'Chassis Velocity Z': 'v_z',
+            'Gear': 'gear',
+        }
+
+        rows = {}
+        for ld_name, htf_name in CHANNEL_MAP.items():
+            if ld_name in available:
+                try:
+                    rows[htf_name] = ld[ld_name].data
+                except Exception:
+                    pass
+
+        if not rows:
+            return {'success': False, 'error': 'No channels readable', 'file': str(ld_path)}
+
+        min_len = min(len(v) for v in rows.values())
+        rows = {k: v[:min_len] for k, v in rows.items()}
+        driver_id = extract_driver_from_filename(ld_path.name)
+        telemetry_df = pd.DataFrame(rows)
+        telemetry_df.insert(0, 'driver_id', driver_id)
+
+        print(f"  ✓ Parsed {len(telemetry_df):,} telemetry samples")
+
+        print("\nExtracting features...")
+        feature_engineer = FeatureEngineer(telemetry_df, segment_size=500)
+        features_df = feature_engineer.extract_all_features()
+
+        if len(features_df) == 0:
+            return {'success': False, 'error': 'No features extracted (file too short)', 'file': str(ld_path)}
+
+        print(f"  ✓ Extracted {len(features_df)} feature sets")
+
+        missing = [f for f in self.feature_names if f not in features_df.columns]
+        if missing:
+            print(f"  Warning: {len(missing)} features missing, filling with 0")
+            for f in missing:
+                features_df[f] = 0
+
+        # Apply round-based split if test_rounds_only requested
+        if getattr(self, 'test_rounds_only', False):
+            n_segs = len(features_df)
+            n_rounds = 8
+            test_rounds = [6, 7]
+            segs_per_round = max(1, n_segs // n_rounds)
+            test_mask = []
+            for pos in range(n_segs):
+                round_num = min(pos // segs_per_round + 1, n_rounds)
+                test_mask.append(round_num in test_rounds)
+            features_df = features_df[test_mask].reset_index(drop=True)
+            n_test = len(features_df)
+            print(f"  Using test rounds (6+7) only: {n_test}/{n_segs} segments")
+            if n_test == 0:
+                return {'success': False, 'error': 'No test segments after round split', 'file': str(ld_path)}
+
+        X = features_df[self.feature_names].copy()
+        X = X.replace([np.inf, -np.inf], np.nan).fillna(0)
+        X_values = X.values
+
+        # Random Forest was trained on unscaled features — skip scaler
+        if self.model_name == 'random_forest':
+            X_input = X_values
+        else:
+            X_input = self.scaler.transform(X_values)
+
+        predictions = self.model.predict(X_input)
+        if hasattr(self.model, 'predict_proba'):
+            probabilities = self.model.predict_proba(X_input)
+            max_probas = probabilities.max(axis=1)
+        else:
+            max_probas = np.ones(len(predictions))
+
+        predicted_drivers = self.label_encoder.inverse_transform(predictions)
+        results = self._aggregate_predictions(predicted_drivers, max_probas, confidence_threshold)
+        results['file'] = str(ld_path)
+        results['n_segments'] = len(features_df)
+        results['n_samples'] = len(telemetry_df)
+        results['success'] = True
+        return results
+
     def _aggregate_predictions(self, predictions: np.ndarray, 
                                probabilities: np.ndarray,
                                confidence_threshold: float) -> Dict:
@@ -304,6 +410,11 @@ def main():
         default=0.6,
         help='Confidence threshold for known vs unknown driver (default: 0.6)'
     )
+    parser.add_argument(
+        '--test-only',
+        action='store_true',
+        help='Only use test rounds (6+7) — segments not seen during training'
+    )
     
     args = parser.parse_args()
     
@@ -322,6 +433,7 @@ def main():
     
     # Create predictor with custom model directory
     predictor = DriverPredictor(model_name=args.model)
+    predictor.test_rounds_only = args.test_only
     predictor.models_dir = model_dir
     
     # Reload models from correct directory

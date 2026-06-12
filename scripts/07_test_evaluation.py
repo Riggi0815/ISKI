@@ -11,12 +11,17 @@ import joblib
 from typing import Dict, List
 import importlib.util
 
+sys.stdout.reconfigure(encoding='utf-8')
+
 # Add scripts directory to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent))
 sys.path.append(str(Path(__file__).parent))
 from utils import (
     get_project_root, get_models_path, get_results_path, get_test_data_path,
-    list_test_htf_files, list_test_ld_files
+    get_raw_data_path, list_test_htf_files, list_test_ld_files,
+    extract_driver_from_filename
 )
+from ldparser import ldData
 
 # Import modules with numeric prefixes using importlib
 def import_module_from_path(module_name: str, file_path: str):
@@ -95,13 +100,41 @@ class TestEvaluator:
         print(f"\nProcessing: {file_path.name}")
         print(f"{'─'*60}")
         
-        # Parse HTF file
+        # Parse file
         if file_path.suffix == '.htf':
             parser = HTFParser(str(file_path))
             header_dict, telemetry_df = parser.parse()
             true_driver = header_dict.get('driver_pseudonym_code', 'UNKNOWN')
+        elif file_path.suffix == '.ld':
+            CHANNEL_MAP = {
+                'Ground Speed': 'v_car', 'Throttle Pos': 'percent_throttle',
+                'Brake Pos': 'percent_brake', 'Steering Angle': 'steering_angle',
+                'CG Accel Lateral': 'g_lat', 'CG Accel Longitudinal': 'g_long',
+                'CG Accel Vertical': 'g_vert', 'Engine RPM': 'n_engine',
+                'Tire Temp Core FR': 't_tyreFR', 'Tire Temp Core FL': 't_tyreFL',
+                'Tire Temp Core RR': 't_tyreRR', 'Tire Temp Core RL': 't_tyreRL',
+                'Tire Pressure FR': 'p_tyreFR', 'Tire Pressure FL': 'p_tyreFL',
+                'Tire Pressure RR': 'p_tyreRR', 'Tire Pressure RL': 'p_tyreRL',
+                'Chassis Velocity X': 'v_x', 'Chassis Velocity Z': 'v_z', 'Gear': 'gear',
+            }
+            true_driver = extract_driver_from_filename(file_path.name)
+            ld = ldData.fromfile(str(file_path))
+            available = list(ld)
+            rows = {}
+            for ld_name, htf_name in CHANNEL_MAP.items():
+                if ld_name in available:
+                    try:
+                        rows[htf_name] = ld[ld_name].data
+                    except Exception:
+                        pass
+            if not rows:
+                return {'success': False, 'error': 'No channels readable'}
+            min_len = min(len(v) for v in rows.values())
+            rows = {k: v[:min_len] for k, v in rows.items()}
+            telemetry_df = pd.DataFrame(rows)
+            telemetry_df.insert(0, 'driver_id', true_driver)
         else:
-            return {'success': False, 'error': f"Unsupported file type: {file_path.suffix}. Only HTF files supported."}
+            return {'success': False, 'error': f"Unsupported: {file_path.suffix}"}
         
         if telemetry_df is None or len(telemetry_df) == 0:
             return {'success': False, 'error': 'Failed to parse file'}
@@ -126,14 +159,14 @@ class TestEvaluator:
         
         X = features_df[self.feature_names].copy()
         X = X.replace([np.inf, -np.inf], np.nan).fillna(0)
-        X_scaled = self.scaler.transform(X)
-        
+        X_input = X.values if self.model_name == 'random_forest' else self.scaler.transform(X.values)
+
         # Predict
-        predictions = self.model.predict(X_scaled)
-        
+        predictions = self.model.predict(X_input)
+
         # Get prediction probabilities
         if hasattr(self.model, 'predict_proba'):
-            probabilities = self.model.predict_proba(X_scaled)
+            probabilities = self.model.predict_proba(X_input)
             confidences = probabilities.max(axis=1)
             avg_confidence = confidences.mean() * 100
         else:
@@ -175,10 +208,13 @@ class TestEvaluator:
         Returns:
             Dictionary with overall evaluation results
         """
-        # Get test files
+        # Get test files — fall back to raw_data/ if test_data/ is empty
         htf_files = list_test_htf_files()
         ld_files = list_test_ld_files()
         all_files = htf_files + ld_files
+        if not all_files:
+            print("test_data/ empty — using raw_data/ instead")
+            all_files = sorted(get_raw_data_path().glob("*.ld")) + sorted(get_raw_data_path().glob("*.htf"))
         
         print(f"{'='*60}")
         print(f"TEST DATA EVALUATION")

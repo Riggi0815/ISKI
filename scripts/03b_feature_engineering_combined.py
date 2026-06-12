@@ -10,6 +10,8 @@ import numpy as np
 from scipy import stats
 from scipy.fft import fft
 
+sys.stdout.reconfigure(encoding='utf-8')
+
 # Add scripts directory to path for imports
 sys.path.append(str(Path(__file__).parent))
 from utils import (
@@ -234,9 +236,11 @@ def main():
     print(f"FEATURE ENGINEERING - Combined HTF + LD Data")
     print(f"{'='*60}\n")
     
-    # Load combined telemetry data
+    # Load combined telemetry data (fall back to LD-only if no combined exists)
     print("Loading combined telemetry data...")
     telemetry_file = processed_path / "telemetry_combined"
+    if not (telemetry_file.with_suffix('.pkl')).exists():
+        telemetry_file = processed_path / "telemetry_ld"
     telemetry_df = load_dataframe(telemetry_file)
     
     if telemetry_df is None or len(telemetry_df) == 0:
