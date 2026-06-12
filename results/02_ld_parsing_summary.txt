@@ -1,0 +1,28 @@
+============================================================
+LD FILE PARSING SUMMARY
+============================================================
+
+Files: 5/5
+Samples: 126,196
+Drivers: 5
+
+Channels mapped:
+  - v_car
+  - percent_throttle
+  - percent_brake
+  - steering_angle
+  - g_lat
+  - g_long
+  - g_vert
+  - n_engine
+  - t_tyreFR
+  - t_tyreFL
+  - t_tyreRR
+  - t_tyreRL
+  - p_tyreFR
+  - p_tyreFL
+  - p_tyreRR
+  - p_tyreRL
+  - v_x
+  - v_z
+  - gear
