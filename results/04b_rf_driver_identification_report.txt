@@ -5,67 +5,61 @@ RANDOM FOREST — Driver Identification Report
 Train/Test Split:
   Training rounds : [1, 2, 3, 4, 5, 8]
   Test rounds     : [6, 7]
-  Train segments  : 1,625
-  Test  segments  : 532
+  Train segments  : 192
+  Test  segments  : 58
 
 Model: RandomForestClassifier (n_estimators=200, balanced class weights)
 Features: 29
 
-Train Accuracy : 0.9969 (99.69%)
-Test  Accuracy : 0.9624 (96.24%)
+Train Accuracy : 1.0000 (100.00%)
+Test  Accuracy : 0.8793 (87.93%)
 
 Classification Report (Test Set):
 --------------------------------------------------
               precision    recall  f1-score   support
 
-     ALAD201       1.00      1.00      1.00        14
-  CHIPZ26000       0.96      0.96      0.96       114
-  INBWZ11002       0.96      0.94      0.95        90
-  MAAKZ19001       0.98      0.96      0.97       136
-  MAMCZ06001       0.90      0.88      0.89        32
-     NIMB230       1.00      1.00      1.00        10
-  PASZZ20000       0.98      0.98      0.98        44
-  TOINZ27000       0.95      0.99      0.97        92
+   _ALAD201_       0.93      0.93      0.93        14
+   _NIMB230_       0.91      1.00      0.95        10
+   _RINE150_       0.78      0.70      0.74        10
+   _SOMD122_       0.80      0.80      0.80        10
+   _THTH312_       0.93      0.93      0.93        14
 
-    accuracy                           0.96       532
-   macro avg       0.97      0.96      0.96       532
-weighted avg       0.96      0.96      0.96       532
+    accuracy                           0.88        58
+   macro avg       0.87      0.87      0.87        58
+weighted avg       0.88      0.88      0.88        58
 
 
 Confusion Matrix (Test Set):
   Rows = True Driver, Columns = Predicted Driver
-  Classes: ['ALAD201', 'CHIPZ26000', 'INBWZ11002', 'MAAKZ19001', 'MAMCZ06001', 'NIMB230', 'PASZZ20000', 'TOINZ27000']
+  Classes: ['_ALAD201_', '_NIMB230_', '_RINE150_', '_SOMD122_', '_THTH312_']
 
-[[ 14   0   0   0   0   0   0   0]
- [  0 110   0   0   3   0   1   0]
- [  0   0  85   1   0   0   0   4]
- [  0   0   4 131   0   0   0   1]
- [  0   4   0   0  28   0   0   0]
- [  0   0   0   0   0  10   0   0]
- [  0   1   0   0   0   0  43   0]
- [  0   0   0   1   0   0   0  91]]
+[[13  0  0  1  0]
+ [ 0 10  0  0  0]
+ [ 1  0  7  1  1]
+ [ 0  0  2  8  0]
+ [ 0  1  0  0 13]]
 
 Top 20 Feature Importances:
 --------------------------------------------------
-   1. tire_temp_diff_fr                             0.1000
-   2. n_engine_mean                                 0.0994
-   3. n_engine_max                                  0.0979
-   4. throttle_smoothness                           0.0947
-   5. throttle_changes                              0.0814
-   6. percent_throttle_std                          0.0652
-   7. throttle_aggressive                           0.0478
-   8. gear_ratio_std                                0.0368
-   9. tire_pressure_diff_lr                         0.0367
-  10. jerk_mean                                     0.0341
-  11. percent_throttle_mean                         0.0332
-  12. g_lat_std                                     0.0280
-  13. gear_ratio_mean                               0.0217
-  14. g_lat_mean                                    0.0215
-  15. jerk_max                                      0.0192
-  16. g_lat_extreme_pct                             0.0185
-  17. v_car_min                                     0.0178
-  18. g_long_std                                    0.0161
-  19. v_car_mean                                    0.0157
-  20. corner_count                                  0.0145
+   1. n_engine_mean                                 0.1173
+   2. percent_throttle_std                          0.0793
+   3. throttle_smoothness                           0.0786
+   4. jerk_mean                                     0.0706
+   5. g_lat_extreme_pct                             0.0628
+   6. tire_temp_diff_fr                             0.0572
+   7. tire_pressure_diff_lr                         0.0502
+   8. throttle_aggressive                           0.0478
+   9. throttle_changes                              0.0434
+  10. g_lat_std                                     0.0325
+  11. percent_throttle_mean                         0.0314
+  12. v_car_max                                     0.0275
+  13. v_car_mean                                    0.0243
+  14. g_long_std                                    0.0217
+  15. n_engine_max                                  0.0210
+  16. gear_ratio_mean                               0.0204
+  17. gear_ratio_std                                0.0203
+  18. v_car_min                                     0.0200
+  19. v_car_std                                     0.0193
+  20. corner_count                                  0.0192
 
 ======================================================================

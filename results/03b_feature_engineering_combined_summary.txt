@@ -2,17 +2,14 @@
 FEATURE ENGINEERING SUMMARY - Combined HTF+LD Data
 ============================================================
 
-Input samples: 1,080,376
-Output feature sets: 2,157
-Features per set: 92
+Input samples: 126,196
+Output feature sets: 250
+Features per set: 124
 Segment size: 500 samples (10 seconds at 50Hz)
 
 Feature sets per driver:
-  MAAKZ19001: 545 segments
-  CHIPZ26000: 459 segments
-  TOINZ27000: 374 segments
-  INBWZ11002: 363 segments
-  PASZZ20000: 182 segments
-  MAMCZ06001: 133 segments
-  ALAD201: 59 segments
-  NIMB230: 42 segments
+  _ALAD201_: 59 segments
+  _THTH312_: 56 segments
+  _SOMD122_: 47 segments
+  _RINE150_: 46 segments
+  _NIMB230_: 42 segments

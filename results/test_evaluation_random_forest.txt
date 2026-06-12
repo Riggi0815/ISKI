@@ -2,23 +2,31 @@
 TEST DATA EVALUATION - RANDOM_FOREST
 ============================================================
 
-Files evaluated: 3
-Correct predictions: 0/3
-Accuracy: 0.0%
-Average confidence: 28.1%
-Average agreement: 98.6%
+Files evaluated: 5
+Correct predictions: 5/5
+Accuracy: 100.0%
+Average confidence: 71.8%
+Average agreement: 97.1%
 
 Per-file results:
 ────────────────────────────────────────────────────────────
-✗ RINE150.htf
-  True: RINE150, Predicted: ALAD201
-  Segments: 46, Agreement: 97.8%, Confidence: 27.1%
+✓ ks_nurburgring_&_ks_porsche_911_gt3_rs_&_ALAD201_&_stint_1.ld
+  True: _ALAD201_, Predicted: _ALAD201_
+  Segments: 59, Agreement: 98.3%, Confidence: 75.5%
 
-✗ SOMD122.htf
-  True: SOMD122, Predicted: ALAD201
-  Segments: 47, Agreement: 97.9%, Confidence: 27.8%
+✓ ks_nurburgring_&_ks_porsche_911_gt3_rs_&_NIMB230_&_stint_1.ld
+  True: _NIMB230_, Predicted: _NIMB230_
+  Segments: 42, Agreement: 100.0%, Confidence: 80.5%
 
-✗ THTH312.htf
-  True: THTH312, Predicted: ALAD201
-  Segments: 56, Agreement: 100.0%, Confidence: 29.5%
+✓ ks_nurburgring_&_ks_porsche_911_gt3_rs_&_RINE150_&_stint_1.ld
+  True: _RINE150_, Predicted: _RINE150_
+  Segments: 46, Agreement: 93.5%, Confidence: 65.4%
+
+✓ ks_nurburgring_&_ks_porsche_911_gt3_rs_&_SOMD122_&_stint_1.ld
+  True: _SOMD122_, Predicted: _SOMD122_
+  Segments: 47, Agreement: 95.7%, Confidence: 65.5%
+
+✓ ks_nurburgring_&_ks_porsche_911_gt3_rs_&_THTH312_&_stint_1.ld
+  True: _THTH312_, Predicted: _THTH312_
+  Segments: 56, Agreement: 98.2%, Confidence: 72.1%
 
