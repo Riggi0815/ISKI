@@ -381,94 +381,248 @@ class DriverPredictor:
         print(f"{'='*60}\n")
 
 
+ZONE_NAMES   = {0: 'straight', 1: 'eingang', 2: 'mitte', 3: 'apex'}
+# Corner segments count double — straights carry less driver-specific signal
+ZONE_WEIGHTS = {0: 1.0, 1: 2.0, 2: 2.0, 3: 2.0}
+
+
+def run_test_round_evaluation(model_name: str = 'random_forest'):
+    """
+    For each driver: predict using their test-round segments (rounds 6 & 7),
+    with corner segments weighted higher. Saves a per-driver .txt and summary.
+    """
+    import json
+    from utils import get_features_path
+
+    features_path = get_features_path()
+    results_path  = get_results_path()
+    models_dir    = get_models_path() / "combined"
+    results_path.mkdir(exist_ok=True)
+
+    print('=' * 60)
+    print('DRIVER PREDICTION — Test Rounds 6 & 7 (per driver)')
+    print(f'Model: {model_name}  |  Corner weight: {ZONE_WEIGHTS[1]}x  Straight weight: {ZONE_WEIGHTS[0]}x')
+    print('=' * 60)
+
+    pkl = features_path / 'driver_features_combined.pkl'
+    if not pkl.exists():
+        print("ERROR: features/driver_features_combined.pkl not found.")
+        print("Run: py -3 scripts\\03b_feature_engineering_combined.py first")
+        return
+    features_df = pd.read_pickle(pkl)
+    print(f'\nLoaded {len(features_df)} segments for {features_df["driver_id"].nunique()} drivers.\n')
+
+    model = joblib.load(models_dir / f"{model_name}_model.pkl")
+    le    = joblib.load(models_dir / "label_encoder.pkl")
+    with open(models_dir / "model_metadata.json") as f:
+        metadata = json.load(f)
+    feature_names = metadata['feature_names']
+
+    TEST_ROUNDS = [6, 7]
+    N_ROUNDS    = 8
+
+    all_results = []
+
+    for driver_id in sorted(features_df['driver_id'].unique()):
+        mask       = features_df['driver_id'] == driver_id
+        driver_idx = features_df.index[mask].tolist()
+        n_segs     = len(driver_idx)
+        segs_per_round = max(1, n_segs // N_ROUNDS)
+
+        test_indices = [
+            idx for pos, idx in enumerate(driver_idx)
+            if min(pos // segs_per_round + 1, N_ROUNDS) in TEST_ROUNDS
+        ]
+        if not test_indices:
+            print(f"  {driver_id}: no test segments found")
+            continue
+
+        test_df = features_df.loc[test_indices].copy()
+        print(f"    {driver_id}: {len(test_df)} test segments")
+
+        for feat in feature_names:
+            if feat not in test_df.columns:
+                test_df[feat] = 0
+
+        X = test_df[feature_names].copy()
+        X = X.replace([np.inf, -np.inf], np.nan).fillna(0)
+        float32_max = np.finfo(np.float32).max * 0.9
+        X = X.clip(lower=-float32_max, upper=float32_max)
+
+        preds       = model.predict(X.values)
+        pred_labels = le.inverse_transform(preds)
+
+        if hasattr(model, 'predict_proba'):
+            proba          = model.predict_proba(X.values)
+            seg_confidence = proba.max(axis=1) * 100
+            avg_confidence = seg_confidence.mean()
+        else:
+            seg_confidence = np.full(len(preds), 100.0)
+            avg_confidence = 100.0
+
+        # Corner segments count double — detected via bool features
+        is_corner = (
+            test_df.get('is_eingang', pd.Series(0, index=test_df.index)) |
+            test_df.get('is_mitte',   pd.Series(0, index=test_df.index)) |
+            test_df.get('is_apex',    pd.Series(0, index=test_df.index))
+        ).values.astype(bool)
+        weights = np.where(is_corner, ZONE_WEIGHTS[1], ZONE_WEIGHTS[0])
+
+        weighted_votes: dict = {}
+        for label, w in zip(pred_labels, weights):
+            weighted_votes[label] = weighted_votes.get(label, 0.0) + w
+        total_weight = weights.sum()
+
+        top_driver = max(weighted_votes, key=weighted_votes.get)
+        agreement  = weighted_votes[top_driver] / total_weight * 100
+        is_correct = (top_driver == driver_id)
+
+        result = {
+            'driver_id':        driver_id,
+            'n_segments':       len(test_df),
+            'predicted_driver': top_driver,
+            'is_correct':       is_correct,
+            'agreement':        agreement,
+            'avg_confidence':   avg_confidence,
+            'weighted_votes':   weighted_votes,
+            'total_weight':     total_weight,
+            'pred_labels':      list(pred_labels),
+            'seg_confidence':   list(seg_confidence),
+            'is_corner':        list(is_corner),
+            'weights':          list(weights),
+        }
+        all_results.append(result)
+
+        # --- Per-driver text file ---
+        tag      = driver_id.strip('_')
+        out_file = results_path / f"predict_{tag}.txt"
+        with open(out_file, 'w', encoding='utf-8') as f:
+            f.write('=' * 60 + '\n')
+            f.write('DRIVER PREDICTION REPORT\n')
+            f.write('=' * 60 + '\n\n')
+            f.write(f"True driver:        {driver_id}\n")
+            f.write(f"Model:              {model_name}\n")
+            f.write(f"Test rounds:        6 & 7\n")
+            f.write(f"Segments evaluated: {len(test_df)}\n")
+            f.write(f"Corner weight:      {ZONE_WEIGHTS[1]}x  |  Straight weight: {ZONE_WEIGHTS[0]}x\n\n")
+            f.write(f"Predicted driver:   {top_driver}\n")
+            f.write(f"Result:             {'CORRECT' if is_correct else 'WRONG'}\n")
+            f.write(f"Weighted agreement: {agreement:.1f}%  "
+                    f"(weight {weighted_votes[top_driver]:.1f} / {total_weight:.1f})\n")
+            f.write(f"Avg. confidence:    {avg_confidence:.1f}%\n\n")
+
+            f.write('Weighted vote distribution:\n')
+            f.write('-' * 40 + '\n')
+            for drv, w in sorted(weighted_votes.items(), key=lambda x: x[1], reverse=True):
+                pct = w / total_weight * 100
+                bar = '#' * int(pct / 5)
+                f.write(f"  {drv:15s}: {w:6.1f} pts  ({pct:5.1f}%)  {bar}\n")
+
+            f.write('\nPer-segment predictions:\n')
+            f.write('-' * 40 + '\n')
+            f.write(f"  {'#':>3}  {'Type':<8} {'Weight':>6}  {'Predicted':<15}  {'Conf':>6}  OK?\n")
+            f.write(f"  {'-'*3}  {'-'*8} {'-'*6}  {'-'*15}  {'-'*6}  ---\n")
+            for i, (pred, conf, corner, w) in enumerate(
+                    zip(pred_labels, seg_confidence, is_corner, weights), 1):
+                mark      = 'yes' if pred == driver_id else 'no'
+                seg_type  = 'corner' if corner else 'straight'
+                f.write(f"  {i:3d}  {seg_type:<8} {w:6.1f}  {pred:<15}  {conf:5.1f}%  {mark}\n")
+
+        status = 'OK' if is_correct else 'WRONG'
+        print(f"  [{status}] {driver_id}: predicted={top_driver}  "
+              f"({agreement:.1f}% weighted, {len(test_df)} segs, conf {avg_confidence:.1f}%)  "
+              f"-> {out_file.name}")
+
+    # --- Summary ---
+    correct = sum(1 for r in all_results if r['is_correct'])
+    total   = len(all_results)
+    print(f"\n{'='*60}")
+    print(f"TOTAL: {correct}/{total} correct ({100*correct/total:.1f}%)")
+    print(f"{'='*60}")
+
+    summary_file = results_path / "05_predict_test_rounds_summary.txt"
+    with open(summary_file, 'w', encoding='utf-8') as f:
+        f.write('=' * 60 + '\n')
+        f.write('TEST ROUND EVALUATION — SUMMARY\n')
+        f.write(f"Model:         {model_name}\n")
+        f.write(f"Test rounds:   6 & 7\n")
+        f.write(f"Corner weight: {ZONE_WEIGHTS[1]}x  |  Straight weight: {ZONE_WEIGHTS[0]}x\n")
+        f.write('=' * 60 + '\n\n')
+        f.write(f"Overall accuracy: {correct}/{total} ({100*correct/total:.1f}%)\n\n")
+        f.write('-' * 60 + '\n')
+        for r in all_results:
+            status = 'OK   ' if r['is_correct'] else 'WRONG'
+            f.write(f"[{status}] {r['driver_id']:15s} -> {r['predicted_driver']:15s} "
+                    f"({r['agreement']:.1f}% weighted agreement, "
+                    f"{r['n_segments']} segs, conf {r['avg_confidence']:.1f}%)\n")
+
+    print(f"\nSummary:          {summary_file.name}")
+    print(f"Per-driver files: {results_path}")
+
+
 def main():
     """Main execution function"""
     parser = argparse.ArgumentParser(
-        description="Predict driver identity from HTF telemetry data"
+        description="Predict driver identity from telemetry data"
     )
     parser.add_argument(
         'file',
+        nargs='?',
         type=str,
-        help='Path to HTF telemetry file (.htf)'
+        help='Pfad zur Telemetrie-Datei (.ld oder .htf). '
+             'Ohne Datei: Auswertung aller Fahrer auf Test-Runden 6 & 7.'
     )
     parser.add_argument(
         '--model',
         type=str,
-        default='svm',
+        default='random_forest',
         choices=['random_forest', 'svm', 'xgboost'],
-        help='Model to use for prediction (default: svm)'
-    )
-    parser.add_argument(
-        '--model-dir',
-        type=str,
-        default=None,
-        help='Model directory (default: models/ or models/combined/ if exists)'
+        help='Modell (default: random_forest)'
     )
     parser.add_argument(
         '--confidence-threshold',
         type=float,
         default=0.6,
-        help='Confidence threshold for known vs unknown driver (default: 0.6)'
+        help='Konfidenz-Schwelle (default: 0.6)'
     )
     parser.add_argument(
         '--test-only',
         action='store_true',
-        help='Only use test rounds (6+7) — segments not seen during training'
+        help='Nur Test-Runden (6+7) verwenden'
     )
-    
+
     args = parser.parse_args()
-    
-    # Determine model directory
-    if args.model_dir:
-        model_dir = Path(args.model_dir)
-    else:
-        # Check if combined models exist, otherwise use default
-        combined_dir = get_models_path() / "combined"
-        if combined_dir.exists() and (combined_dir / f"{args.model}_model.pkl").exists():
-            model_dir = combined_dir
-            print(f"Using combined model directory: {combined_dir}")
-        else:
-            model_dir = get_models_path()
-            print(f"Using default model directory: {model_dir}")
-    
-    # Create predictor with custom model directory
-    predictor = DriverPredictor(model_name=args.model)
+
+    # No file given → batch evaluation over all drivers' test rounds
+    if args.file is None:
+        run_test_round_evaluation(model_name=args.model)
+        return
+
+    # Single-file prediction (existing behaviour)
+    models_dir = get_models_path() / "combined"
+    predictor  = DriverPredictor(model_name=args.model)
     predictor.test_rounds_only = args.test_only
-    predictor.models_dir = model_dir
-    
-    # Reload models from correct directory
-    predictor.model = joblib.load(model_dir / f"{args.model}_model.pkl")
-    predictor.scaler = joblib.load(model_dir / "scaler.pkl")
-    predictor.label_encoder = joblib.load(model_dir / "label_encoder.pkl")
-    
-    # Make prediction (auto-detect file type)
+
     result = predictor.predict_from_file(
         args.file,
         confidence_threshold=args.confidence_threshold
     )
-    
-    # Print result
     predictor.print_prediction_result(result)
-    
-    # Save result to file
+
     results_dir = get_results_path()
     result_file = results_dir / f"prediction_{Path(args.file).stem}.txt"
-    
     with open(result_file, 'w', encoding='utf-8') as f:
-        f.write(f"Prediction Result\n")
-        f.write(f"{'='*60}\n\n")
+        f.write("Prediction Result\n")
+        f.write('=' * 60 + '\n\n')
         f.write(f"Input File: {args.file}\n")
-        f.write(f"File Type: {Path(args.file).suffix.upper()}\n")
         f.write(f"Model: {args.model}\n")
-        f.write(f"Confidence Threshold: {args.confidence_threshold}\n\n")
         f.write(f"Predicted Driver: {result.get('predicted_driver', 'N/A')}\n")
         f.write(f"Status: {'KNOWN' if result.get('is_known', False) else 'UNKNOWN'}\n")
         f.write(f"Confidence: {result.get('confidence', 0):.1%}\n")
         f.write(f"Vote Percentage: {result.get('vote_percentage', 0):.1f}%\n")
-        f.write(f"\nVote Distribution:\n")
+        f.write("\nVote Distribution:\n")
         for driver, count in result.get('all_predictions', {}).items():
             f.write(f"  {driver}: {count} votes\n")
-    
     print(f"Result saved to: {result_file}")
 
 

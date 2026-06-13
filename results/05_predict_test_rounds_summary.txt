@@ -1,0 +1,15 @@
+============================================================
+TEST ROUND EVALUATION — SUMMARY
+Model:         random_forest
+Test rounds:   6 & 7
+Corner weight: 2.0x  |  Straight weight: 1.0x
+============================================================
+
+Overall accuracy: 5/5 (100.0%)
+
+------------------------------------------------------------
+[OK   ] _ALAD201_       -> _ALAD201_       (97.7% weighted agreement, 28 segs, conf 63.5%)
+[OK   ] _NIMB230_       -> _NIMB230_       (100.0% weighted agreement, 20 segs, conf 70.4%)
+[OK   ] _RINE150_       -> _RINE150_       (84.4% weighted agreement, 22 segs, conf 57.7%)
+[OK   ] _SOMD122_       -> _SOMD122_       (86.7% weighted agreement, 22 segs, conf 48.9%)
+[OK   ] _THTH312_       -> _THTH312_       (97.7% weighted agreement, 28 segs, conf 56.3%)

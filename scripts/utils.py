@@ -11,6 +11,33 @@ from typing import Dict, List, Tuple, Any
 import json
 
 
+# MoTeC LD channel name to HTF-compatible column name mapping
+CHANNEL_MAP = {
+    'Ground Speed':          'v_car',
+    'Throttle Pos':          'percent_throttle',
+    'Brake Pos':             'percent_brake',
+    'Steering Angle':        'steering_angle',
+    'CG Accel Lateral':      'g_lat',
+    'CG Accel Longitudinal': 'g_long',
+    'CG Accel Vertical':     'g_vert',
+    'Engine RPM':            'n_engine',
+    'Tire Temp Core FR':     't_tyreFR',
+    'Tire Temp Core FL':     't_tyreFL',
+    'Tire Temp Core RR':     't_tyreRR',
+    'Tire Temp Core RL':     't_tyreRL',
+    'Tire Pressure FR':      'p_tyreFR',
+    'Tire Pressure FL':      'p_tyreFL',
+    'Tire Pressure RR':      'p_tyreRR',
+    'Tire Pressure RL':      'p_tyreRL',
+    'Chassis Velocity X':    'v_x',
+    'Chassis Velocity Z':    'v_z',
+    'Gear':                  'gear',
+    'Car Pos Norm':          'pos_norm',
+    'Car Coord X':           'coord_x',
+    'Car Coord Y':           'coord_y',
+}
+
+
 def get_project_root() -> Path:
     """Get the project root directory"""
     return Path(__file__).parent.parent

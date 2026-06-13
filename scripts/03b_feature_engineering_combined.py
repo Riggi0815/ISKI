@@ -4,6 +4,7 @@ Extract features from unified telemetry dataset
 """
 
 import sys
+import json
 from pathlib import Path
 import pandas as pd
 import numpy as np
@@ -22,19 +23,29 @@ from utils import (
 
 class FeatureEngineer:
     """Extract behavioral features from telemetry data"""
-    
-    def __init__(self, telemetry_df, segment_size=500):
+
+    def __init__(self, telemetry_df, segment_size=500, stride=None):
         """
         Initialize FeatureEngineer
-        
+
         Args:
             telemetry_df: DataFrame with telemetry data
             segment_size: Number of samples per segment (default: 500 = 10 seconds @ 50Hz)
+            stride: Step between windows (default: segment_size // 2 = 50% overlap)
         """
         self.telemetry_df = telemetry_df
         self.segment_size = segment_size
+        self.stride = stride if stride is not None else segment_size // 2
         self.min_segment_size = int(segment_size * 0.8)  # Allow 80% minimum
-        
+
+        # Load corner zones for zone feature (optional — skipped if file missing)
+        self.corner_zones = None
+        zones_file = get_features_path() / 'corner_zones.json'
+        if zones_file.exists():
+            with open(zones_file) as f:
+                self.corner_zones = json.load(f)
+            print(f"  Loaded {len(self.corner_zones)} corner zones for zone feature")
+
         # Telemetry channels to extract features from
         self.feature_channels = [
             'v_car', 'percent_throttle', 'percent_brake', 'steering_angle',
@@ -45,57 +56,62 @@ class FeatureEngineer:
         ]
         
     def extract_all_features(self):
-        """Extract features for all drivers"""
-        print(f"\nExtracting features (segment size: {self.segment_size} samples)...")
-        
+        """Extract features for all drivers using sliding windows with zone bool features."""
+        print(f"\nExtracting features (window={self.segment_size} samples, stride={self.stride}, 50% overlap)...")
+
         all_features = []
-        drivers = self.telemetry_df['driver_id'].unique()
-        
-        for driver_id in drivers:
-            driver_data = self.telemetry_df[self.telemetry_df['driver_id'] == driver_id].copy()
-            
-            # Create segments
+
+        for driver_id in self.telemetry_df['driver_id'].unique():
+            # reset_index so segment.index == positional index == zone_labels positions
+            driver_data = self.telemetry_df[
+                self.telemetry_df['driver_id'] == driver_id
+            ].copy().reset_index(drop=True)
+
+            zone_labels = None
+            if self.corner_zones is not None and 'pos_norm' in driver_data.columns:
+                from corner_zones import label_samples
+                zone_labels, _ = label_samples(driver_data['pos_norm'].values, self.corner_zones)
+
             segments = self._create_segments(driver_data)
-            
             print(f"  {driver_id}: {len(segments)} segments")
-            
-            # Extract features from each segment
-            for segment_idx, segment in enumerate(segments):
-                features = self._extract_segment_features(segment, driver_id, segment_idx)
+
+            for seg_idx, segment in enumerate(segments):
+                features = self._extract_segment_features(segment, driver_id, seg_idx, zone_labels)
                 all_features.append(features)
-        
+
         features_df = pd.DataFrame(all_features)
-        
-        # Handle NaN/Inf values
-        features_df = features_df.replace([np.inf, -np.inf], np.nan)
-        features_df = features_df.fillna(0)
-        
-        print(f"\n✓ Extracted {len(features_df)} feature sets with {len(features_df.columns)-2} features each")
-        
+        features_df = features_df.replace([np.inf, -np.inf], np.nan).fillna(0)
+        print(f"\n✓ Extracted {len(features_df)} feature sets with {len(features_df.columns) - 2} features each")
         return features_df
-    
+
     def _create_segments(self, driver_data):
-        """Split driver data into segments"""
+        """Sliding window with 50% overlap."""
         segments = []
         total_samples = len(driver_data)
-        
-        for start_idx in range(0, total_samples, self.segment_size):
-            end_idx = start_idx + self.segment_size
-            segment = driver_data.iloc[start_idx:end_idx]
-            
-            # Only keep segments with minimum required size
+        for start_idx in range(0, total_samples, self.stride):
+            segment = driver_data.iloc[start_idx: start_idx + self.segment_size]
             if len(segment) >= self.min_segment_size:
                 segments.append(segment)
-        
         return segments
-    
-    def _extract_segment_features(self, segment, driver_id, segment_idx):
-        """Extract all features from a single segment"""
+
+    def _extract_segment_features(self, segment, driver_id, segment_idx, zone_labels=None):
+        """Extract all features from a single segment."""
+        # Dominant zone in this window → one-hot bool features
+        if zone_labels is not None:
+            seg_zones = zone_labels[segment.index[0]: segment.index[-1] + 1]
+            dominant_zone = int(np.bincount(seg_zones).argmax())
+        else:
+            dominant_zone = 0
+
         features = {
-            'driver_id': driver_id,
-            'segment_id': f"{driver_id}_{segment_idx}"
+            'driver_id':   driver_id,
+            'segment_id':  f"{driver_id}_{segment_idx}",
+            'is_straight': int(dominant_zone == 0),
+            'is_eingang':  int(dominant_zone == 1),
+            'is_mitte':    int(dominant_zone == 2),
+            'is_apex':     int(dominant_zone == 3),
         }
-        
+
         # 1. Statistical features for each channel
         for channel in self.feature_channels:
             if channel in segment.columns:
@@ -259,8 +275,8 @@ def main():
     print("EXTRACTING FEATURES")
     print(f"{'='*60}")
     
-    # Use 500-sample segments (10 seconds at 50Hz)
-    feature_engineer = FeatureEngineer(telemetry_df, segment_size=500)
+    # 500-sample windows (10s @ 50Hz), 50% overlap (stride=250)
+    feature_engineer = FeatureEngineer(telemetry_df, segment_size=500, stride=250)
     features_df = feature_engineer.extract_all_features()
     
     # Save features
@@ -281,7 +297,7 @@ def main():
         f.write(f"Input samples: {len(telemetry_df):,}\n")
         f.write(f"Output feature sets: {len(features_df):,}\n")
         f.write(f"Features per set: {len(features_df.columns) - 2}\n")
-        f.write(f"Segment size: 500 samples (10 seconds at 50Hz)\n\n")
+        f.write(f"Segmentation: corner-phase (eingang / mitte / apex)\n\n")
         
         f.write("Feature sets per driver:\n")
         for driver_id, count in features_df['driver_id'].value_counts().items():

@@ -1,0 +1,47 @@
+============================================================
+DRIVER PREDICTION REPORT
+============================================================
+
+True driver:        _RINE150_
+Model:              random_forest
+Test rounds:        6 & 7
+Segments evaluated: 22
+Corner weight:      2.0x  |  Straight weight: 1.0x
+
+Predicted driver:   _RINE150_
+Result:             CORRECT
+Weighted agreement: 84.4%  (weight 27.0 / 32.0)
+Avg. confidence:    57.7%
+
+Weighted vote distribution:
+----------------------------------------
+  _RINE150_      :   27.0 pts  ( 84.4%)  ################
+  _SOMD122_      :    3.0 pts  (  9.4%)  #
+  _ALAD201_      :    2.0 pts  (  6.2%)  #
+
+Per-segment predictions:
+----------------------------------------
+    #  Type     Weight  Predicted          Conf  OK?
+  ---  -------- ------  ---------------  ------  ---
+    1  straight    1.0  _SOMD122_         48.7%  no
+    2  straight    1.0  _RINE150_         48.1%  yes
+    3  corner      2.0  _RINE150_         64.4%  yes
+    4  straight    1.0  _RINE150_         77.3%  yes
+    5  straight    1.0  _RINE150_         64.4%  yes
+    6  straight    1.0  _RINE150_         77.8%  yes
+    7  straight    1.0  _RINE150_         62.1%  yes
+    8  corner      2.0  _RINE150_         69.6%  yes
+    9  corner      2.0  _RINE150_         42.5%  yes
+   10  corner      2.0  _RINE150_         34.3%  yes
+   11  corner      2.0  _RINE150_         38.7%  yes
+   12  corner      2.0  _ALAD201_         73.5%  no
+   13  corner      2.0  _RINE150_         45.7%  yes
+   14  straight    1.0  _RINE150_         70.7%  yes
+   15  straight    1.0  _RINE150_         71.3%  yes
+   16  corner      2.0  _RINE150_         51.3%  yes
+   17  straight    1.0  _RINE150_         60.3%  yes
+   18  straight    1.0  _RINE150_         48.5%  yes
+   19  straight    1.0  _RINE150_         64.6%  yes
+   20  straight    1.0  _RINE150_         54.2%  yes
+   21  corner      2.0  _RINE150_         42.2%  yes
+   22  corner      2.0  _SOMD122_         60.1%  no

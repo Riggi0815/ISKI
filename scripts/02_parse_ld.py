@@ -16,31 +16,23 @@ sys.path.append(str(Path(__file__).parent))
 from ldparser import ldData
 from utils import (
     get_project_root, get_raw_data_path, get_processed_data_path,
-    get_results_path, save_dataframe, extract_driver_from_filename
+    get_results_path, save_dataframe, extract_driver_from_filename,
+    CHANNEL_MAP
 )
 
-# Mapping: LD channel name → HTF column name (expected by feature engineering)
-CHANNEL_MAP = {
-    'Ground Speed':              'v_car',
-    'Throttle Pos':              'percent_throttle',
-    'Brake Pos':                 'percent_brake',
-    'Steering Angle':            'steering_angle',
-    'CG Accel Lateral':          'g_lat',
-    'CG Accel Longitudinal':     'g_long',
-    'CG Accel Vertical':         'g_vert',
-    'Engine RPM':                'n_engine',
-    'Tire Temp Core FR':         't_tyreFR',
-    'Tire Temp Core FL':         't_tyreFL',
-    'Tire Temp Core RR':         't_tyreRR',
-    'Tire Temp Core RL':         't_tyreRL',
-    'Tire Pressure FR':          'p_tyreFR',
-    'Tire Pressure FL':          'p_tyreFL',
-    'Tire Pressure RR':          'p_tyreRR',
-    'Tire Pressure RL':          'p_tyreRL',
-    'Chassis Velocity X':        'v_x',
-    'Chassis Velocity Z':        'v_z',
-    'Gear':                      'gear',
-}
+
+def detect_laps(pos_norm: np.ndarray, wrap_threshold: float = 0.5) -> np.ndarray:
+    """
+    Assign lap numbers by detecting when Car Pos Norm wraps from ~1 back to ~0.
+    Each wrap increments the lap counter.
+    """
+    lap_numbers = np.zeros(len(pos_norm), dtype=int)
+    lap = 0
+    for i in range(1, len(pos_norm)):
+        if pos_norm[i] < pos_norm[i - 1] - wrap_threshold:
+            lap += 1
+        lap_numbers[i] = lap
+    return lap_numbers
 
 
 def parse_ld_file(file_path: Path) -> pd.DataFrame:
@@ -77,12 +69,20 @@ def parse_ld_file(file_path: Path) -> pd.DataFrame:
     rows = {k: v[:min_len] for k, v in rows.items()}
 
     df = pd.DataFrame(rows)
+
+    # Add lap numbers if pos_norm is available
+    if 'pos_norm' in df.columns:
+        df['lap_number'] = detect_laps(df['pos_norm'].values)
+    else:
+        df['lap_number'] = 0
+
     df.insert(0, 'driver_id', driver_id)
     df.insert(1, 'circuit', circuit)
     df.insert(2, 'vehicle', vehicle)
     df.insert(3, 'sample_index', range(len(df)))
 
-    print(f"  ✓ Parsed {len(df):,} samples | {len(df.columns)-4} telemetry channels")
+    n_laps = int(df['lap_number'].max()) + 1 if 'lap_number' in df.columns else 1
+    print(f"  ✓ Parsed {len(df):,} samples | {n_laps} laps detected")
     return df
 
 

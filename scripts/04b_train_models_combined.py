@@ -37,6 +37,9 @@ from utils import get_project_root, get_features_path, get_models_path, get_resu
 # Mapped to actual column names present in driver_features_combined
 # ---------------------------------------------------------------------------
 FEATURE_COLUMNS = [
+    # Zone context — one-hot booleans (dominant zone in the 10s window)
+    'is_straight', 'is_eingang', 'is_mitte', 'is_apex',
+
     # Vehicle speed before / in / after corner
     'v_car_mean', 'v_car_std', 'v_car_min', 'v_car_max',
     # Speed variation (how much the driver varies speed through a segment)

@@ -5,61 +5,61 @@ RANDOM FOREST — Driver Identification Report
 Train/Test Split:
   Training rounds : [1, 2, 3, 4, 5, 8]
   Test rounds     : [6, 7]
-  Train segments  : 192
-  Test  segments  : 58
+  Train segments  : 378
+  Test  segments  : 120
 
 Model: RandomForestClassifier (n_estimators=200, balanced class weights)
-Features: 29
+Features: 33
 
 Train Accuracy : 1.0000 (100.00%)
-Test  Accuracy : 0.8793 (87.93%)
+Test  Accuracy : 0.9250 (92.50%)
 
 Classification Report (Test Set):
 --------------------------------------------------
               precision    recall  f1-score   support
 
-   _ALAD201_       0.93      0.93      0.93        14
-   _NIMB230_       0.91      1.00      0.95        10
-   _RINE150_       0.78      0.70      0.74        10
-   _SOMD122_       0.80      0.80      0.80        10
-   _THTH312_       0.93      0.93      0.93        14
+   _ALAD201_       0.90      0.96      0.93        28
+   _NIMB230_       0.95      1.00      0.98        20
+   _RINE150_       0.90      0.86      0.88        22
+   _SOMD122_       0.86      0.82      0.84        22
+   _THTH312_       1.00      0.96      0.98        28
 
-    accuracy                           0.88        58
-   macro avg       0.87      0.87      0.87        58
-weighted avg       0.88      0.88      0.88        58
+    accuracy                           0.93       120
+   macro avg       0.92      0.92      0.92       120
+weighted avg       0.93      0.93      0.92       120
 
 
 Confusion Matrix (Test Set):
   Rows = True Driver, Columns = Predicted Driver
   Classes: ['_ALAD201_', '_NIMB230_', '_RINE150_', '_SOMD122_', '_THTH312_']
 
-[[13  0  0  1  0]
- [ 0 10  0  0  0]
- [ 1  0  7  1  1]
- [ 0  0  2  8  0]
- [ 0  1  0  0 13]]
+[[27  0  0  1  0]
+ [ 0 20  0  0  0]
+ [ 1  0 19  2  0]
+ [ 2  0  2 18  0]
+ [ 0  1  0  0 27]]
 
 Top 20 Feature Importances:
 --------------------------------------------------
-   1. n_engine_mean                                 0.1173
-   2. percent_throttle_std                          0.0793
-   3. throttle_smoothness                           0.0786
-   4. jerk_mean                                     0.0706
-   5. g_lat_extreme_pct                             0.0628
-   6. tire_temp_diff_fr                             0.0572
-   7. tire_pressure_diff_lr                         0.0502
-   8. throttle_aggressive                           0.0478
-   9. throttle_changes                              0.0434
-  10. g_lat_std                                     0.0325
-  11. percent_throttle_mean                         0.0314
-  12. v_car_max                                     0.0275
-  13. v_car_mean                                    0.0243
-  14. g_long_std                                    0.0217
-  15. n_engine_max                                  0.0210
-  16. gear_ratio_mean                               0.0204
-  17. gear_ratio_std                                0.0203
-  18. v_car_min                                     0.0200
-  19. v_car_std                                     0.0193
-  20. corner_count                                  0.0192
+   1. n_engine_mean                                 0.1098
+   2. jerk_mean                                     0.0718
+   3. throttle_smoothness                           0.0702
+   4. tire_temp_diff_fr                             0.0666
+   5. percent_throttle_std                          0.0649
+   6. tire_pressure_diff_lr                         0.0645
+   7. g_lat_extreme_pct                             0.0499
+   8. throttle_aggressive                           0.0451
+   9. throttle_changes                              0.0419
+  10. g_lat_std                                     0.0299
+  11. percent_throttle_mean                         0.0294
+  12. g_long_std                                    0.0271
+  13. n_engine_max                                  0.0266
+  14. corner_count                                  0.0265
+  15. v_car_min                                     0.0256
+  16. v_car_max                                     0.0255
+  17. g_long_min                                    0.0248
+  18. gear_ratio_mean                               0.0243
+  19. gear_ratio_std                                0.0227
+  20. v_car_mean                                    0.0190
 
 ======================================================================
