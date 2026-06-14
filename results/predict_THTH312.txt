@@ -6,47 +6,48 @@ True driver:        _THTH312_
 Model:              random_forest
 Test rounds:        6 & 7
 Segments evaluated: 28
-Corner weight:      2.0x  |  Straight weight: 1.0x
 
 Predicted driver:   _THTH312_
 Result:             CORRECT
-Weighted agreement: 97.7%  (weight 42.0 / 43.0)
-Avg. confidence:    56.3%
 
-Weighted vote distribution:
+Segment Accuracy:         96.4%  (27/28 segments correct, unweighted)
+Weighted Vote Confidence: 97.7%  (zone-weighted majority vote: corner=2.0x, straight=1.0x)
+Mean Posterior Prob.:     56.3%  (mean predict_proba per segment, independent of zone weights)
+
+Weighted Vote Distribution:
 ----------------------------------------
   _THTH312_      :   42.0 pts  ( 97.7%)  ###################
   _NIMB230_      :    1.0 pts  (  2.3%)  
 
-Per-segment predictions:
+Per-Segment Predictions:
 ----------------------------------------
-    #  Type     Weight  Predicted          Conf  OK?
-  ---  -------- ------  ---------------  ------  ---
-    1  straight    1.0  _THTH312_         94.7%  yes
-    2  corner      2.0  _THTH312_         86.9%  yes
-    3  corner      2.0  _THTH312_         76.6%  yes
-    4  straight    1.0  _THTH312_         79.7%  yes
-    5  straight    1.0  _THTH312_         79.1%  yes
-    6  straight    1.0  _THTH312_         67.9%  yes
-    7  straight    1.0  _THTH312_         53.5%  yes
-    8  straight    1.0  _THTH312_         52.3%  yes
-    9  corner      2.0  _THTH312_         37.2%  yes
-   10  corner      2.0  _THTH312_         54.8%  yes
-   11  corner      2.0  _THTH312_         35.1%  yes
-   12  corner      2.0  _THTH312_         45.5%  yes
-   13  corner      2.0  _THTH312_         57.2%  yes
-   14  corner      2.0  _THTH312_         35.5%  yes
-   15  corner      2.0  _THTH312_         41.3%  yes
-   16  straight    1.0  _THTH312_         73.9%  yes
-   17  straight    1.0  _THTH312_         54.0%  yes
-   18  corner      2.0  _THTH312_         51.9%  yes
-   19  straight    1.0  _THTH312_         56.8%  yes
-   20  straight    1.0  _THTH312_         52.9%  yes
-   21  straight    1.0  _NIMB230_         33.5%  no
-   22  straight    1.0  _THTH312_         42.0%  yes
-   23  straight    1.0  _THTH312_         46.2%  yes
-   24  corner      2.0  _THTH312_         39.6%  yes
-   25  corner      2.0  _THTH312_         53.9%  yes
-   26  corner      2.0  _THTH312_         68.2%  yes
-   27  corner      2.0  _THTH312_         44.3%  yes
-   28  corner      2.0  _THTH312_         62.1%  yes
+    #  Zone     Weight  Predicted        Post.Prob.  Correct?
+  ---  -------- ------  ---------------  ----------  --------
+    1  straight    1.0  _THTH312_             94.7%  yes
+    2  apex        2.0  _THTH312_             86.9%  yes
+    3  mitte       2.0  _THTH312_             76.6%  yes
+    4  straight    1.0  _THTH312_             79.7%  yes
+    5  straight    1.0  _THTH312_             79.1%  yes
+    6  straight    1.0  _THTH312_             67.9%  yes
+    7  straight    1.0  _THTH312_             53.5%  yes
+    8  straight    1.0  _THTH312_             52.3%  yes
+    9  mitte       2.0  _THTH312_             37.2%  yes
+   10  eingang     2.0  _THTH312_             54.8%  yes
+   11  apex        2.0  _THTH312_             35.1%  yes
+   12  apex        2.0  _THTH312_             45.5%  yes
+   13  apex        2.0  _THTH312_             57.2%  yes
+   14  apex        2.0  _THTH312_             35.5%  yes
+   15  apex        2.0  _THTH312_             41.3%  yes
+   16  straight    1.0  _THTH312_             73.9%  yes
+   17  straight    1.0  _THTH312_             54.0%  yes
+   18  mitte       2.0  _THTH312_             51.9%  yes
+   19  straight    1.0  _THTH312_             56.8%  yes
+   20  straight    1.0  _THTH312_             52.9%  yes
+   21  straight    1.0  _NIMB230_             33.5%  no
+   22  straight    1.0  _THTH312_             42.0%  yes
+   23  straight    1.0  _THTH312_             46.2%  yes
+   24  apex        2.0  _THTH312_             39.6%  yes
+   25  apex        2.0  _THTH312_             53.9%  yes
+   26  eingang     2.0  _THTH312_             68.2%  yes
+   27  apex        2.0  _THTH312_             44.3%  yes
+   28  apex        2.0  _THTH312_             62.1%  yes

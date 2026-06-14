@@ -127,7 +127,8 @@ def prepare_features(features_df: pd.DataFrame, feature_cols: list) -> tuple:
     return X, available
 
 
-def train_random_forest(X_train, y_train, n_estimators: int = 200, random_state: int = 42):
+def train_random_forest(X_train, y_train, n_estimators: int = 200, random_state: int = 42,
+                        sample_weight=None):
     """Train Random Forest — no scaling needed (tree-based model)."""
     rf = RandomForestClassifier(
         n_estimators=n_estimators,
@@ -137,7 +138,7 @@ def train_random_forest(X_train, y_train, n_estimators: int = 200, random_state:
         random_state=random_state,
         n_jobs=-1,
     )
-    rf.fit(X_train, y_train)
+    rf.fit(X_train, y_train, sample_weight=sample_weight)
     return rf
 
 
@@ -274,7 +275,6 @@ def main():
     # 4. Train Random Forest
     # -----------------------------------------------------------------------
     print('\n[4] Training Random Forest (n_estimators=200)...')
-    # Note: Random Forest doesn't need scaled features, but we scale anyway for consistency
     rf = train_random_forest(X_train.values, y_train, n_estimators=200)
 
     y_train_pred = rf.predict(X_train.values)

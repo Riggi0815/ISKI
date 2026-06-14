@@ -381,9 +381,8 @@ class DriverPredictor:
         print(f"{'='*60}\n")
 
 
-ZONE_NAMES   = {0: 'straight', 1: 'eingang', 2: 'mitte', 3: 'apex'}
-# Corner segments count double — straights carry less driver-specific signal
-ZONE_WEIGHTS = {0: 1.0, 1: 2.0, 2: 2.0, 3: 2.0}
+# Per-zone weights: apex (tightest corner) counts most, straight counts least
+ZONE_WEIGHTS = {'is_apex': 2.0, 'is_mitte': 2.0, 'is_eingang': 2.0, 'is_straight': 1.0}
 
 
 def run_test_round_evaluation(model_name: str = 'random_forest'):
@@ -401,7 +400,7 @@ def run_test_round_evaluation(model_name: str = 'random_forest'):
 
     print('=' * 60)
     print('DRIVER PREDICTION — Test Rounds 6 & 7 (per driver)')
-    print(f'Model: {model_name}  |  Corner weight: {ZONE_WEIGHTS[1]}x  Straight weight: {ZONE_WEIGHTS[0]}x')
+    print(f'Model: {model_name}  |  Weighting: corner=2.0x  straight=1.0x')
     print('=' * 60)
 
     pkl = features_path / 'driver_features_combined.pkl'
@@ -460,22 +459,34 @@ def run_test_round_evaluation(model_name: str = 'random_forest'):
             seg_confidence = np.full(len(preds), 100.0)
             avg_confidence = 100.0
 
-        # Corner segments count double — detected via bool features
-        is_corner = (
-            test_df.get('is_eingang', pd.Series(0, index=test_df.index)) |
-            test_df.get('is_mitte',   pd.Series(0, index=test_df.index)) |
-            test_df.get('is_apex',    pd.Series(0, index=test_df.index))
-        ).values.astype(bool)
-        weights = np.where(is_corner, ZONE_WEIGHTS[1], ZONE_WEIGHTS[0])
+        # Per-zone weighted vote using zone bool columns
+        def seg_zone_weight(row):
+            for zone_col, zone_w in ZONE_WEIGHTS.items():
+                if zone_col in test_df.columns and int(row.get(zone_col, 0)) == 1:
+                    return zone_col.replace('is_', ''), zone_w
+            return 'straight', ZONE_WEIGHTS['is_straight']
+
+        seg_zones = [seg_zone_weight(row) for _, row in test_df.iterrows()]
+        seg_zone_names   = [z[0] for z in seg_zones]
+        seg_zone_weights = np.array([z[1] for z in seg_zones])
 
         weighted_votes: dict = {}
-        for label, w in zip(pred_labels, weights):
+        for label, w in zip(pred_labels, seg_zone_weights):
             weighted_votes[label] = weighted_votes.get(label, 0.0) + w
-        total_weight = weights.sum()
+        total_weight = seg_zone_weights.sum()
 
-        top_driver = max(weighted_votes, key=weighted_votes.get)
-        agreement  = weighted_votes[top_driver] / total_weight * 100
+        top_driver  = max(weighted_votes, key=weighted_votes.get)
+        confidence  = weighted_votes[top_driver] / total_weight * 100
+
+        # Raw unweighted agreement
+        vote_counts = {}
+        for label in pred_labels:
+            vote_counts[label] = vote_counts.get(label, 0) + 1
+        n_correct  = vote_counts.get(top_driver, 0)
+        agreement  = n_correct / len(pred_labels) * 100
         is_correct = (top_driver == driver_id)
+
+        avg_rf_conf = float(seg_confidence.mean())
 
         result = {
             'driver_id':        driver_id,
@@ -483,13 +494,14 @@ def run_test_round_evaluation(model_name: str = 'random_forest'):
             'predicted_driver': top_driver,
             'is_correct':       is_correct,
             'agreement':        agreement,
-            'avg_confidence':   avg_confidence,
+            'confidence':       confidence,
+            'avg_rf_conf':      avg_rf_conf,
             'weighted_votes':   weighted_votes,
             'total_weight':     total_weight,
             'pred_labels':      list(pred_labels),
             'seg_confidence':   list(seg_confidence),
-            'is_corner':        list(is_corner),
-            'weights':          list(weights),
+            'seg_zone_names':   seg_zone_names,
+            'seg_zone_weights': list(seg_zone_weights),
         }
         all_results.append(result)
 
@@ -503,35 +515,36 @@ def run_test_round_evaluation(model_name: str = 'random_forest'):
             f.write(f"True driver:        {driver_id}\n")
             f.write(f"Model:              {model_name}\n")
             f.write(f"Test rounds:        6 & 7\n")
-            f.write(f"Segments evaluated: {len(test_df)}\n")
-            f.write(f"Corner weight:      {ZONE_WEIGHTS[1]}x  |  Straight weight: {ZONE_WEIGHTS[0]}x\n\n")
+            f.write(f"Segments evaluated: {len(test_df)}\n\n")
             f.write(f"Predicted driver:   {top_driver}\n")
-            f.write(f"Result:             {'CORRECT' if is_correct else 'WRONG'}\n")
-            f.write(f"Weighted agreement: {agreement:.1f}%  "
-                    f"(weight {weighted_votes[top_driver]:.1f} / {total_weight:.1f})\n")
-            f.write(f"Avg. confidence:    {avg_confidence:.1f}%\n\n")
+            f.write(f"Result:             {'CORRECT' if is_correct else 'WRONG'}\n\n")
+            f.write(f"Segment Accuracy:         {agreement:.1f}%"
+                    f"  ({n_correct}/{len(pred_labels)} segments correct, unweighted)\n")
+            f.write(f"Weighted Vote Confidence: {confidence:.1f}%"
+                    f"  (zone-weighted majority vote: corner=2.0x, straight=1.0x)\n")
+            f.write(f"Mean Posterior Prob.:     {avg_rf_conf:.1f}%"
+                    f"  (mean predict_proba per segment, independent of zone weights)\n\n")
 
-            f.write('Weighted vote distribution:\n')
+            f.write('Weighted Vote Distribution:\n')
             f.write('-' * 40 + '\n')
             for drv, w in sorted(weighted_votes.items(), key=lambda x: x[1], reverse=True):
                 pct = w / total_weight * 100
                 bar = '#' * int(pct / 5)
                 f.write(f"  {drv:15s}: {w:6.1f} pts  ({pct:5.1f}%)  {bar}\n")
 
-            f.write('\nPer-segment predictions:\n')
+            f.write('\nPer-Segment Predictions:\n')
             f.write('-' * 40 + '\n')
-            f.write(f"  {'#':>3}  {'Type':<8} {'Weight':>6}  {'Predicted':<15}  {'Conf':>6}  OK?\n")
-            f.write(f"  {'-'*3}  {'-'*8} {'-'*6}  {'-'*15}  {'-'*6}  ---\n")
-            for i, (pred, conf, corner, w) in enumerate(
-                    zip(pred_labels, seg_confidence, is_corner, weights), 1):
-                mark      = 'yes' if pred == driver_id else 'no'
-                seg_type  = 'corner' if corner else 'straight'
-                f.write(f"  {i:3d}  {seg_type:<8} {w:6.1f}  {pred:<15}  {conf:5.1f}%  {mark}\n")
+            f.write(f"  {'#':>3}  {'Zone':<8} {'Weight':>6}  {'Predicted':<15}  {'Post.Prob.':>10}  Correct?\n")
+            f.write(f"  {'-'*3}  {'-'*8} {'-'*6}  {'-'*15}  {'-'*10}  --------\n")
+            for i, (pred, conf, zname, zw) in enumerate(
+                    zip(pred_labels, seg_confidence, seg_zone_names, seg_zone_weights), 1):
+                mark = 'yes' if pred == driver_id else 'no'
+                f.write(f"  {i:3d}  {zname:<8} {zw:6.1f}  {pred:<15}  {conf:9.1f}%  {mark}\n")
 
         status = 'OK' if is_correct else 'WRONG'
         print(f"  [{status}] {driver_id}: predicted={top_driver}  "
-              f"({agreement:.1f}% weighted, {len(test_df)} segs, conf {avg_confidence:.1f}%)  "
-              f"-> {out_file.name}")
+              f"seg_acc={agreement:.1f}%  wt_conf={confidence:.1f}%  post_prob={avg_rf_conf:.1f}%  "
+              f"({len(test_df)} segs)  -> {out_file.name}")
 
     # --- Summary ---
     correct = sum(1 for r in all_results if r['is_correct'])
@@ -544,17 +557,18 @@ def run_test_round_evaluation(model_name: str = 'random_forest'):
     with open(summary_file, 'w', encoding='utf-8') as f:
         f.write('=' * 60 + '\n')
         f.write('TEST ROUND EVALUATION — SUMMARY\n')
-        f.write(f"Model:         {model_name}\n")
-        f.write(f"Test rounds:   6 & 7\n")
-        f.write(f"Corner weight: {ZONE_WEIGHTS[1]}x  |  Straight weight: {ZONE_WEIGHTS[0]}x\n")
+        f.write(f"Model:       {model_name}\n")
+        f.write(f"Test rounds: 6 & 7\n")
+        f.write(f"Weighting:   corner=2.0x  straight=1.0x\n")
         f.write('=' * 60 + '\n\n')
         f.write(f"Overall accuracy: {correct}/{total} ({100*correct/total:.1f}%)\n\n")
-        f.write('-' * 60 + '\n')
+        f.write(f"  {'Driver':<15} {'Result':<6}  {'Predicted':<15}  {'Seg.Acc.':>8}  {'Wt.Conf.':>8}  {'Mean Post.Prob.':>15}  Segs\n")
+        f.write(f"  {'-'*15} {'-'*6}  {'-'*15}  {'-'*8}  {'-'*8}  {'-'*15}  ----\n")
         for r in all_results:
             status = 'OK   ' if r['is_correct'] else 'WRONG'
-            f.write(f"[{status}] {r['driver_id']:15s} -> {r['predicted_driver']:15s} "
-                    f"({r['agreement']:.1f}% weighted agreement, "
-                    f"{r['n_segments']} segs, conf {r['avg_confidence']:.1f}%)\n")
+            f.write(f"  {r['driver_id']:<15} {status}  {r['predicted_driver']:<15}  "
+                    f"{r['agreement']:7.1f}%  {r['confidence']:7.1f}%  "
+                    f"{r['avg_rf_conf']:14.1f}%  {r['n_segments']}\n")
 
     print(f"\nSummary:          {summary_file.name}")
     print(f"Per-driver files: {results_path}")

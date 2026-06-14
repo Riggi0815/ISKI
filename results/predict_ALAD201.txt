@@ -6,47 +6,48 @@ True driver:        _ALAD201_
 Model:              random_forest
 Test rounds:        6 & 7
 Segments evaluated: 28
-Corner weight:      2.0x  |  Straight weight: 1.0x
 
 Predicted driver:   _ALAD201_
 Result:             CORRECT
-Weighted agreement: 97.7%  (weight 42.0 / 43.0)
-Avg. confidence:    63.5%
 
-Weighted vote distribution:
+Segment Accuracy:         96.4%  (27/28 segments correct, unweighted)
+Weighted Vote Confidence: 97.7%  (zone-weighted majority vote: corner=2.0x, straight=1.0x)
+Mean Posterior Prob.:     63.5%  (mean predict_proba per segment, independent of zone weights)
+
+Weighted Vote Distribution:
 ----------------------------------------
   _ALAD201_      :   42.0 pts  ( 97.7%)  ###################
   _SOMD122_      :    1.0 pts  (  2.3%)  
 
-Per-segment predictions:
+Per-Segment Predictions:
 ----------------------------------------
-    #  Type     Weight  Predicted          Conf  OK?
-  ---  -------- ------  ---------------  ------  ---
-    1  corner      2.0  _ALAD201_         58.7%  yes
-    2  corner      2.0  _ALAD201_         72.6%  yes
-    3  corner      2.0  _ALAD201_         72.7%  yes
-    4  corner      2.0  _ALAD201_         57.8%  yes
-    5  corner      2.0  _ALAD201_         74.2%  yes
-    6  straight    1.0  _ALAD201_         78.8%  yes
-    7  straight    1.0  _ALAD201_         79.1%  yes
-    8  straight    1.0  _ALAD201_         80.7%  yes
-    9  corner      2.0  _ALAD201_         65.2%  yes
-   10  straight    1.0  _ALAD201_         50.5%  yes
-   11  straight    1.0  _ALAD201_         40.6%  yes
-   12  straight    1.0  _ALAD201_         71.1%  yes
-   13  straight    1.0  _ALAD201_         63.0%  yes
-   14  straight    1.0  _ALAD201_         52.5%  yes
-   15  corner      2.0  _ALAD201_         76.0%  yes
-   16  corner      2.0  _ALAD201_         88.0%  yes
-   17  corner      2.0  _ALAD201_         33.4%  yes
-   18  corner      2.0  _ALAD201_         53.2%  yes
-   19  corner      2.0  _ALAD201_         65.9%  yes
-   20  corner      2.0  _ALAD201_         46.0%  yes
-   21  straight    1.0  _ALAD201_         45.1%  yes
-   22  corner      2.0  _ALAD201_         77.7%  yes
-   23  corner      2.0  _ALAD201_         84.6%  yes
-   24  corner      2.0  _ALAD201_         51.6%  yes
-   25  straight    1.0  _ALAD201_         48.0%  yes
-   26  straight    1.0  _ALAD201_         69.4%  yes
-   27  straight    1.0  _ALAD201_         77.1%  yes
-   28  straight    1.0  _SOMD122_         45.0%  no
+    #  Zone     Weight  Predicted        Post.Prob.  Correct?
+  ---  -------- ------  ---------------  ----------  --------
+    1  apex        2.0  _ALAD201_             58.7%  yes
+    2  apex        2.0  _ALAD201_             72.6%  yes
+    3  mitte       2.0  _ALAD201_             72.7%  yes
+    4  eingang     2.0  _ALAD201_             57.8%  yes
+    5  apex        2.0  _ALAD201_             74.2%  yes
+    6  straight    1.0  _ALAD201_             78.8%  yes
+    7  straight    1.0  _ALAD201_             79.1%  yes
+    8  straight    1.0  _ALAD201_             80.7%  yes
+    9  mitte       2.0  _ALAD201_             65.2%  yes
+   10  straight    1.0  _ALAD201_             50.5%  yes
+   11  straight    1.0  _ALAD201_             40.6%  yes
+   12  straight    1.0  _ALAD201_             71.1%  yes
+   13  straight    1.0  _ALAD201_             63.0%  yes
+   14  straight    1.0  _ALAD201_             52.5%  yes
+   15  mitte       2.0  _ALAD201_             76.0%  yes
+   16  apex        2.0  _ALAD201_             88.0%  yes
+   17  apex        2.0  _ALAD201_             33.4%  yes
+   18  apex        2.0  _ALAD201_             53.2%  yes
+   19  apex        2.0  _ALAD201_             65.9%  yes
+   20  apex        2.0  _ALAD201_             46.0%  yes
+   21  straight    1.0  _ALAD201_             45.1%  yes
+   22  apex        2.0  _ALAD201_             77.7%  yes
+   23  apex        2.0  _ALAD201_             84.6%  yes
+   24  apex        2.0  _ALAD201_             51.6%  yes
+   25  straight    1.0  _ALAD201_             48.0%  yes
+   26  straight    1.0  _ALAD201_             69.4%  yes
+   27  straight    1.0  _ALAD201_             77.1%  yes
+   28  straight    1.0  _SOMD122_             45.0%  no

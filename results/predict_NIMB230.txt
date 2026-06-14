@@ -6,38 +6,39 @@ True driver:        _NIMB230_
 Model:              random_forest
 Test rounds:        6 & 7
 Segments evaluated: 20
-Corner weight:      2.0x  |  Straight weight: 1.0x
 
 Predicted driver:   _NIMB230_
 Result:             CORRECT
-Weighted agreement: 100.0%  (weight 27.0 / 27.0)
-Avg. confidence:    70.4%
 
-Weighted vote distribution:
+Segment Accuracy:         100.0%  (20/20 segments correct, unweighted)
+Weighted Vote Confidence: 100.0%  (zone-weighted majority vote: corner=2.0x, straight=1.0x)
+Mean Posterior Prob.:     70.4%  (mean predict_proba per segment, independent of zone weights)
+
+Weighted Vote Distribution:
 ----------------------------------------
   _NIMB230_      :   27.0 pts  (100.0%)  ####################
 
-Per-segment predictions:
+Per-Segment Predictions:
 ----------------------------------------
-    #  Type     Weight  Predicted          Conf  OK?
-  ---  -------- ------  ---------------  ------  ---
-    1  corner      2.0  _NIMB230_         58.0%  yes
-    2  straight    1.0  _NIMB230_         52.3%  yes
-    3  straight    1.0  _NIMB230_         90.5%  yes
-    4  corner      2.0  _NIMB230_         73.9%  yes
-    5  straight    1.0  _NIMB230_         88.7%  yes
-    6  straight    1.0  _NIMB230_         83.9%  yes
-    7  straight    1.0  _NIMB230_         66.7%  yes
-    8  straight    1.0  _NIMB230_         64.1%  yes
-    9  straight    1.0  _NIMB230_         91.0%  yes
-   10  corner      2.0  _NIMB230_         68.0%  yes
-   11  corner      2.0  _NIMB230_         56.4%  yes
-   12  corner      2.0  _NIMB230_         54.5%  yes
-   13  corner      2.0  _NIMB230_         64.5%  yes
-   14  straight    1.0  _NIMB230_         68.0%  yes
-   15  straight    1.0  _NIMB230_         48.2%  yes
-   16  corner      2.0  _NIMB230_         62.3%  yes
-   17  straight    1.0  _NIMB230_         73.5%  yes
-   18  straight    1.0  _NIMB230_         82.3%  yes
-   19  straight    1.0  _NIMB230_         88.7%  yes
-   20  straight    1.0  _NIMB230_         72.0%  yes
+    #  Zone     Weight  Predicted        Post.Prob.  Correct?
+  ---  -------- ------  ---------------  ----------  --------
+    1  apex        2.0  _NIMB230_             58.0%  yes
+    2  straight    1.0  _NIMB230_             52.3%  yes
+    3  straight    1.0  _NIMB230_             90.5%  yes
+    4  mitte       2.0  _NIMB230_             73.9%  yes
+    5  straight    1.0  _NIMB230_             88.7%  yes
+    6  straight    1.0  _NIMB230_             83.9%  yes
+    7  straight    1.0  _NIMB230_             66.7%  yes
+    8  straight    1.0  _NIMB230_             64.1%  yes
+    9  straight    1.0  _NIMB230_             91.0%  yes
+   10  apex        2.0  _NIMB230_             68.0%  yes
+   11  apex        2.0  _NIMB230_             56.4%  yes
+   12  apex        2.0  _NIMB230_             54.5%  yes
+   13  apex        2.0  _NIMB230_             64.5%  yes
+   14  straight    1.0  _NIMB230_             68.0%  yes
+   15  straight    1.0  _NIMB230_             48.2%  yes
+   16  mitte       2.0  _NIMB230_             62.3%  yes
+   17  straight    1.0  _NIMB230_             73.5%  yes
+   18  straight    1.0  _NIMB230_             82.3%  yes
+   19  straight    1.0  _NIMB230_             88.7%  yes
+   20  straight    1.0  _NIMB230_             72.0%  yes

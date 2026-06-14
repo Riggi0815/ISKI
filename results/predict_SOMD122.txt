@@ -6,42 +6,43 @@ True driver:        _SOMD122_
 Model:              random_forest
 Test rounds:        6 & 7
 Segments evaluated: 22
-Corner weight:      2.0x  |  Straight weight: 1.0x
 
 Predicted driver:   _SOMD122_
 Result:             CORRECT
-Weighted agreement: 86.7%  (weight 26.0 / 30.0)
-Avg. confidence:    48.9%
 
-Weighted vote distribution:
+Segment Accuracy:         81.8%  (18/22 segments correct, unweighted)
+Weighted Vote Confidence: 86.7%  (zone-weighted majority vote: corner=2.0x, straight=1.0x)
+Mean Posterior Prob.:     48.9%  (mean predict_proba per segment, independent of zone weights)
+
+Weighted Vote Distribution:
 ----------------------------------------
   _SOMD122_      :   26.0 pts  ( 86.7%)  #################
   _RINE150_      :    2.0 pts  (  6.7%)  #
   _ALAD201_      :    2.0 pts  (  6.7%)  #
 
-Per-segment predictions:
+Per-Segment Predictions:
 ----------------------------------------
-    #  Type     Weight  Predicted          Conf  OK?
-  ---  -------- ------  ---------------  ------  ---
-    1  corner      2.0  _SOMD122_         44.1%  yes
-    2  straight    1.0  _SOMD122_         53.4%  yes
-    3  straight    1.0  _SOMD122_         76.4%  yes
-    4  corner      2.0  _SOMD122_         57.5%  yes
-    5  straight    1.0  _SOMD122_         57.0%  yes
-    6  straight    1.0  _SOMD122_         55.4%  yes
-    7  straight    1.0  _RINE150_         43.0%  no
-    8  straight    1.0  _SOMD122_         59.2%  yes
-    9  straight    1.0  _SOMD122_         37.3%  yes
-   10  corner      2.0  _SOMD122_         42.6%  yes
-   11  corner      2.0  _SOMD122_         58.0%  yes
-   12  corner      2.0  _SOMD122_         48.0%  yes
-   13  corner      2.0  _SOMD122_         44.4%  yes
-   14  straight    1.0  _SOMD122_         57.0%  yes
-   15  straight    1.0  _SOMD122_         54.5%  yes
-   16  corner      2.0  _SOMD122_         42.7%  yes
-   17  straight    1.0  _RINE150_         38.3%  no
-   18  straight    1.0  _ALAD201_         43.2%  no
-   19  straight    1.0  _ALAD201_         51.1%  no
-   20  straight    1.0  _SOMD122_         29.6%  yes
-   21  straight    1.0  _SOMD122_         40.2%  yes
-   22  corner      2.0  _SOMD122_         43.3%  yes
+    #  Zone     Weight  Predicted        Post.Prob.  Correct?
+  ---  -------- ------  ---------------  ----------  --------
+    1  apex        2.0  _SOMD122_             44.1%  yes
+    2  straight    1.0  _SOMD122_             53.4%  yes
+    3  straight    1.0  _SOMD122_             76.4%  yes
+    4  mitte       2.0  _SOMD122_             57.5%  yes
+    5  straight    1.0  _SOMD122_             57.0%  yes
+    6  straight    1.0  _SOMD122_             55.4%  yes
+    7  straight    1.0  _RINE150_             43.0%  no
+    8  straight    1.0  _SOMD122_             59.2%  yes
+    9  straight    1.0  _SOMD122_             37.3%  yes
+   10  apex        2.0  _SOMD122_             42.6%  yes
+   11  mitte       2.0  _SOMD122_             58.0%  yes
+   12  apex        2.0  _SOMD122_             48.0%  yes
+   13  apex        2.0  _SOMD122_             44.4%  yes
+   14  straight    1.0  _SOMD122_             57.0%  yes
+   15  straight    1.0  _SOMD122_             54.5%  yes
+   16  mitte       2.0  _SOMD122_             42.7%  yes
+   17  straight    1.0  _RINE150_             38.3%  no
+   18  straight    1.0  _ALAD201_             43.2%  no
+   19  straight    1.0  _ALAD201_             51.1%  no
+   20  straight    1.0  _SOMD122_             29.6%  yes
+   21  straight    1.0  _SOMD122_             40.2%  yes
+   22  mitte       2.0  _SOMD122_             43.3%  yes
