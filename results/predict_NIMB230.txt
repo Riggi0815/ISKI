@@ -16,13 +16,13 @@ Mean Posterior Prob.:     70.4%  (mean predict_proba per segment, independent of
 
 Weighted Vote Distribution:
 ----------------------------------------
-  _NIMB230_      :   27.0 pts  (100.0%)  ####################
+  _NIMB230_      :   32.0 pts  (100.0%)  ####################
 
 Per-Segment Predictions:
 ----------------------------------------
     #  Zone     Weight  Predicted        Post.Prob.  Correct?
   ---  -------- ------  ---------------  ----------  --------
-    1  apex        2.0  _NIMB230_             58.0%  yes
+    1  apex        3.0  _NIMB230_             58.0%  yes
     2  straight    1.0  _NIMB230_             52.3%  yes
     3  straight    1.0  _NIMB230_             90.5%  yes
     4  mitte       2.0  _NIMB230_             73.9%  yes
@@ -31,10 +31,10 @@ Per-Segment Predictions:
     7  straight    1.0  _NIMB230_             66.7%  yes
     8  straight    1.0  _NIMB230_             64.1%  yes
     9  straight    1.0  _NIMB230_             91.0%  yes
-   10  apex        2.0  _NIMB230_             68.0%  yes
-   11  apex        2.0  _NIMB230_             56.4%  yes
-   12  apex        2.0  _NIMB230_             54.5%  yes
-   13  apex        2.0  _NIMB230_             64.5%  yes
+   10  apex        3.0  _NIMB230_             68.0%  yes
+   11  apex        3.0  _NIMB230_             56.4%  yes
+   12  apex        3.0  _NIMB230_             54.5%  yes
+   13  apex        3.0  _NIMB230_             64.5%  yes
    14  straight    1.0  _NIMB230_             68.0%  yes
    15  straight    1.0  _NIMB230_             48.2%  yes
    16  mitte       2.0  _NIMB230_             62.3%  yes

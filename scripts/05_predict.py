@@ -382,7 +382,7 @@ class DriverPredictor:
 
 
 # Per-zone weights: apex (tightest corner) counts most, straight counts least
-ZONE_WEIGHTS = {'is_apex': 2.0, 'is_mitte': 2.0, 'is_eingang': 2.0, 'is_straight': 1.0}
+ZONE_WEIGHTS = {'is_apex': 3.0, 'is_mitte': 2.0, 'is_eingang': 1.5, 'is_straight': 1.0}
 
 
 def run_test_round_evaluation(model_name: str = 'random_forest'):
@@ -400,7 +400,7 @@ def run_test_round_evaluation(model_name: str = 'random_forest'):
 
     print('=' * 60)
     print('DRIVER PREDICTION — Test Rounds 6 & 7 (per driver)')
-    print(f'Model: {model_name}  |  Weighting: corner=2.0x  straight=1.0x')
+    print(f'Model: {model_name}  |  Weighting: apex=3.0x  mitte=2.0x  eingang=1.5x  straight=1.0x')
     print('=' * 60)
 
     pkl = features_path / 'driver_features_combined.pkl'
@@ -521,7 +521,7 @@ def run_test_round_evaluation(model_name: str = 'random_forest'):
             f.write(f"Segment Accuracy:         {agreement:.1f}%"
                     f"  ({n_correct}/{len(pred_labels)} segments correct, unweighted)\n")
             f.write(f"Weighted Vote Confidence: {confidence:.1f}%"
-                    f"  (zone-weighted majority vote: corner=2.0x, straight=1.0x)\n")
+                    f"  (zone-weighted majority vote: apex=3.0x, mitte=2.0x, eingang=1.5x, straight=1.0x)\n")
             f.write(f"Mean Posterior Prob.:     {avg_rf_conf:.1f}%"
                     f"  (mean predict_proba per segment, independent of zone weights)\n\n")
 

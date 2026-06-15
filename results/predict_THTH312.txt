@@ -11,20 +11,20 @@ Predicted driver:   _THTH312_
 Result:             CORRECT
 
 Segment Accuracy:         96.4%  (27/28 segments correct, unweighted)
-Weighted Vote Confidence: 97.7%  (zone-weighted majority vote: corner=2.0x, straight=1.0x)
+Weighted Vote Confidence: 98.1%  (zone-weighted majority vote: corner=2.0x, straight=1.0x)
 Mean Posterior Prob.:     56.3%  (mean predict_proba per segment, independent of zone weights)
 
 Weighted Vote Distribution:
 ----------------------------------------
-  _THTH312_      :   42.0 pts  ( 97.7%)  ###################
-  _NIMB230_      :    1.0 pts  (  2.3%)  
+  _THTH312_      :   51.0 pts  ( 98.1%)  ###################
+  _NIMB230_      :    1.0 pts  (  1.9%)  
 
 Per-Segment Predictions:
 ----------------------------------------
     #  Zone     Weight  Predicted        Post.Prob.  Correct?
   ---  -------- ------  ---------------  ----------  --------
     1  straight    1.0  _THTH312_             94.7%  yes
-    2  apex        2.0  _THTH312_             86.9%  yes
+    2  apex        3.0  _THTH312_             86.9%  yes
     3  mitte       2.0  _THTH312_             76.6%  yes
     4  straight    1.0  _THTH312_             79.7%  yes
     5  straight    1.0  _THTH312_             79.1%  yes
@@ -32,12 +32,12 @@ Per-Segment Predictions:
     7  straight    1.0  _THTH312_             53.5%  yes
     8  straight    1.0  _THTH312_             52.3%  yes
     9  mitte       2.0  _THTH312_             37.2%  yes
-   10  eingang     2.0  _THTH312_             54.8%  yes
-   11  apex        2.0  _THTH312_             35.1%  yes
-   12  apex        2.0  _THTH312_             45.5%  yes
-   13  apex        2.0  _THTH312_             57.2%  yes
-   14  apex        2.0  _THTH312_             35.5%  yes
-   15  apex        2.0  _THTH312_             41.3%  yes
+   10  eingang     1.5  _THTH312_             54.8%  yes
+   11  apex        3.0  _THTH312_             35.1%  yes
+   12  apex        3.0  _THTH312_             45.5%  yes
+   13  apex        3.0  _THTH312_             57.2%  yes
+   14  apex        3.0  _THTH312_             35.5%  yes
+   15  apex        3.0  _THTH312_             41.3%  yes
    16  straight    1.0  _THTH312_             73.9%  yes
    17  straight    1.0  _THTH312_             54.0%  yes
    18  mitte       2.0  _THTH312_             51.9%  yes
@@ -46,8 +46,8 @@ Per-Segment Predictions:
    21  straight    1.0  _NIMB230_             33.5%  no
    22  straight    1.0  _THTH312_             42.0%  yes
    23  straight    1.0  _THTH312_             46.2%  yes
-   24  apex        2.0  _THTH312_             39.6%  yes
-   25  apex        2.0  _THTH312_             53.9%  yes
-   26  eingang     2.0  _THTH312_             68.2%  yes
-   27  apex        2.0  _THTH312_             44.3%  yes
-   28  apex        2.0  _THTH312_             62.1%  yes
+   24  apex        3.0  _THTH312_             39.6%  yes
+   25  apex        3.0  _THTH312_             53.9%  yes
+   26  eingang     1.5  _THTH312_             68.2%  yes
+   27  apex        3.0  _THTH312_             44.3%  yes
+   28  apex        3.0  _THTH312_             62.1%  yes
