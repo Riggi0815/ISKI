@@ -2,31 +2,107 @@
 TEST DATA EVALUATION - RANDOM_FOREST
 ============================================================
 
-Files evaluated: 5
-Correct predictions: 5/5
-Accuracy: 100.0%
-Average confidence: 71.8%
-Average agreement: 97.1%
+Files evaluated: 24
+Correct predictions: 23/24
+Accuracy: 95.8%
+Average confidence: 57.4%
+Average agreement: 92.3%
 
 Per-file results:
 ────────────────────────────────────────────────────────────
-✓ ks_nurburgring_&_ks_porsche_911_gt3_rs_&_ALAD201_&_stint_1.ld
-  True: _ALAD201_, Predicted: _ALAD201_
-  Segments: 59, Agreement: 98.3%, Confidence: 75.5%
+✓ ks_nurburgring_&_ks_porsche_911_gt3_rs_&_ANIC011_&_stint_1.ld
+  True: _ANIC011_, Predicted: _ANIC011_
+  Segments: 119, Agreement: 99.2%, Confidence: 64.2%
+
+✓ ks_nurburgring_&_ks_porsche_911_gt3_rs_&_BRIG160_&_stint_1.ld
+  True: _BRIG160_, Predicted: _BRIG160_
+  Segments: 83, Agreement: 98.8%, Confidence: 59.6%
+
+✓ ks_nurburgring_&_ks_porsche_911_gt3_rs_&_CHKA302_&_stint_1.ld
+  True: _CHKA302_, Predicted: _CHKA302_
+  Segments: 25, Agreement: 92.0%, Confidence: 65.6%
+
+✓ ks_nurburgring_&_ks_porsche_911_gt3_rs_&_FARC062_&_stint_1.ld
+  True: _FARC062_, Predicted: _FARC062_
+  Segments: 101, Agreement: 83.2%, Confidence: 46.8%
+
+✓ ks_nurburgring_&_ks_porsche_911_gt3_rs_&_FEFH030_&_stint_1.ld
+  True: _FEFH030_, Predicted: _FEFH030_
+  Segments: 104, Agreement: 94.2%, Confidence: 53.0%
+
+✓ ks_nurburgring_&_ks_porsche_911_gt3_rs_&_FIND031_&_stint_1.ld
+  True: _FIND031_, Predicted: _FIND031_
+  Segments: 90, Agreement: 91.1%, Confidence: 47.5%
+
+✓ ks_nurburgring_&_ks_porsche_911_gt3_rs_&_ISMS130_&_stint_1.ld
+  True: _ISMS130_, Predicted: _ISMS130_
+  Segments: 96, Agreement: 76.0%, Confidence: 46.5%
+
+✓ ks_nurburgring_&_ks_porsche_911_gt3_rs_&_JADR090_&_stint_1.ld
+  True: _JADR090_, Predicted: _JADR090_
+  Segments: 146, Agreement: 91.8%, Confidence: 67.3%
+
+✓ ks_nurburgring_&_ks_porsche_911_gt3_rs_&_JOI033_&_stint_1.ld
+  True: _JOI033_, Predicted: _JOI033_
+  Segments: 100, Agreement: 95.0%, Confidence: 57.8%
+
+✓ ks_nurburgring_&_ks_porsche_911_gt3_rs_&_JORC051_&_stint_1.ld
+  True: _JORC051_, Predicted: _JORC051_
+  Segments: 94, Agreement: 87.2%, Confidence: 48.1%
+
+✓ ks_nurburgring_&_ks_porsche_911_gt3_rs_&_KEPD180_&_stint_2.ld
+  True: _KEPD180_, Predicted: _KEPD180_
+  Segments: 95, Agreement: 95.8%, Confidence: 67.6%
+
+✓ ks_nurburgring_&_ks_porsche_911_gt3_rs_&_KETZ160_&_stint_1.ld
+  True: _KETZ160_, Predicted: _KETZ160_
+  Segments: 89, Agreement: 92.1%, Confidence: 50.1%
+
+✓ ks_nurburgring_&_ks_porsche_911_gt3_rs_&_LIAZ070_&_stint_1.ld
+  True: _LIAZ070_, Predicted: _LIAZ070_
+  Segments: 89, Agreement: 88.8%, Confidence: 50.2%
+
+✓ ks_nurburgring_&_ks_porsche_911_gt3_rs_&_MAKR091_&_stint_1.ld
+  True: _MAKR091_, Predicted: _MAKR091_
+  Segments: 96, Agreement: 90.6%, Confidence: 69.5%
+
+✓ ks_nurburgring_&_ks_porsche_911_gt3_rs_&_MIBE102_&_stint_1.ld
+  True: _MIBE102_, Predicted: _MIBE102_
+  Segments: 98, Agreement: 99.0%, Confidence: 61.4%
+
+✓ ks_nurburgring_&_ks_porsche_911_gt3_rs_&_NIDL241_&_stint_1.ld
+  True: _NIDL241_, Predicted: _NIDL241_
+  Segments: 91, Agreement: 89.0%, Confidence: 53.2%
 
 ✓ ks_nurburgring_&_ks_porsche_911_gt3_rs_&_NIMB230_&_stint_1.ld
   True: _NIMB230_, Predicted: _NIMB230_
-  Segments: 42, Agreement: 100.0%, Confidence: 80.5%
+  Segments: 84, Agreement: 98.8%, Confidence: 65.9%
 
-✓ ks_nurburgring_&_ks_porsche_911_gt3_rs_&_RINE150_&_stint_1.ld
-  True: _RINE150_, Predicted: _RINE150_
-  Segments: 46, Agreement: 93.5%, Confidence: 65.4%
+✓ ks_nurburgring_&_ks_porsche_911_gt3_rs_&_OLOT290_&_stint_1.ld
+  True: _OLOT290_, Predicted: _OLOT290_
+  Segments: 174, Agreement: 100.0%, Confidence: 77.6%
+
+✗ ks_nurburgring_&_ks_porsche_911_gt3_rs_&_RINE150_&_stint_1.ld
+  True: _RINE150_, Predicted: _ALAD201_
+  Segments: 118, Agreement: 98.3%, Confidence: 56.3%
+
+✓ ks_nurburgring_&_ks_porsche_911_gt3_rs_&_SEMD260_&_stint_1.ld
+  True: _SEMD260_, Predicted: _SEMD260_
+  Segments: 104, Agreement: 98.1%, Confidence: 65.0%
+
+✓ ks_nurburgring_&_ks_porsche_911_gt3_rs_&_SHMM240_&_stint_1.ld
+  True: _SHMM240_, Predicted: _SHMM240_
+  Segments: 89, Agreement: 88.8%, Confidence: 51.0%
 
 ✓ ks_nurburgring_&_ks_porsche_911_gt3_rs_&_SOMD122_&_stint_1.ld
   True: _SOMD122_, Predicted: _SOMD122_
-  Segments: 47, Agreement: 95.7%, Confidence: 65.5%
+  Segments: 93, Agreement: 89.2%, Confidence: 45.6%
 
 ✓ ks_nurburgring_&_ks_porsche_911_gt3_rs_&_THTH312_&_stint_1.ld
   True: _THTH312_, Predicted: _THTH312_
-  Segments: 56, Agreement: 98.2%, Confidence: 72.1%
+  Segments: 112, Agreement: 86.6%, Confidence: 54.2%
+
+✓ ks_nurburgring_&_ks_porsche_911_gt3_rs_&_TOMS241_&_stint_1.ld
+  True: _TOMS241_, Predicted: _TOMS241_
+  Segments: 91, Agreement: 91.2%, Confidence: 52.6%
 

@@ -184,6 +184,9 @@ class TestEvaluator:
         # Check if prediction is correct
         is_correct = (predicted_driver == true_driver)
         
+        for driver, count in vote_counts.most_common():
+            print(f"  {driver}: {count} votes ({count/len(predicted_drivers)*100:.1f}%)")
+        
         print(f"Predicted: {predicted_driver} ({agreement:.1f}% agreement)")
         if avg_confidence:
             print(f"Confidence: {avg_confidence:.1f}%")

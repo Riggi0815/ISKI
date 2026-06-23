@@ -2,9 +2,9 @@
 LD FILE PARSING SUMMARY
 ============================================================
 
-Files: 5/5
-Samples: 126,196
-Drivers: 5
+Files: 25/25
+Samples: 624,982
+Drivers: 25
 
 Channels mapped:
   - v_car
@@ -26,3 +26,7 @@ Channels mapped:
   - v_x
   - v_z
   - gear
+  - pos_norm
+  - coord_x
+  - coord_y
+  - lap_number
