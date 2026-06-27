@@ -12,9 +12,9 @@ import sys
 # Add scripts directory to path for imports
 sys.path.append(str(Path(__file__).parent))
 from utils import (
-    list_training_htf_files, 
-    save_dataframe, 
-    save_json, 
+    list_htf_files,
+    save_dataframe,
+    save_json,
     print_dataframe_info,
     get_results_path,
     create_summary_report
@@ -165,10 +165,10 @@ def parse_all_htf_files() -> pd.DataFrame:
     Returns:
         Combined DataFrame with all telemetry data
     """
-    htf_files = list_training_htf_files()
-    
+    htf_files = list_htf_files()
+
     if not htf_files:
-        print("No HTF files found in training_data!")
+        print("No HTF files found in raw_data!")
         return pd.DataFrame()
     
     print(f"\n{'='*60}")
