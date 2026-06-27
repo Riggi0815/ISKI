@@ -1,155 +1,114 @@
 # Sim Racing Driver Identification
 
-Fahrererkennung anhand von Assetto Corsa Telemetriedaten (MoTeC `.ld` Format). Das System extrahiert Fahrverhaltensmuster aus Telemetrie-Segmenten und klassifiziert Fahrer mit einem Random Forest.
+Fahrererkennung aus Assetto Corsa Telemetriedaten (MoTeC `.ld` Format). Der Random Forest klassifiziert Fahrer anhand von Fahrverhaltenssegmenten.
 
-**Aktuelles Ergebnis: 24/25 Fahrer korrekt erkannt — Agreement 81.1%, Confidence 50.6%**
+**Ergebnis: 24/25 Fahrer korrekt erkannt, Agreement 81.1%, Confidence 50.6%**
 
 ---
 
-## Installation
+## Vorbereitung
 
-```
-pip install -r requirements.txt
-```
+1. Abhängigkeiten installieren:
+   ```
+   pip install -r requirements.txt
+   ```
+
+2. `.ld` Dateien in den Ordner `raw_data/` legen. Jede Datei steht für einen Fahrer. Die Dateien werden automatisch nach Fahrername gruppiert.
 
 ---
 
 ## Pipeline
 
-`.ld` Dateien in `raw_data/` ablegen, dann der Reihe nach ausführen:
+Schritte der Reihe nach ausführen:
 
-### Schritt 1 — LD-Dateien parsen
+### Schritt 1 - LD-Dateien parsen
 
 ```
 python scripts/02_parse_ld.py
 ```
 
-Liest die `.ld` Binärdateien aus `raw_data/` via `ldparser.py` und speichert die Telemetrie als `processed_data/telemetry_ld.pkl`. Mappt MoTeC-Kanalnamen auf interne Namen (z.B. `Ground Speed` → `v_car`).
+Liest alle `.ld` Dateien aus `raw_data/` und speichert die Telemetrie als `processed_data/telemetry_ld.pkl`.
 
-### Schritt 2 — Kurvenzonierung erstellen
+### Schritt 2 - Kurvenzonierung erstellen
 
 ```
 python scripts/corner_zones.py
 ```
 
-Liest die Fahrzeugposition (`Car Pos Norm`) aus den geparsten `.ld` Daten und erstellt eine Zuordnung von Streckenpositionen zu Zonen (Eingang / Mitte / Apex / Gerade). Speichert das Ergebnis als `features/corner_zones.json`.
+Wertet die Streckenkoordinaten aus und teilt die Strecke in Zonen auf (Eingang, Mitte, Apex, Gerade). Ergebnis liegt in `features/corner_zones.json`. Nur einmal noetig, solange sich die Strecke nicht aendert.
 
-> Muss nur einmal ausgeführt werden (oder nach Änderung der Strecke). Fehlt `corner_zones.json`, werden keine Zonenfeatures extrahiert.
-
-### Schritt 3 — Features extrahieren
+### Schritt 3 - Features extrahieren
 
 ```
 python scripts/03b_feature_engineering_combined.py
 ```
 
-Teilt die Telemetrie in **10-Sekunden-Segmente** mit **5-Sekunden-Versatz** (50% Overlap, stride=250 bei 50 Hz) auf. Stationäre Segmente (Fahrzeug steht, `v_car < 5 km/h`) werden automatisch übersprungen. Berechnet pro Segment ~124 Features:
+Teilt die Telemetrie in 10-Sekunden-Segmente auf (5 Sekunden Versatz, 50% Overlap) und berechnet pro Segment ca. 45 Features aus Geschwindigkeit, Lenkung, Gas, Bremse, Reifentemperaturen und Zonenzugehoerigkeit. Stehende Segmente (unter 5 km/h) werden uebersprungen. Ergebnis: `features/driver_features_combined.pkl`.
 
-- Statistische Features: Mittelwert, Std, Min, Max, Skewness, Kurtosis je Kanal
-- Verhaltensfeatures: Jerk, Lenkrate, Throttle-Smoothness, Bremsereignisse, Trail-Braking
-- Frequenzfeatures: Dominante FFT-Frequenz für Lenkung, Gas, Querbeschleunigung
-- Reifenfeatures: Temperatur- und Druckdifferenzen zwischen Achsen/Seiten
-- Zonenfeatures: Is-Straight / Is-Eingang / Is-Mitte / Is-Apex (One-Hot)
-
-Speichert als `features/driver_features_combined.pkl`.
-
-### Schritt 4 — Modell trainieren
+### Schritt 4 - Modell trainieren
 
 ```
 python scripts/04b_train_models_combined.py
 ```
 
-Trainiert einen Random Forest auf den extrahierten Features.
+Trainiert den Random Forest. Die Segmente jedes Fahrers werden in 8 gleiche Bloecke aufgeteilt:
+- Training: Bloecke 1, 2, 3, 4, 5, 8 (ca. 77%)
+- Test: Bloecke 6, 7 (ca. 23%)
 
-**Train/Test-Split (round-basiert):**
-- Training: Runden 1, 2, 3, 4, 5, 8 (~77% der Segmente)
-- Test: Runden 6, 7 (~23% der Segmente)
+Modell wird in `models/combined/` gespeichert.
 
-Die Segmente eines Fahrers werden gleichmäßig in 8 Runden aufgeteilt. Runden 6 und 7 wurden während des gesamten Trainings nie gesehen.
+### Schritt 5 - Auswertung
 
-Gibt aus: Train/Test Accuracy, Confusion Matrix, Feature Importance.
-Speichert Modell in `models/combined/`.
-
-### Schritt 5 — Auswertung / Vorhersage
-
-**Alle Fahrer auf Test-Runden 6 & 7 auswerten (Hauptauswertung):**
-
+Alle Fahrer auf den Testdaten auswerten:
 ```
 python scripts/05_predict.py --model random_forest
 ```
 
-Wertet für jeden Fahrer seine Test-Segmente (Runden 6+7) aus mit zonengewichtetem Majority Voting (Apex-Segmente zählen 3x, Geraden 1x). Speichert pro Fahrer eine Ergebnisdatei in `results/`.
-
-**Einzelne .ld Datei vorhersagen:**
-
+Einzelne Datei vorhersagen:
 ```
 python scripts/05_predict.py "raw_data/<datei>.ld" --model random_forest
 ```
 
-Parst eine `.ld` Datei, extrahiert Features und sagt den Fahrer via Majority Voting vorher.
-
+Nur auf ungesehenen Segmenten testen (Bloecke 6+7):
 ```
 python scripts/05_predict.py "raw_data/<datei>.ld" --model random_forest --test-only
 ```
 
-Mit `--test-only` werden nur die Test-Segmente (Runden 6+7) verwendet — das ist der faire Test auf ungesehenen Daten.
-
----
-
-## Optionale Auswertung
-
-### Leave-One-Out Test
-
-```
-python scripts/06_leave_one_out_evaluation.py
-```
-
-Trainiert das Modell ohne einen Fahrer und testet dann auf genau diesem. Misst, ob ein unbekannter Fahrer erkannt wird (niedrige Confidence = gut). Ergebnis in `results/leave_one_out/`.
+Ergebnisse werden in `results/` gespeichert.
 
 ---
 
 ## Projektstruktur
 
 ```
-raw_data/                           ← .ld Eingabedateien (Assetto Corsa / MoTeC)
-processed_data/                     ← geparste Telemetrie (wird nicht gepusht)
-features/                           ← extrahierte Feature-Vektoren + corner_zones.json
-models/combined/                    ← trainiertes Modell (wird nicht gepusht)
-results/                            ← Auswertungs-Outputs
+raw_data/                              <- .ld Dateien hier rein (eine pro Fahrer)
+processed_data/                        <- geparste Telemetrie (nicht gepusht)
+features/                              <- Feature-Vektoren und corner_zones.json
+models/combined/                       <- trainiertes Modell (nicht gepusht)
+results/                               <- Auswertungs-Outputs
 scripts/
-  utils.py                          ← Pfad-Hilfsfunktionen, CHANNEL_MAP
-  corner_zones.py                   ← Schritt 2: Kurven-Zonenkarte aus Streckenkoordinaten bauen
-  02_parse_ld.py                    ← Schritt 1: .ld Dateien parsen
-  03b_feature_engineering_combined.py ← Schritt 3: Feature Extraktion
-  04b_train_models_combined.py      ← Schritt 4: Modell trainieren
-  05_predict.py                     ← Schritt 5: Vorhersage & Auswertung
-  06_leave_one_out_evaluation.py    ← Optional: Open-Set Evaluation
-ldparser.py                         ← MoTeC Binary Parser (Abhängigkeit von Schritt 1)
-requirements.txt
+  02_parse_ld.py                       <- Schritt 1: .ld parsen
+  corner_zones.py                      <- Schritt 2: Kurvenzonierung
+  03b_feature_engineering_combined.py  <- Schritt 3: Features extrahieren
+  04b_train_models_combined.py         <- Schritt 4: Modell trainieren
+  05_predict.py                        <- Schritt 5: Vorhersage und Auswertung
+  06_leave_one_out_evaluation.py       <- Optional: Open-Set Test
+  utils.py                             <- Hilfsfunktionen
+ldparser.py                            <- MoTeC Binary Parser
 ```
 
 ---
 
-## Nicht benötigte Dateien (Legacy)
+## Legacy-Dateien (nicht benoetigt)
 
-Die folgenden Dateien sind **nicht Teil der Pipeline** und werden für die Abgabe nicht benötigt. Sie entstammen früheren Entwicklungsstufen:
-
-| Datei | Warum nicht benötigt |
+| Datei | Grund |
 |---|---|
-| `scripts/00_split_raw_data.py` | Alter Ansatz: Dateien manuell in `training_data/` und `test_data/` kopieren. Ersetzt durch round-basiertes Splitting direkt in `04b_train_models_combined.py`. |
-| `scripts/00_data_overview.py` | Debug-Hilfstool, kein Schritt der Pipeline. |
-| `scripts/01_parse_htf.py` | Parser für das HTF-Format (ein anderes Telemetrieformat). Es gibt keine `.htf` Dateien im Projekt — nur `.ld`. |
-| `scripts/03a_combine_data.py` | Alter Schritt zum Zusammenführen von HTF- und LD-Daten. Nicht mehr relevant, da ausschließlich `.ld` Daten verwendet werden. |
-| `scripts/07_test_evaluation.py` | Redundant mit `05_predict.py` (ohne Dateiargument). Liest aus `test_data/` (leer) und fällt auf `raw_data/` zurück — andere Logik als der round-basierte Split. |
+| `scripts/00_split_raw_data.py` | Alter manueller Split-Ansatz, ersetzt durch round-basiertes Splitting in `04b`. |
+| `scripts/00_data_overview.py` | Debug-Tool, kein Pipeline-Schritt. |
+| `scripts/01_parse_htf.py` | HTF-Format-Parser, keine HTF-Dateien im Projekt. |
+| `scripts/03a_combine_data.py` | Wurde benoetigt um HTF- und LD-Daten zusammenzufuehren, nicht mehr relevant. |
+| `scripts/07_test_evaluation.py` | Redundant mit `05_predict.py`. |
 | `scripts/plot_track.py` | Strecken-Visualisierung, kein Pipeline-Schritt. |
 | `scripts/plot_track_corners.py` | Kurven-Visualisierung, kein Pipeline-Schritt. |
-| `training_data/` | Aus altem file-basierten Split-Ansatz, wird nicht mehr verwendet. |
-| `test_data/` | Aus altem file-basierten Split-Ansatz, leer und nicht verwendet. |
-
----
-
-## Hinweise
-
-- **Random Forest braucht keinen Scaler** — `05_predict.py` skaliert für RF nicht (wird intern korrekt behandelt)
-- **Confidence vs. Agreement**: Agreement = wie oft der richtige Fahrer pro Segment erkannt wurde. Confidence = zonengewichteter Anteil der Stimmen für den Gewinner
-- **Fairer Test**: Nur Runden 6+7 (`--test-only` oder Auswertung ohne Dateiargument) sind valide — alles andere testet auf Trainingsdaten
-- **corner_zones.json**: Wird automatisch aus den LD-Dateien gebaut, wenn die Datei fehlt. Liegt in `features/corner_zones.json`
+| `training_data/` | Alter Split-Ansatz, nicht mehr verwendet. |
+| `test_data/` | Alter Split-Ansatz, leer. |
