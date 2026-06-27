@@ -78,6 +78,32 @@ Ergebnisse werden in `results/` gespeichert.
 
 ---
 
+## Optional: HTF-Daten einbinden
+
+Falls zusaetzlich HTF-Telemetriedaten vorliegen, koennen diese vor Schritt 3 eingebunden werden.
+
+### HTF-Dateien parsen
+
+HTF-Dateien ebenfalls in `raw_data/` legen, dann:
+
+```
+python scripts/01_parse_htf.py
+```
+
+Speichert die HTF-Telemetrie als `processed_data/telemetry_htf.pkl`.
+
+### HTF und LD zusammenfuehren
+
+```
+python scripts/03a_combine_data.py
+```
+
+Fuegt HTF- und LD-Daten zu `processed_data/telemetry_combined.pkl` zusammen. Schritt 3 (`03b_feature_engineering_combined.py`) laedt automatisch die kombinierte Datei, falls sie existiert, ansonsten nur die LD-Daten.
+
+Danach normal mit Schritt 3 weitermachen.
+
+---
+
 ## Projektstruktur
 
 ```
@@ -92,6 +118,8 @@ scripts/
   03b_feature_engineering_combined.py  <- Schritt 3: Features extrahieren
   04b_train_models_combined.py         <- Schritt 4: Modell trainieren
   05_predict.py                        <- Schritt 5: Vorhersage und Auswertung
+  01_parse_htf.py                      <- Optional: HTF-Daten parsen
+  03a_combine_data.py                  <- Optional: HTF + LD zusammenfuehren
   06_leave_one_out_evaluation.py       <- Optional: Open-Set Test
   utils.py                             <- Hilfsfunktionen
 ldparser.py                            <- MoTeC Binary Parser
@@ -105,8 +133,6 @@ ldparser.py                            <- MoTeC Binary Parser
 |---|---|
 | `scripts/00_split_raw_data.py` | Alter manueller Split-Ansatz, ersetzt durch round-basiertes Splitting in `04b`. |
 | `scripts/00_data_overview.py` | Debug-Tool, kein Pipeline-Schritt. |
-| `scripts/01_parse_htf.py` | HTF-Format-Parser, keine HTF-Dateien im Projekt. |
-| `scripts/03a_combine_data.py` | Wurde benoetigt um HTF- und LD-Daten zusammenzufuehren, nicht mehr relevant. |
 | `scripts/07_test_evaluation.py` | Redundant mit `05_predict.py`. |
 | `scripts/plot_track.py` | Strecken-Visualisierung, kein Pipeline-Schritt. |
 | `scripts/plot_track_corners.py` | Kurven-Visualisierung, kein Pipeline-Schritt. |
