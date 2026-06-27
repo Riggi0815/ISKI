@@ -7,47 +7,43 @@ Model:              random_forest
 Test rounds:        6 & 7
 Segments evaluated: 24
 
-Predicted driver:   _JOI033_
-Accuracy:           WRONG
+Predicted driver:   _ISMS130_
+Accuracy:           CORRECT
 
-Agreement:   12.5%  (3/24 segments voted for true driver)
-Confidence:  22.6%  (mean RF tree posterior probability per segment)
+Agreement:   54.2%  (13/24 segments voted for true driver)
+Confidence:  49.7%  (mean RF tree posterior probability per segment)
 
 Weighted Vote Distribution:
 ----------------------------------------
-  _JOI033_       :   11.0 pts  ( 25.9%)  #####
-  _THTH312_      :    8.0 pts  ( 18.8%)  ###
-  _FIND031_      :    7.0 pts  ( 16.5%)  ###
-  _ISMS130_      :    7.0 pts  ( 16.5%)  ###
-  _FARC062_      :    5.5 pts  ( 12.9%)  ##
-  _LIAZ070_      :    3.0 pts  (  7.1%)  #
-  _NIDL241_      :    1.0 pts  (  2.4%)  
+  _ISMS130_      :   26.5 pts  ( 62.4%)  ############
+  _JOI033_       :    9.0 pts  ( 21.2%)  ####
+  _TOMS241_      :    7.0 pts  ( 16.5%)  ###
 
 Per-Segment Predictions:
 ----------------------------------------
     #  Zone     Weight  Predicted        Confidence  Correct?
   ---  -------- ------  ---------------  ----------  --------
-    1  straight    1.0  _THTH312_             23.2%  no
-    2  straight    1.0  _FIND031_             13.8%  no
-    3  mitte       2.0  _JOI033_              28.2%  no
-    4  straight    1.0  _JOI033_              49.4%  no
-    5  straight    1.0  _JOI033_              19.1%  no
-    6  straight    1.0  _THTH312_             18.4%  no
-    7  straight    1.0  _FIND031_             14.6%  no
-    8  straight    1.0  _JOI033_              29.9%  no
-    9  apex        3.0  _FIND031_             18.5%  no
-   10  apex        3.0  _THTH312_             24.0%  no
-   11  apex        3.0  _THTH312_             15.3%  no
-   12  apex        3.0  _JOI033_              20.4%  no
-   13  apex        3.0  _JOI033_              26.9%  no
-   14  straight    1.0  _LIAZ070_             31.5%  no
-   15  straight    1.0  _LIAZ070_             23.4%  no
-   16  eingang     1.5  _FARC062_             20.7%  no
-   17  apex        3.0  _FARC062_             21.0%  no
-   18  straight    1.0  _FARC062_             17.7%  no
-   19  straight    1.0  _NIDL241_             13.1%  no
-   20  straight    1.0  _ISMS130_             14.2%  yes
-   21  straight    1.0  _LIAZ070_             23.3%  no
-   22  mitte       2.0  _FIND031_             17.9%  no
-   23  apex        3.0  _ISMS130_             33.0%  yes
-   24  apex        3.0  _ISMS130_             23.9%  yes
+    1  straight    1.0  _JOI033_              63.6%  no
+    2  straight    1.0  _JOI033_              62.8%  no
+    3  mitte       2.0  _JOI033_              67.4%  no
+    4  straight    1.0  _JOI033_              74.6%  no
+    5  straight    1.0  _JOI033_              73.8%  no
+    6  straight    1.0  _JOI033_              52.7%  no
+    7  straight    1.0  _JOI033_              40.2%  no
+    8  straight    1.0  _JOI033_              39.3%  no
+    9  apex        3.0  _ISMS130_             43.3%  yes
+   10  apex        3.0  _ISMS130_             36.9%  yes
+   11  apex        3.0  _TOMS241_             35.1%  no
+   12  apex        3.0  _ISMS130_             42.8%  yes
+   13  apex        3.0  _ISMS130_             43.7%  yes
+   14  straight    1.0  _ISMS130_             49.5%  yes
+   15  straight    1.0  _ISMS130_             47.8%  yes
+   16  eingang     1.5  _ISMS130_             37.7%  yes
+   17  apex        3.0  _TOMS241_             41.3%  no
+   18  straight    1.0  _TOMS241_             44.6%  no
+   19  straight    1.0  _ISMS130_             49.6%  yes
+   20  straight    1.0  _ISMS130_             51.6%  yes
+   21  straight    1.0  _ISMS130_             41.5%  yes
+   22  mitte       2.0  _ISMS130_             43.7%  yes
+   23  apex        3.0  _ISMS130_             62.2%  yes
+   24  apex        3.0  _ISMS130_             47.3%  yes

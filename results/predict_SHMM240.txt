@@ -10,41 +10,38 @@ Segments evaluated: 22
 Predicted driver:   _SHMM240_
 Accuracy:           CORRECT
 
-Agreement:   63.6%  (14/22 segments voted for true driver)
-Confidence:  27.5%  (mean RF tree posterior probability per segment)
+Agreement:   90.9%  (20/22 segments voted for true driver)
+Confidence:  45.1%  (mean RF tree posterior probability per segment)
 
 Weighted Vote Distribution:
 ----------------------------------------
-  _SHMM240_      :   21.5 pts  ( 58.9%)  ###########
-  _JORC051_      :    7.0 pts  ( 19.2%)  ###
-  _TOMS241_      :    5.0 pts  ( 13.7%)  ##
-  _LIAZ070_      :    1.0 pts  (  2.7%)  
-  _FIND031_      :    1.0 pts  (  2.7%)  
-  _NIMB230_      :    1.0 pts  (  2.7%)  
+  _SHMM240_      :   32.5 pts  ( 89.0%)  #################
+  _SOMD122_      :    3.0 pts  (  8.2%)  #
+  _KETZ160_      :    1.0 pts  (  2.7%)  
 
 Per-Segment Predictions:
 ----------------------------------------
     #  Zone     Weight  Predicted        Confidence  Correct?
   ---  -------- ------  ---------------  ----------  --------
-    1  straight    1.0  _SHMM240_             28.1%  yes
-    2  mitte       2.0  _SHMM240_             20.8%  yes
-    3  straight    1.0  _SHMM240_             44.8%  yes
-    4  straight    1.0  _SHMM240_             40.8%  yes
-    5  straight    1.0  _SHMM240_             23.2%  yes
-    6  straight    1.0  _LIAZ070_             22.7%  no
-    7  mitte       2.0  _SHMM240_             19.5%  yes
-    8  apex        3.0  _JORC051_             37.4%  no
-    9  apex        3.0  _JORC051_             22.2%  no
-   10  mitte       2.0  _TOMS241_             21.1%  no
-   11  straight    1.0  _FIND031_             32.1%  no
-   12  straight    1.0  _SHMM240_             20.1%  yes
-   13  straight    1.0  _NIMB230_             41.4%  no
-   14  apex        3.0  _SHMM240_             30.7%  yes
-   15  straight    1.0  _JORC051_             17.0%  no
-   16  straight    1.0  _SHMM240_             21.7%  yes
-   17  straight    1.0  _SHMM240_             23.0%  yes
-   18  straight    1.0  _SHMM240_             43.5%  yes
-   19  apex        3.0  _SHMM240_             33.0%  yes
-   20  eingang     1.5  _SHMM240_             20.1%  yes
-   21  apex        3.0  _TOMS241_             22.1%  no
-   22  mitte       2.0  _SHMM240_             19.8%  yes
+    1  straight    1.0  _SHMM240_             50.2%  yes
+    2  mitte       2.0  _SHMM240_             28.4%  yes
+    3  straight    1.0  _KETZ160_             34.9%  no
+    4  straight    1.0  _SHMM240_             58.2%  yes
+    5  straight    1.0  _SHMM240_             58.9%  yes
+    6  straight    1.0  _SHMM240_             41.0%  yes
+    7  mitte       2.0  _SHMM240_             48.6%  yes
+    8  apex        3.0  _SOMD122_             42.0%  no
+    9  apex        3.0  _SHMM240_             34.1%  yes
+   10  mitte       2.0  _SHMM240_             37.1%  yes
+   11  straight    1.0  _SHMM240_             35.4%  yes
+   12  straight    1.0  _SHMM240_             48.1%  yes
+   13  straight    1.0  _SHMM240_             47.2%  yes
+   14  apex        3.0  _SHMM240_             41.7%  yes
+   15  straight    1.0  _SHMM240_             36.5%  yes
+   16  straight    1.0  _SHMM240_             49.4%  yes
+   17  straight    1.0  _SHMM240_             48.3%  yes
+   18  straight    1.0  _SHMM240_             55.4%  yes
+   19  apex        3.0  _SHMM240_             59.8%  yes
+   20  eingang     1.5  _SHMM240_             50.2%  yes
+   21  apex        3.0  _SHMM240_             44.1%  yes
+   22  mitte       2.0  _SHMM240_             42.5%  yes

@@ -11,7 +11,7 @@ Predicted driver:   _BRIG160_
 Accuracy:           CORRECT
 
 Agreement:   100.0%  (20/20 segments voted for true driver)
-Confidence:  44.2%  (mean RF tree posterior probability per segment)
+Confidence:  42.8%  (mean RF tree posterior probability per segment)
 
 Weighted Vote Distribution:
 ----------------------------------------
@@ -21,23 +21,23 @@ Per-Segment Predictions:
 ----------------------------------------
     #  Zone     Weight  Predicted        Confidence  Correct?
   ---  -------- ------  ---------------  ----------  --------
-    1  apex        3.0  _BRIG160_             39.0%  yes
-    2  apex        3.0  _BRIG160_             23.0%  yes
-    3  straight    1.0  _BRIG160_             23.9%  yes
-    4  straight    1.0  _BRIG160_             44.0%  yes
-    5  apex        3.0  _BRIG160_             44.2%  yes
-    6  straight    1.0  _BRIG160_             68.6%  yes
-    7  straight    1.0  _BRIG160_             55.4%  yes
-    8  straight    1.0  _BRIG160_             63.9%  yes
-    9  straight    1.0  _BRIG160_             25.2%  yes
-   10  apex        3.0  _BRIG160_             35.9%  yes
-   11  eingang     1.5  _BRIG160_             37.0%  yes
-   12  apex        3.0  _BRIG160_             45.3%  yes
-   13  apex        3.0  _BRIG160_             30.8%  yes
-   14  straight    1.0  _BRIG160_             50.7%  yes
-   15  straight    1.0  _BRIG160_             47.5%  yes
-   16  mitte       2.0  _BRIG160_             35.7%  yes
-   17  straight    1.0  _BRIG160_             52.2%  yes
-   18  straight    1.0  _BRIG160_             58.2%  yes
-   19  straight    1.0  _BRIG160_             60.0%  yes
-   20  straight    1.0  _BRIG160_             43.0%  yes
+    1  apex        3.0  _BRIG160_             52.6%  yes
+    2  apex        3.0  _BRIG160_             27.3%  yes
+    3  straight    1.0  _BRIG160_             34.9%  yes
+    4  straight    1.0  _BRIG160_             41.1%  yes
+    5  apex        3.0  _BRIG160_             46.6%  yes
+    6  straight    1.0  _BRIG160_             50.5%  yes
+    7  straight    1.0  _BRIG160_             40.5%  yes
+    8  straight    1.0  _BRIG160_             42.7%  yes
+    9  straight    1.0  _BRIG160_             31.8%  yes
+   10  apex        3.0  _BRIG160_             48.9%  yes
+   11  eingang     1.5  _BRIG160_             47.8%  yes
+   12  apex        3.0  _BRIG160_             49.4%  yes
+   13  apex        3.0  _BRIG160_             33.3%  yes
+   14  straight    1.0  _BRIG160_             32.2%  yes
+   15  straight    1.0  _BRIG160_             47.0%  yes
+   16  mitte       2.0  _BRIG160_             36.8%  yes
+   17  straight    1.0  _BRIG160_             34.6%  yes
+   18  straight    1.0  _BRIG160_             39.0%  yes
+   19  straight    1.0  _BRIG160_             61.9%  yes
+   20  straight    1.0  _BRIG160_             57.3%  yes

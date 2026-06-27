@@ -10,35 +10,34 @@ Segments evaluated: 20
 Predicted driver:   _NIMB230_
 Accuracy:           CORRECT
 
-Agreement:   95.0%  (19/20 segments voted for true driver)
-Confidence:  41.0%  (mean RF tree posterior probability per segment)
+Agreement:   100.0%  (20/20 segments voted for true driver)
+Confidence:  67.8%  (mean RF tree posterior probability per segment)
 
 Weighted Vote Distribution:
 ----------------------------------------
-  _NIMB230_      :   31.0 pts  ( 96.9%)  ###################
-  _FARC062_      :    1.0 pts  (  3.1%)  
+  _NIMB230_      :   32.0 pts  (100.0%)  ####################
 
 Per-Segment Predictions:
 ----------------------------------------
     #  Zone     Weight  Predicted        Confidence  Correct?
   ---  -------- ------  ---------------  ----------  --------
-    1  apex        3.0  _NIMB230_             34.9%  yes
-    2  straight    1.0  _NIMB230_             31.3%  yes
-    3  straight    1.0  _NIMB230_             62.3%  yes
-    4  mitte       2.0  _NIMB230_             55.8%  yes
-    5  straight    1.0  _NIMB230_             65.0%  yes
-    6  straight    1.0  _NIMB230_             54.8%  yes
-    7  straight    1.0  _NIMB230_             26.5%  yes
-    8  straight    1.0  _NIMB230_             24.7%  yes
-    9  straight    1.0  _NIMB230_             70.2%  yes
-   10  apex        3.0  _NIMB230_             47.4%  yes
-   11  apex        3.0  _NIMB230_             21.5%  yes
-   12  apex        3.0  _NIMB230_             33.7%  yes
-   13  apex        3.0  _NIMB230_             41.3%  yes
-   14  straight    1.0  _NIMB230_             35.0%  yes
-   15  straight    1.0  _FARC062_             14.9%  no
-   16  mitte       2.0  _NIMB230_             32.8%  yes
-   17  straight    1.0  _NIMB230_             44.8%  yes
-   18  straight    1.0  _NIMB230_             38.1%  yes
-   19  straight    1.0  _NIMB230_             53.3%  yes
-   20  straight    1.0  _NIMB230_             30.9%  yes
+    1  apex        3.0  _NIMB230_             73.3%  yes
+    2  straight    1.0  _NIMB230_             68.8%  yes
+    3  straight    1.0  _NIMB230_             76.6%  yes
+    4  mitte       2.0  _NIMB230_             79.5%  yes
+    5  straight    1.0  _NIMB230_             83.9%  yes
+    6  straight    1.0  _NIMB230_             73.1%  yes
+    7  straight    1.0  _NIMB230_             74.0%  yes
+    8  straight    1.0  _NIMB230_             71.3%  yes
+    9  straight    1.0  _NIMB230_             91.5%  yes
+   10  apex        3.0  _NIMB230_             82.1%  yes
+   11  apex        3.0  _NIMB230_             68.2%  yes
+   12  apex        3.0  _NIMB230_             74.8%  yes
+   13  apex        3.0  _NIMB230_             50.2%  yes
+   14  straight    1.0  _NIMB230_             51.0%  yes
+   15  straight    1.0  _NIMB230_             42.1%  yes
+   16  mitte       2.0  _NIMB230_             51.8%  yes
+   17  straight    1.0  _NIMB230_             56.0%  yes
+   18  straight    1.0  _NIMB230_             84.9%  yes
+   19  straight    1.0  _NIMB230_             52.7%  yes
+   20  straight    1.0  _NIMB230_             50.4%  yes

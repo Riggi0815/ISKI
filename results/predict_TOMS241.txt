@@ -10,40 +10,38 @@ Segments evaluated: 22
 Predicted driver:   _TOMS241_
 Accuracy:           CORRECT
 
-Agreement:   63.6%  (14/22 segments voted for true driver)
-Confidence:  31.4%  (mean RF tree posterior probability per segment)
+Agreement:   77.3%  (17/22 segments voted for true driver)
+Confidence:  51.0%  (mean RF tree posterior probability per segment)
 
 Weighted Vote Distribution:
 ----------------------------------------
-  _TOMS241_      :   22.0 pts  ( 62.9%)  ############
-  _SHMM240_      :    4.0 pts  ( 11.4%)  ##
-  _KETZ160_      :    4.0 pts  ( 11.4%)  ##
-  _LIAZ070_      :    3.0 pts  (  8.6%)  #
-  _JOI033_       :    2.0 pts  (  5.7%)  #
+  _TOMS241_      :   26.0 pts  ( 74.3%)  ##############
+  _THTH312_      :    5.0 pts  ( 14.3%)  ##
+  _LIAZ070_      :    4.0 pts  ( 11.4%)  ##
 
 Per-Segment Predictions:
 ----------------------------------------
     #  Zone     Weight  Predicted        Confidence  Correct?
   ---  -------- ------  ---------------  ----------  --------
-    1  straight    1.0  _TOMS241_             35.9%  yes
-    2  straight    1.0  _JOI033_              45.7%  no
-    3  straight    1.0  _JOI033_              31.4%  no
-    4  apex        3.0  _SHMM240_             31.9%  no
-    5  straight    1.0  _SHMM240_             35.0%  no
-    6  straight    1.0  _TOMS241_             45.8%  yes
-    7  straight    1.0  _TOMS241_             43.7%  yes
-    8  straight    1.0  _TOMS241_             22.6%  yes
-    9  mitte       2.0  _TOMS241_             30.7%  yes
-   10  apex        3.0  _LIAZ070_             20.2%  no
-   11  apex        3.0  _TOMS241_             35.6%  yes
-   12  mitte       2.0  _TOMS241_             36.9%  yes
-   13  apex        3.0  _TOMS241_             22.4%  yes
-   14  straight    1.0  _TOMS241_             39.1%  yes
-   15  straight    1.0  _TOMS241_             31.4%  yes
-   16  mitte       2.0  _KETZ160_             35.7%  no
-   17  straight    1.0  _TOMS241_             38.1%  yes
-   18  straight    1.0  _TOMS241_             23.1%  yes
-   19  straight    1.0  _KETZ160_             21.1%  no
-   20  straight    1.0  _KETZ160_             23.8%  no
-   21  straight    1.0  _TOMS241_             20.6%  yes
-   22  apex        3.0  _TOMS241_             20.1%  yes
+    1  straight    1.0  _TOMS241_             54.3%  yes
+    2  straight    1.0  _TOMS241_             33.2%  yes
+    3  straight    1.0  _LIAZ070_             33.7%  no
+    4  apex        3.0  _TOMS241_             69.6%  yes
+    5  straight    1.0  _TOMS241_             68.8%  yes
+    6  straight    1.0  _TOMS241_             69.3%  yes
+    7  straight    1.0  _TOMS241_             70.1%  yes
+    8  straight    1.0  _TOMS241_             57.6%  yes
+    9  mitte       2.0  _TOMS241_             65.2%  yes
+   10  apex        3.0  _TOMS241_             49.4%  yes
+   11  apex        3.0  _TOMS241_             54.9%  yes
+   12  mitte       2.0  _TOMS241_             43.5%  yes
+   13  apex        3.0  _LIAZ070_             38.2%  no
+   14  straight    1.0  _TOMS241_             55.9%  yes
+   15  straight    1.0  _TOMS241_             50.6%  yes
+   16  mitte       2.0  _TOMS241_             68.0%  yes
+   17  straight    1.0  _TOMS241_             62.0%  yes
+   18  straight    1.0  _TOMS241_             58.8%  yes
+   19  straight    1.0  _TOMS241_             42.1%  yes
+   20  straight    1.0  _THTH312_             22.0%  no
+   21  straight    1.0  _THTH312_             27.6%  no
+   22  apex        3.0  _THTH312_             27.1%  no

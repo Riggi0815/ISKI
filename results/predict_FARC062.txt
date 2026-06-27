@@ -10,43 +10,41 @@ Segments evaluated: 24
 Predicted driver:   _FARC062_
 Accuracy:           CORRECT
 
-Agreement:   33.3%  (8/24 segments voted for true driver)
-Confidence:  25.3%  (mean RF tree posterior probability per segment)
+Agreement:   62.5%  (15/24 segments voted for true driver)
+Confidence:  34.9%  (mean RF tree posterior probability per segment)
 
 Weighted Vote Distribution:
 ----------------------------------------
-  _FARC062_      :   15.0 pts  ( 36.1%)  #######
-  _SOMD122_      :   10.0 pts  ( 24.1%)  ####
-  _KEPD180_      :    8.0 pts  ( 19.3%)  ###
-  _NIDL241_      :    4.0 pts  (  9.6%)  #
-  _MIBE102_      :    3.0 pts  (  7.2%)  #
-  _ANIC011_      :    1.5 pts  (  3.6%)  
+  _FARC062_      :   23.0 pts  ( 56.8%)  ###########
+  _MIBE102_      :    8.5 pts  ( 21.0%)  ####
+  _SOMD122_      :    6.0 pts  ( 14.8%)  ##
+  _FEFH030_      :    3.0 pts  (  7.4%)  #
 
 Per-Segment Predictions:
 ----------------------------------------
     #  Zone     Weight  Predicted        Confidence  Correct?
   ---  -------- ------  ---------------  ----------  --------
-    1  mitte       2.0  _FARC062_             25.5%  yes
-    2  apex        3.0  _KEPD180_             28.5%  no
-    3  apex        3.0  _FARC062_             22.8%  yes
-    4  straight    1.0  _SOMD122_             28.8%  no
-    5  straight    1.0  _SOMD122_             24.2%  no
-    6  eingang     1.5  _ANIC011_             19.2%  no
-    7  apex        3.0  _MIBE102_             20.4%  no
-    8  straight    1.0  _KEPD180_             29.2%  no
-    9  straight    1.0  _KEPD180_             25.0%  no
-   10  straight    1.0  _KEPD180_             30.0%  no
-   11  straight    1.0  _KEPD180_             36.2%  no
-   12  straight    1.0  _KEPD180_             38.1%  no
-   13  apex        3.0  _FARC062_             27.7%  yes
-   14  mitte       2.0  _FARC062_             28.1%  yes
-   15  apex        3.0  _SOMD122_             18.7%  no
-   16  apex        3.0  _SOMD122_             21.8%  no
-   17  apex        3.0  _NIDL241_             27.8%  no
-   18  straight    1.0  _NIDL241_             21.2%  no
-   19  straight    1.0  _FARC062_             18.8%  yes
-   20  mitte       2.0  _FARC062_             20.1%  yes
-   21  straight    1.0  _SOMD122_             20.5%  no
-   22  straight    1.0  _FARC062_             24.1%  yes
-   23  straight    1.0  _SOMD122_             26.3%  no
-   24  straight    1.0  _FARC062_             24.1%  yes
+    1  apex        3.0  _SOMD122_             42.3%  no
+    2  apex        3.0  _SOMD122_             29.9%  no
+    3  straight    1.0  _FARC062_             23.6%  yes
+    4  straight    1.0  _FARC062_             23.9%  yes
+    5  eingang     1.5  _MIBE102_             29.5%  no
+    6  apex        3.0  _MIBE102_             30.9%  no
+    7  straight    1.0  _FARC062_             29.3%  yes
+    8  straight    1.0  _MIBE102_             33.6%  no
+    9  straight    1.0  _MIBE102_             50.6%  no
+   10  straight    1.0  _MIBE102_             42.5%  no
+   11  straight    1.0  _MIBE102_             39.2%  no
+   12  apex        3.0  _FARC062_             45.5%  yes
+   13  mitte       2.0  _FARC062_             42.3%  yes
+   14  apex        3.0  _FARC062_             33.5%  yes
+   15  apex        3.0  _FARC062_             26.1%  yes
+   16  apex        3.0  _FEFH030_             25.1%  no
+   17  straight    1.0  _FARC062_             31.0%  yes
+   18  straight    1.0  _FARC062_             27.2%  yes
+   19  mitte       2.0  _FARC062_             37.0%  yes
+   20  straight    1.0  _FARC062_             42.9%  yes
+   21  straight    1.0  _FARC062_             33.7%  yes
+   22  straight    1.0  _FARC062_             38.7%  yes
+   23  straight    1.0  _FARC062_             32.2%  yes
+   24  straight    1.0  _FARC062_             47.2%  yes

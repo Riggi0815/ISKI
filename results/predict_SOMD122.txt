@@ -10,44 +10,37 @@ Segments evaluated: 22
 Predicted driver:   _SOMD122_
 Accuracy:           CORRECT
 
-Agreement:   45.5%  (10/22 segments voted for true driver)
-Confidence:  19.8%  (mean RF tree posterior probability per segment)
+Agreement:   90.9%  (20/22 segments voted for true driver)
+Confidence:  46.9%  (mean RF tree posterior probability per segment)
 
 Weighted Vote Distribution:
 ----------------------------------------
-  _SOMD122_      :   19.0 pts  ( 55.9%)  ###########
-  _FARC062_      :    4.0 pts  ( 11.8%)  ##
-  _LIAZ070_      :    2.0 pts  (  5.9%)  #
-  _KETZ160_      :    2.0 pts  (  5.9%)  #
-  _ALAD201_      :    2.0 pts  (  5.9%)  #
-  _FIND031_      :    2.0 pts  (  5.9%)  #
-  _JORC051_      :    1.0 pts  (  2.9%)  
-  _ISMS130_      :    1.0 pts  (  2.9%)  
-  _BRIG160_      :    1.0 pts  (  2.9%)  
+  _SOMD122_      :   32.0 pts  ( 94.1%)  ##################
+  _SHMM240_      :    2.0 pts  (  5.9%)  #
 
 Per-Segment Predictions:
 ----------------------------------------
     #  Zone     Weight  Predicted        Confidence  Correct?
   ---  -------- ------  ---------------  ----------  --------
-    1  apex        3.0  _SOMD122_             16.5%  yes
-    2  straight    1.0  _SOMD122_             19.7%  yes
-    3  straight    1.0  _SOMD122_             33.9%  yes
-    4  mitte       2.0  _FARC062_             19.0%  no
-    5  straight    1.0  _FARC062_             26.0%  no
-    6  straight    1.0  _SOMD122_             21.7%  yes
-    7  straight    1.0  _LIAZ070_             25.2%  no
-    8  straight    1.0  _LIAZ070_             26.1%  no
-    9  straight    1.0  _JORC051_             15.1%  no
-   10  apex        3.0  _SOMD122_             19.1%  yes
-   11  mitte       2.0  _KETZ160_             15.8%  no
-   12  apex        3.0  _SOMD122_             22.1%  yes
-   13  apex        3.0  _SOMD122_             25.4%  yes
-   14  straight    1.0  _SOMD122_             19.4%  yes
-   15  straight    1.0  _SOMD122_             19.6%  yes
-   16  mitte       2.0  _SOMD122_             19.3%  yes
-   17  straight    1.0  _FARC062_             13.7%  no
-   18  straight    1.0  _ALAD201_             16.9%  no
-   19  straight    1.0  _ALAD201_             14.2%  no
-   20  straight    1.0  _ISMS130_             16.9%  no
-   21  straight    1.0  _BRIG160_             12.3%  no
-   22  mitte       2.0  _FIND031_             17.8%  no
+    1  apex        3.0  _SOMD122_             52.5%  yes
+    2  straight    1.0  _SOMD122_             50.2%  yes
+    3  straight    1.0  _SOMD122_             63.3%  yes
+    4  mitte       2.0  _SOMD122_             53.2%  yes
+    5  straight    1.0  _SOMD122_             50.6%  yes
+    6  straight    1.0  _SOMD122_             51.3%  yes
+    7  straight    1.0  _SOMD122_             39.2%  yes
+    8  straight    1.0  _SHMM240_             32.0%  no
+    9  straight    1.0  _SHMM240_             31.2%  no
+   10  apex        3.0  _SOMD122_             36.9%  yes
+   11  mitte       2.0  _SOMD122_             30.4%  yes
+   12  apex        3.0  _SOMD122_             41.4%  yes
+   13  apex        3.0  _SOMD122_             54.7%  yes
+   14  straight    1.0  _SOMD122_             55.1%  yes
+   15  straight    1.0  _SOMD122_             62.0%  yes
+   16  mitte       2.0  _SOMD122_             39.3%  yes
+   17  straight    1.0  _SOMD122_             36.6%  yes
+   18  straight    1.0  _SOMD122_             56.3%  yes
+   19  straight    1.0  _SOMD122_             59.6%  yes
+   20  straight    1.0  _SOMD122_             52.0%  yes
+   21  straight    1.0  _SOMD122_             38.4%  yes
+   22  mitte       2.0  _SOMD122_             45.9%  yes

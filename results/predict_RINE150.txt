@@ -10,40 +10,36 @@ Segments evaluated: 22
 Predicted driver:   _RINE150_
 Accuracy:           CORRECT
 
-Agreement:   68.2%  (15/22 segments voted for true driver)
-Confidence:  29.9%  (mean RF tree posterior probability per segment)
+Agreement:   100.0%  (22/22 segments voted for true driver)
+Confidence:  61.8%  (mean RF tree posterior probability per segment)
 
 Weighted Vote Distribution:
 ----------------------------------------
-  _RINE150_      :   23.5 pts  ( 60.3%)  ############
-  _FIND031_      :    5.0 pts  ( 12.8%)  ##
-  _SOMD122_      :    4.5 pts  ( 11.5%)  ##
-  _FARC062_      :    3.0 pts  (  7.7%)  #
-  _ALAD201_      :    3.0 pts  (  7.7%)  #
+  _RINE150_      :   39.0 pts  (100.0%)  ####################
 
 Per-Segment Predictions:
 ----------------------------------------
     #  Zone     Weight  Predicted        Confidence  Correct?
   ---  -------- ------  ---------------  ----------  --------
-    1  straight    1.0  _RINE150_             28.8%  yes
-    2  straight    1.0  _RINE150_             21.8%  yes
-    3  apex        3.0  _RINE150_             31.2%  yes
-    4  straight    1.0  _RINE150_             50.0%  yes
-    5  straight    1.0  _FIND031_             27.5%  no
-    6  straight    1.0  _RINE150_             48.9%  yes
-    7  straight    1.0  _RINE150_             41.3%  yes
-    8  eingang     1.5  _RINE150_             46.3%  yes
-    9  eingang     1.5  _SOMD122_             19.1%  no
-   10  apex        3.0  _RINE150_             10.9%  yes
-   11  apex        3.0  _FARC062_             18.2%  no
-   12  apex        3.0  _ALAD201_             31.5%  no
-   13  apex        3.0  _RINE150_             19.0%  yes
-   14  straight    1.0  _RINE150_             50.4%  yes
-   15  straight    1.0  _RINE150_             42.7%  yes
-   16  apex        3.0  _RINE150_             25.8%  yes
-   17  straight    1.0  _RINE150_             37.5%  yes
-   18  straight    1.0  _RINE150_             22.3%  yes
-   19  straight    1.0  _RINE150_             31.3%  yes
-   20  straight    1.0  _FIND031_             18.9%  no
-   21  apex        3.0  _FIND031_             15.2%  no
-   22  apex        3.0  _SOMD122_             18.9%  no
+    1  straight    1.0  _RINE150_             82.4%  yes
+    2  straight    1.0  _RINE150_             72.0%  yes
+    3  apex        3.0  _RINE150_             81.1%  yes
+    4  straight    1.0  _RINE150_             83.9%  yes
+    5  straight    1.0  _RINE150_             58.4%  yes
+    6  straight    1.0  _RINE150_             63.5%  yes
+    7  straight    1.0  _RINE150_             56.1%  yes
+    8  eingang     1.5  _RINE150_             64.1%  yes
+    9  eingang     1.5  _RINE150_             56.3%  yes
+   10  apex        3.0  _RINE150_             48.8%  yes
+   11  apex        3.0  _RINE150_             55.9%  yes
+   12  apex        3.0  _RINE150_             61.0%  yes
+   13  apex        3.0  _RINE150_             57.5%  yes
+   14  straight    1.0  _RINE150_             71.6%  yes
+   15  straight    1.0  _RINE150_             68.1%  yes
+   16  apex        3.0  _RINE150_             42.0%  yes
+   17  straight    1.0  _RINE150_             49.7%  yes
+   18  straight    1.0  _RINE150_             65.0%  yes
+   19  straight    1.0  _RINE150_             62.2%  yes
+   20  straight    1.0  _RINE150_             55.2%  yes
+   21  apex        3.0  _RINE150_             58.8%  yes
+   22  apex        3.0  _RINE150_             45.1%  yes

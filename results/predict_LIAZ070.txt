@@ -5,46 +5,40 @@ DRIVER PREDICTION REPORT
 True driver:        _LIAZ070_
 Model:              random_forest
 Test rounds:        6 & 7
-Segments evaluated: 22
+Segments evaluated: 20
 
 Predicted driver:   _LIAZ070_
 Accuracy:           CORRECT
 
-Agreement:   40.9%  (9/22 segments voted for true driver)
-Confidence:  26.0%  (mean RF tree posterior probability per segment)
+Agreement:   85.0%  (17/20 segments voted for true driver)
+Confidence:  54.9%  (mean RF tree posterior probability per segment)
 
 Weighted Vote Distribution:
 ----------------------------------------
-  _LIAZ070_      :   15.0 pts  ( 41.7%)  ########
-  _JORC051_      :   12.5 pts  ( 34.7%)  ######
-  _TOMS241_      :    3.0 pts  (  8.3%)  #
-  _BRIG160_      :    3.0 pts  (  8.3%)  #
-  _KETZ160_      :    1.5 pts  (  4.2%)  
-  _FIND031_      :    1.0 pts  (  2.8%)  
+  _LIAZ070_      :   27.5 pts  ( 87.3%)  #################
+  _TOMS241_      :    4.0 pts  ( 12.7%)  ##
 
 Per-Segment Predictions:
 ----------------------------------------
     #  Zone     Weight  Predicted        Confidence  Correct?
   ---  -------- ------  ---------------  ----------  --------
-    1  straight    1.0  _LIAZ070_             44.5%  yes
-    2  straight    1.0  _JORC051_             33.1%  no
-    3  straight    1.0  _TOMS241_             18.0%  no
-    4  straight    1.0  _FIND031_             25.6%  no
-    5  eingang     1.5  _JORC051_             12.5%  no
-    6  eingang     1.5  _JORC051_             19.6%  no
-    7  apex        3.0  _JORC051_             17.8%  no
-    8  eingang     1.5  _KETZ160_             24.4%  no
-    9  apex        3.0  _LIAZ070_             15.7%  yes
-   10  straight    1.0  _LIAZ070_             37.3%  yes
-   11  straight    1.0  _LIAZ070_             28.5%  yes
-   12  mitte       2.0  _LIAZ070_             31.9%  yes
-   13  straight    1.0  _LIAZ070_             31.2%  yes
-   14  straight    1.0  _TOMS241_             24.1%  no
-   15  straight    1.0  _TOMS241_             24.4%  no
-   16  straight    1.0  _JORC051_             13.4%  no
-   17  eingang     1.5  _JORC051_             18.9%  no
-   18  apex        3.0  _JORC051_             24.3%  no
-   19  apex        3.0  _BRIG160_             17.2%  no
-   20  mitte       2.0  _LIAZ070_             30.3%  yes
-   21  apex        3.0  _LIAZ070_             38.4%  yes
-   22  straight    1.0  _LIAZ070_             41.5%  yes
+    1  mitte       2.0  _TOMS241_             41.5%  no
+    2  apex        3.0  _LIAZ070_             33.9%  yes
+    3  straight    1.0  _LIAZ070_             45.5%  yes
+    4  straight    1.0  _LIAZ070_             71.2%  yes
+    5  apex        3.0  _LIAZ070_             67.2%  yes
+    6  straight    1.0  _LIAZ070_             79.1%  yes
+    7  straight    1.0  _LIAZ070_             64.9%  yes
+    8  straight    1.0  _LIAZ070_             63.3%  yes
+    9  straight    1.0  _LIAZ070_             59.5%  yes
+   10  eingang     1.5  _LIAZ070_             57.8%  yes
+   11  eingang     1.5  _LIAZ070_             43.1%  yes
+   12  apex        3.0  _LIAZ070_             50.3%  yes
+   13  eingang     1.5  _LIAZ070_             56.6%  yes
+   14  apex        3.0  _LIAZ070_             51.5%  yes
+   15  straight    1.0  _LIAZ070_             63.5%  yes
+   16  straight    1.0  _LIAZ070_             52.3%  yes
+   17  mitte       2.0  _LIAZ070_             49.1%  yes
+   18  straight    1.0  _LIAZ070_             52.1%  yes
+   19  straight    1.0  _TOMS241_             46.3%  no
+   20  straight    1.0  _TOMS241_             48.7%  no

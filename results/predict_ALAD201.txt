@@ -10,44 +10,42 @@ Segments evaluated: 28
 Predicted driver:   _ALAD201_
 Accuracy:           CORRECT
 
-Agreement:   92.9%  (26/28 segments voted for true driver)
-Confidence:  40.1%  (mean RF tree posterior probability per segment)
+Agreement:   100.0%  (28/28 segments voted for true driver)
+Confidence:  56.7%  (mean RF tree posterior probability per segment)
 
 Weighted Vote Distribution:
 ----------------------------------------
-  _ALAD201_      :   49.5 pts  ( 92.5%)  ##################
-  _SEMD260_      :    3.0 pts  (  5.6%)  #
-  _KEPD180_      :    1.0 pts  (  1.9%)  
+  _ALAD201_      :   53.5 pts  (100.0%)  ####################
 
 Per-Segment Predictions:
 ----------------------------------------
     #  Zone     Weight  Predicted        Confidence  Correct?
   ---  -------- ------  ---------------  ----------  --------
-    1  apex        3.0  _ALAD201_             35.3%  yes
-    2  apex        3.0  _ALAD201_             44.0%  yes
-    3  mitte       2.0  _ALAD201_             33.8%  yes
-    4  eingang     1.5  _ALAD201_             31.1%  yes
-    5  apex        3.0  _ALAD201_             40.7%  yes
-    6  straight    1.0  _ALAD201_             38.4%  yes
-    7  straight    1.0  _ALAD201_             41.9%  yes
-    8  straight    1.0  _ALAD201_             47.2%  yes
-    9  mitte       2.0  _ALAD201_             54.1%  yes
-   10  straight    1.0  _ALAD201_             49.1%  yes
-   11  straight    1.0  _ALAD201_             19.8%  yes
-   12  straight    1.0  _ALAD201_             46.3%  yes
-   13  straight    1.0  _ALAD201_             49.8%  yes
-   14  straight    1.0  _ALAD201_             41.0%  yes
-   15  mitte       2.0  _ALAD201_             54.7%  yes
-   16  apex        3.0  _ALAD201_             51.4%  yes
-   17  apex        3.0  _SEMD260_             26.4%  no
-   18  apex        3.0  _ALAD201_             27.1%  yes
-   19  apex        3.0  _ALAD201_             39.8%  yes
-   20  apex        3.0  _ALAD201_             24.6%  yes
-   21  straight    1.0  _KEPD180_             31.4%  no
-   22  apex        3.0  _ALAD201_             33.5%  yes
+    1  apex        3.0  _ALAD201_             56.0%  yes
+    2  apex        3.0  _ALAD201_             46.4%  yes
+    3  mitte       2.0  _ALAD201_             64.0%  yes
+    4  eingang     1.5  _ALAD201_             60.2%  yes
+    5  apex        3.0  _ALAD201_             66.0%  yes
+    6  straight    1.0  _ALAD201_             75.7%  yes
+    7  straight    1.0  _ALAD201_             75.1%  yes
+    8  straight    1.0  _ALAD201_             72.2%  yes
+    9  mitte       2.0  _ALAD201_             68.5%  yes
+   10  straight    1.0  _ALAD201_             66.8%  yes
+   11  straight    1.0  _ALAD201_             40.0%  yes
+   12  straight    1.0  _ALAD201_             56.1%  yes
+   13  straight    1.0  _ALAD201_             62.5%  yes
+   14  straight    1.0  _ALAD201_             55.3%  yes
+   15  mitte       2.0  _ALAD201_             62.3%  yes
+   16  apex        3.0  _ALAD201_             56.8%  yes
+   17  apex        3.0  _ALAD201_             49.6%  yes
+   18  apex        3.0  _ALAD201_             54.5%  yes
+   19  apex        3.0  _ALAD201_             52.5%  yes
+   20  apex        3.0  _ALAD201_             37.6%  yes
+   21  straight    1.0  _ALAD201_             44.2%  yes
+   22  apex        3.0  _ALAD201_             54.1%  yes
    23  apex        3.0  _ALAD201_             56.4%  yes
-   24  apex        3.0  _ALAD201_             43.0%  yes
-   25  straight    1.0  _ALAD201_             32.4%  yes
-   26  straight    1.0  _ALAD201_             43.2%  yes
-   27  straight    1.0  _ALAD201_             50.1%  yes
-   28  straight    1.0  _ALAD201_             36.7%  yes
+   24  apex        3.0  _ALAD201_             54.4%  yes
+   25  straight    1.0  _ALAD201_             53.4%  yes
+   26  straight    1.0  _ALAD201_             51.3%  yes
+   27  straight    1.0  _ALAD201_             51.9%  yes
+   28  straight    1.0  _ALAD201_             43.0%  yes

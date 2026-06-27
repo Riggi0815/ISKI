@@ -10,39 +10,38 @@ Segments evaluated: 24
 Predicted driver:   _MIBE102_
 Accuracy:           CORRECT
 
-Agreement:   95.8%  (23/24 segments voted for true driver)
-Confidence:  47.0%  (mean RF tree posterior probability per segment)
+Agreement:   100.0%  (24/24 segments voted for true driver)
+Confidence:  65.9%  (mean RF tree posterior probability per segment)
 
 Weighted Vote Distribution:
 ----------------------------------------
-  _MIBE102_      :   43.5 pts  ( 97.8%)  ###################
-  _ANIC011_      :    1.0 pts  (  2.2%)  
+  _MIBE102_      :   44.5 pts  (100.0%)  ####################
 
 Per-Segment Predictions:
 ----------------------------------------
     #  Zone     Weight  Predicted        Confidence  Correct?
   ---  -------- ------  ---------------  ----------  --------
-    1  apex        3.0  _MIBE102_             33.1%  yes
-    2  straight    1.0  _MIBE102_             33.4%  yes
-    3  apex        3.0  _MIBE102_             49.2%  yes
-    4  apex        3.0  _MIBE102_             37.8%  yes
-    5  straight    1.0  _MIBE102_             38.8%  yes
-    6  straight    1.0  _MIBE102_             45.0%  yes
-    7  straight    1.0  _MIBE102_             64.2%  yes
-    8  straight    1.0  _MIBE102_             63.8%  yes
-    9  straight    1.0  _MIBE102_             47.7%  yes
-   10  eingang     1.5  _MIBE102_             51.6%  yes
-   11  apex        3.0  _MIBE102_             47.9%  yes
-   12  apex        3.0  _MIBE102_             44.2%  yes
-   13  apex        3.0  _MIBE102_             36.4%  yes
-   14  apex        3.0  _MIBE102_             46.3%  yes
-   15  apex        3.0  _MIBE102_             55.8%  yes
-   16  straight    1.0  _MIBE102_             35.5%  yes
-   17  straight    1.0  _MIBE102_             48.9%  yes
-   18  apex        3.0  _MIBE102_             46.5%  yes
-   19  straight    1.0  _MIBE102_             37.1%  yes
-   20  straight    1.0  _MIBE102_             48.8%  yes
-   21  straight    1.0  _MIBE102_             74.0%  yes
-   22  straight    1.0  _ANIC011_             39.8%  no
-   23  straight    1.0  _MIBE102_             49.5%  yes
-   24  apex        3.0  _MIBE102_             52.5%  yes
+    1  apex        3.0  _MIBE102_             37.6%  yes
+    2  straight    1.0  _MIBE102_             46.0%  yes
+    3  apex        3.0  _MIBE102_             44.2%  yes
+    4  apex        3.0  _MIBE102_             47.9%  yes
+    5  straight    1.0  _MIBE102_             62.6%  yes
+    6  straight    1.0  _MIBE102_             61.3%  yes
+    7  straight    1.0  _MIBE102_             78.7%  yes
+    8  straight    1.0  _MIBE102_             80.5%  yes
+    9  straight    1.0  _MIBE102_             69.5%  yes
+   10  eingang     1.5  _MIBE102_             68.0%  yes
+   11  apex        3.0  _MIBE102_             72.6%  yes
+   12  apex        3.0  _MIBE102_             79.6%  yes
+   13  apex        3.0  _MIBE102_             62.9%  yes
+   14  apex        3.0  _MIBE102_             60.3%  yes
+   15  apex        3.0  _MIBE102_             71.7%  yes
+   16  straight    1.0  _MIBE102_             68.4%  yes
+   17  straight    1.0  _MIBE102_             69.5%  yes
+   18  apex        3.0  _MIBE102_             63.5%  yes
+   19  straight    1.0  _MIBE102_             69.5%  yes
+   20  straight    1.0  _MIBE102_             76.8%  yes
+   21  straight    1.0  _MIBE102_             73.5%  yes
+   22  straight    1.0  _MIBE102_             63.2%  yes
+   23  straight    1.0  _MIBE102_             70.1%  yes
+   24  apex        3.0  _MIBE102_             82.5%  yes

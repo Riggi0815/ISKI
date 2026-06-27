@@ -10,46 +10,45 @@ Segments evaluated: 28
 Predicted driver:   _THTH312_
 Accuracy:           CORRECT
 
-Agreement:   57.1%  (16/28 segments voted for true driver)
-Confidence:  28.2%  (mean RF tree posterior probability per segment)
+Agreement:   67.9%  (19/28 segments voted for true driver)
+Confidence:  37.1%  (mean RF tree posterior probability per segment)
 
 Weighted Vote Distribution:
 ----------------------------------------
-  _THTH312_      :   29.5 pts  ( 56.7%)  ###########
-  _JORC051_      :   15.5 pts  ( 29.8%)  #####
-  _SEMD260_      :    3.0 pts  (  5.8%)  #
-  _ALAD201_      :    3.0 pts  (  5.8%)  #
-  _FIND031_      :    1.0 pts  (  1.9%)  
+  _THTH312_      :   31.0 pts  ( 59.6%)  ###########
+  _SHMM240_      :   12.0 pts  ( 23.1%)  ####
+  _SOMD122_      :    6.0 pts  ( 11.5%)  ##
+  _JORC051_      :    3.0 pts  (  5.8%)  #
 
 Per-Segment Predictions:
 ----------------------------------------
     #  Zone     Weight  Predicted        Confidence  Correct?
   ---  -------- ------  ---------------  ----------  --------
-    1  straight    1.0  _THTH312_             71.9%  yes
-    2  apex        3.0  _THTH312_             60.4%  yes
-    3  mitte       2.0  _THTH312_             49.1%  yes
-    4  straight    1.0  _THTH312_             53.0%  yes
-    5  straight    1.0  _THTH312_             51.8%  yes
-    6  straight    1.0  _JORC051_             24.4%  no
-    7  straight    1.0  _JORC051_             26.4%  no
-    8  straight    1.0  _FIND031_             21.9%  no
-    9  mitte       2.0  _THTH312_             14.8%  yes
-   10  eingang     1.5  _THTH312_             22.4%  yes
-   11  apex        3.0  _JORC051_             26.2%  no
-   12  apex        3.0  _THTH312_             11.8%  yes
-   13  apex        3.0  _THTH312_             22.4%  yes
-   14  apex        3.0  _SEMD260_             10.2%  no
-   15  apex        3.0  _JORC051_             16.6%  no
-   16  straight    1.0  _THTH312_             20.4%  yes
-   17  straight    1.0  _THTH312_             19.8%  yes
-   18  mitte       2.0  _THTH312_             21.6%  yes
-   19  straight    1.0  _THTH312_             32.4%  yes
-   20  straight    1.0  _THTH312_             17.3%  yes
-   21  straight    1.0  _JORC051_             26.0%  no
-   22  straight    1.0  _JORC051_             32.3%  no
-   23  straight    1.0  _JORC051_             23.7%  no
-   24  apex        3.0  _ALAD201_             13.5%  no
-   25  apex        3.0  _THTH312_             14.2%  yes
-   26  eingang     1.5  _JORC051_             24.4%  no
-   27  apex        3.0  _JORC051_             34.0%  no
-   28  apex        3.0  _THTH312_             27.7%  yes
+    1  straight    1.0  _THTH312_             68.7%  yes
+    2  apex        3.0  _THTH312_             64.2%  yes
+    3  mitte       2.0  _THTH312_             57.1%  yes
+    4  straight    1.0  _THTH312_             58.5%  yes
+    5  straight    1.0  _THTH312_             59.7%  yes
+    6  straight    1.0  _SHMM240_             33.9%  no
+    7  straight    1.0  _SHMM240_             33.7%  no
+    8  straight    1.0  _SHMM240_             27.8%  no
+    9  mitte       2.0  _THTH312_             32.3%  yes
+   10  eingang     1.5  _THTH312_             42.9%  yes
+   11  apex        3.0  _SHMM240_             25.3%  no
+   12  apex        3.0  _SHMM240_             33.3%  no
+   13  apex        3.0  _SOMD122_             22.3%  no
+   14  apex        3.0  _SOMD122_             30.5%  no
+   15  apex        3.0  _THTH312_             33.6%  yes
+   16  straight    1.0  _THTH312_             53.0%  yes
+   17  straight    1.0  _THTH312_             45.0%  yes
+   18  mitte       2.0  _THTH312_             35.4%  yes
+   19  straight    1.0  _THTH312_             39.2%  yes
+   20  straight    1.0  _THTH312_             35.8%  yes
+   21  straight    1.0  _THTH312_             24.6%  yes
+   22  straight    1.0  _THTH312_             26.4%  yes
+   23  straight    1.0  _THTH312_             18.9%  yes
+   24  apex        3.0  _JORC051_             21.5%  no
+   25  apex        3.0  _SHMM240_             23.1%  no
+   26  eingang     1.5  _THTH312_             29.4%  yes
+   27  apex        3.0  _THTH312_             26.3%  yes
+   28  apex        3.0  _THTH312_             37.8%  yes
