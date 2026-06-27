@@ -8,6 +8,8 @@ import sys
 from pathlib import Path
 import pandas as pd
 
+sys.stdout.reconfigure(encoding='utf-8')
+
 sys.path.append(str(Path(__file__).parent))
 from utils import get_processed_data_path, get_results_path, load_dataframe, save_dataframe
 
