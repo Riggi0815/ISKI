@@ -13,7 +13,7 @@ Fahrererkennung aus Assetto Corsa Telemetriedaten (MoTeC `.ld` Format). Der Rand
    pip install -r requirements.txt
    ```
 
-2. `.ld` Dateien in den Ordner `raw_data/` legen. Jede Datei steht für einen Fahrer. Die Dateien werden automatisch nach Fahrername gruppiert.
+2. Telemetriedateien in den Ordner `raw_data/` legen. Jede Datei steht für einen Fahrer. Es werden `.ld` Dateien (MoTeC), `.htf` Dateien oder eine Mischung aus beiden unterstuetzt. Die Dateien werden automatisch nach Fahrername gruppiert.
 
 ---
 
@@ -21,13 +21,29 @@ Fahrererkennung aus Assetto Corsa Telemetriedaten (MoTeC `.ld` Format). Der Rand
 
 Schritte der Reihe nach ausführen:
 
-### Schritt 1 - LD-Dateien parsen
+### Schritt 1a - LD-Dateien parsen
 
 ```
 python scripts/02_parse_ld.py
 ```
 
-Liest alle `.ld` Dateien aus `raw_data/` und speichert die Telemetrie als `processed_data/telemetry_ld.pkl`.
+Liest alle `.ld` Dateien aus `raw_data/` und speichert die Telemetrie als `processed_data/telemetry_ld.pkl`. Nur ausfuehren wenn `.ld` Dateien vorhanden sind.
+
+### Schritt 1b - HTF-Dateien parsen (optional)
+
+```
+python scripts/01_parse_htf.py
+```
+
+Liest alle `.htf` Dateien aus `raw_data/` und speichert die Telemetrie als `processed_data/telemetry_htf.pkl`. Nur ausfuehren wenn `.htf` Dateien vorhanden sind.
+
+### Schritt 1c - Daten zusammenfuehren (optional, nur bei Mischbetrieb)
+
+```
+python scripts/03a_combine_data.py
+```
+
+Fuegt LD- und HTF-Telemetrie zu `processed_data/telemetry_combined.pkl` zusammen. Nur noetig wenn beide Formate verwendet werden. Schritt 3 laedt automatisch die kombinierte Datei falls sie existiert, sonst nur die LD-Daten.
 
 ### Schritt 2 - Kurvenzonierung erstellen
 
@@ -75,32 +91,6 @@ python scripts/05_predict.py "raw_data/<datei>.ld" --model random_forest --test-
 ```
 
 Ergebnisse werden in `results/` gespeichert.
-
----
-
-## Optional: HTF-Daten einbinden
-
-Falls zusaetzlich HTF-Telemetriedaten vorliegen, koennen diese vor Schritt 3 eingebunden werden.
-
-### HTF-Dateien parsen
-
-HTF-Dateien ebenfalls in `raw_data/` legen, dann:
-
-```
-python scripts/01_parse_htf.py
-```
-
-Speichert die HTF-Telemetrie als `processed_data/telemetry_htf.pkl`.
-
-### HTF und LD zusammenfuehren
-
-```
-python scripts/03a_combine_data.py
-```
-
-Fuegt HTF- und LD-Daten zu `processed_data/telemetry_combined.pkl` zusammen. Schritt 3 (`03b_feature_engineering_combined.py`) laedt automatisch die kombinierte Datei, falls sie existiert, ansonsten nur die LD-Daten.
-
-Danach normal mit Schritt 3 weitermachen.
 
 ---
 
