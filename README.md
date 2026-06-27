@@ -2,7 +2,7 @@
 
 Fahrererkennung anhand von Assetto Corsa Telemetriedaten (MoTeC `.ld` Format). Das System extrahiert Fahrverhaltensmuster aus Telemetrie-Segmenten und klassifiziert Fahrer mit einem Random Forest.
 
-**Aktuelles Ergebnis: 87.93% Test Accuracy (5 Fahrer)**
+**Aktuelles Ergebnis: 24/25 Fahrer korrekt erkannt — Agreement 81.1%, Confidence 50.6%**
 
 ---
 
@@ -26,13 +26,23 @@ python scripts/02_parse_ld.py
 
 Liest die `.ld` Binärdateien aus `raw_data/` via `ldparser.py` und speichert die Telemetrie als `processed_data/telemetry_ld.pkl`. Mappt MoTeC-Kanalnamen auf interne Namen (z.B. `Ground Speed` → `v_car`).
 
-### Schritt 2 — Features extrahieren
+### Schritt 2 — Kurvenzonierung erstellen
+
+```
+python scripts/corner_zones.py
+```
+
+Liest die Fahrzeugposition (`Car Pos Norm`) aus den geparsten `.ld` Daten und erstellt eine Zuordnung von Streckenpositionen zu Zonen (Eingang / Mitte / Apex / Gerade). Speichert das Ergebnis als `features/corner_zones.json`.
+
+> Muss nur einmal ausgeführt werden (oder nach Änderung der Strecke). Fehlt `corner_zones.json`, werden keine Zonenfeatures extrahiert.
+
+### Schritt 3 — Features extrahieren
 
 ```
 python scripts/03b_feature_engineering_combined.py
 ```
 
-Teilt die Telemetrie in **10-Sekunden-Segmente** mit **5-Sekunden-Versatz** (50% Overlap, stride=250 bei 50 Hz) auf und berechnet pro Segment ~124 Features:
+Teilt die Telemetrie in **10-Sekunden-Segmente** mit **5-Sekunden-Versatz** (50% Overlap, stride=250 bei 50 Hz) auf. Stationäre Segmente (Fahrzeug steht, `v_car < 5 km/h`) werden automatisch übersprungen. Berechnet pro Segment ~124 Features:
 
 - Statistische Features: Mittelwert, Std, Min, Max, Skewness, Kurtosis je Kanal
 - Verhaltensfeatures: Jerk, Lenkrate, Throttle-Smoothness, Bremsereignisse, Trail-Braking
@@ -42,7 +52,7 @@ Teilt die Telemetrie in **10-Sekunden-Segmente** mit **5-Sekunden-Versatz** (50%
 
 Speichert als `features/driver_features_combined.pkl`.
 
-### Schritt 3 — Modell trainieren
+### Schritt 4 — Modell trainieren
 
 ```
 python scripts/04b_train_models_combined.py
@@ -59,7 +69,7 @@ Die Segmente eines Fahrers werden gleichmäßig in 8 Runden aufgeteilt. Runden 6
 Gibt aus: Train/Test Accuracy, Confusion Matrix, Feature Importance.
 Speichert Modell in `models/combined/`.
 
-### Schritt 4 — Auswertung / Vorhersage
+### Schritt 5 — Auswertung / Vorhersage
 
 **Alle Fahrer auf Test-Runden 6 & 7 auswerten (Hauptauswertung):**
 
@@ -107,11 +117,11 @@ models/combined/                    ← trainiertes Modell (wird nicht gepusht)
 results/                            ← Auswertungs-Outputs
 scripts/
   utils.py                          ← Pfad-Hilfsfunktionen, CHANNEL_MAP
-  corner_zones.py                   ← Kurven-Zonenerkennung (Eingang/Mitte/Apex)
+  corner_zones.py                   ← Schritt 2: Kurven-Zonenkarte aus Streckenkoordinaten bauen
   02_parse_ld.py                    ← Schritt 1: .ld Dateien parsen
-  03b_feature_engineering_combined.py ← Schritt 2: Feature Extraktion
-  04b_train_models_combined.py      ← Schritt 3: Modell trainieren
-  05_predict.py                     ← Schritt 4: Vorhersage & Auswertung
+  03b_feature_engineering_combined.py ← Schritt 3: Feature Extraktion
+  04b_train_models_combined.py      ← Schritt 4: Modell trainieren
+  05_predict.py                     ← Schritt 5: Vorhersage & Auswertung
   06_leave_one_out_evaluation.py    ← Optional: Open-Set Evaluation
 ldparser.py                         ← MoTeC Binary Parser (Abhängigkeit von Schritt 1)
 requirements.txt
