@@ -112,7 +112,7 @@ scripts/
   03a_combine_data.py                  <- Optional: HTF + LD zusammenfuehren
   06_leave_one_out_evaluation.py       <- Optional: Open-Set Test
   utils.py                             <- Hilfsfunktionen
-ldparser.py                            <- MoTeC Binary Parser
+  ldparser.py                          <- MoTeC Binary Parser (Abhaengigkeit von Schritt 1)
 ```
 
 ---
