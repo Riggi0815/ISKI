@@ -269,7 +269,7 @@ def main():
     y_test  = le.transform(test_df['driver_id'])
     class_names = list(le.classes_)
 
-    # Fit scaler on training data (needed for test evaluation script)
+    # Fit scaler on training data (saved for potential SVM/other models — RF uses unscaled features)
     scaler = StandardScaler()
     X_train_scaled = scaler.fit_transform(X_train.values)
     X_test_scaled = scaler.transform(X_test.values)

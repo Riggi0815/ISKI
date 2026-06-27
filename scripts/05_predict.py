@@ -182,15 +182,21 @@ class DriverPredictor:
         
         X = features_df[self.feature_names].copy()
         X = X.replace([np.inf, -np.inf], np.nan).fillna(0)
-        X_scaled = self.scaler.transform(X)
-        
+        X_values = X.values
+
+        # Random Forest was trained on unscaled features — skip scaler
+        if self.model_name == 'random_forest':
+            X_input = X_values
+        else:
+            X_input = self.scaler.transform(X_values)
+
         # Predict for each segment
         print("\nMaking predictions...")
-        predictions = self.model.predict(X_scaled)
-        
+        predictions = self.model.predict(X_input)
+
         # Get prediction probabilities
         if hasattr(self.model, 'predict_proba'):
-            probabilities = self.model.predict_proba(X_scaled)
+            probabilities = self.model.predict_proba(X_input)
             max_probas = probabilities.max(axis=1)
         else:
             # For models without predict_proba, use decision function
