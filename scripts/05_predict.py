@@ -485,24 +485,29 @@ def run_test_round_evaluation(model_name: str = 'random_forest'):
         weighted_vote_pct = weighted_votes[top_driver] / total_weight * 100
         is_correct        = (top_driver == driver_id)
 
-        # Agreement = % of segments that voted for the TRUE driver
+        # Agreement = % of segments that voted for the TRUE driver (unweighted)
         vote_counts = {}
         for label in pred_labels:
             vote_counts[label] = vote_counts.get(label, 0) + 1
         n_correct = vote_counts.get(driver_id, 0)
         agreement = n_correct / len(pred_labels) * 100
 
+        # Weighted Agreement = % of total zone-weight that voted for the TRUE driver
+        weighted_correct = sum(w for pred, w in zip(pred_labels, seg_zone_weights) if pred == driver_id)
+        weighted_agreement = weighted_correct / total_weight * 100
+
         # Confidence = mean RF posterior probability across segments
         avg_rf_conf = float(seg_confidence.mean())
 
         result = {
-            'driver_id':        driver_id,
-            'n_segments':       len(test_df),
-            'predicted_driver': top_driver,
-            'is_correct':       is_correct,
-            'agreement':        agreement,
-            'weighted_vote_pct': weighted_vote_pct,
-            'avg_rf_conf':      avg_rf_conf,
+            'driver_id':          driver_id,
+            'n_segments':         len(test_df),
+            'predicted_driver':   top_driver,
+            'is_correct':         is_correct,
+            'agreement':          agreement,
+            'weighted_agreement': weighted_agreement,
+            'weighted_vote_pct':  weighted_vote_pct,
+            'avg_rf_conf':        avg_rf_conf,
             'weighted_votes':   weighted_votes,
             'total_weight':     total_weight,
             'pred_labels':      list(pred_labels),
@@ -524,10 +529,13 @@ def run_test_round_evaluation(model_name: str = 'random_forest'):
             f.write(f"Test rounds:        6 & 7\n")
             f.write(f"Segments evaluated: {len(test_df)}\n\n")
             f.write(f"Predicted driver:   {top_driver}\n")
-            f.write(f"Accuracy:           {'CORRECT' if is_correct else 'WRONG'}\n\n")
-            f.write(f"Agreement:   {agreement:.1f}%"
+            f.write(f"Accuracy:           {'100%' if is_correct else '0%'}"
+                    f"  (weighted majority vote {'correct' if is_correct else 'wrong'})\n\n")
+            f.write(f"Agreement:          {agreement:.1f}%"
                     f"  ({n_correct}/{len(pred_labels)} segments voted for true driver)\n")
-            f.write(f"Confidence:  {avg_rf_conf:.1f}%"
+            f.write(f"Weighted Agreement: {weighted_agreement:.1f}%"
+                    f"  (zone-weighted: apex=3x mitte=2x eingang=1.5x gerade=1x)\n")
+            f.write(f"Confidence:         {avg_rf_conf:.1f}%"
                     f"  (mean RF tree posterior probability per segment)\n\n")
 
             f.write('Weighted Vote Distribution:\n')
@@ -548,8 +556,8 @@ def run_test_round_evaluation(model_name: str = 'random_forest'):
 
         status = 'OK' if is_correct else 'WRONG'
         print(f"  [{status}] {driver_id}: predicted={top_driver}  "
-              f"agreement={agreement:.1f}%  confidence={avg_rf_conf:.1f}%  "
-              f"({len(test_df)} segs)  -> {out_file.name}")
+              f"agreement={agreement:.1f}%  w.agreement={weighted_agreement:.1f}%  "
+              f"confidence={avg_rf_conf:.1f}%  ({len(test_df)} segs)  -> {out_file.name}")
 
     # --- Summary ---
     correct = sum(1 for r in all_results if r['is_correct'])
@@ -567,12 +575,12 @@ def run_test_round_evaluation(model_name: str = 'random_forest'):
         f.write(f"Weighting:   corner=2.0x  straight=1.0x\n")
         f.write('=' * 60 + '\n\n')
         f.write(f"Overall accuracy: {correct}/{total} ({100*correct/total:.1f}%)\n\n")
-        f.write(f"  {'Driver':<15} {'Accuracy':<8}  {'Predicted':<15}  {'Agreement':>9}  {'Confidence':>10}  Segs\n")
-        f.write(f"  {'-'*15} {'-'*8}  {'-'*15}  {'-'*9}  {'-'*10}  ----\n")
+        f.write(f"  {'Driver':<15} {'Accuracy':<8}  {'Predicted':<15}  {'Agreement':>9}  {'W.Agreement':>11}  {'Confidence':>10}  Segs\n")
+        f.write(f"  {'-'*15} {'-'*8}  {'-'*15}  {'-'*9}  {'-'*11}  {'-'*10}  ----\n")
         for r in all_results:
-            accuracy_str = 'CORRECT' if r['is_correct'] else 'WRONG'
+            accuracy_str = '100%' if r['is_correct'] else '0%'
             f.write(f"  {r['driver_id']:<15} {accuracy_str:<8}  {r['predicted_driver']:<15}  "
-                    f"{r['agreement']:8.1f}%  {r['avg_rf_conf']:9.1f}%  {r['n_segments']}\n")
+                    f"{r['agreement']:8.1f}%  {r['weighted_agreement']:10.1f}%  {r['avg_rf_conf']:9.1f}%  {r['n_segments']}\n")
 
     print(f"\nSummary:          {summary_file.name}")
     print(f"Per-driver files: {results_path}")
