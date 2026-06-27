@@ -94,7 +94,7 @@ def train_random_forest(X_train, y_train, n_estimators: int = 200, random_state:
     rf = RandomForestClassifier(
         n_estimators=n_estimators,
         max_depth=None,        # let trees grow fully for expressive power
-        min_samples_leaf=5,    # increased from 2 → reduces overfitting
+        min_samples_leaf=2,    # slight regularisation against overfitting
         class_weight='balanced',
         random_state=random_state,
         n_jobs=-1,
@@ -185,10 +185,50 @@ def main():
     for drv, cnt in features_df['driver_id'].value_counts().items():
         print(f'    {drv}: {cnt} segments')
 
-    # Use all extracted features — RF selects what matters via feature importance
-    FEATURE_COLUMNS = [c for c in features_df.columns
-                       if c not in ['driver_id', 'segment_id']]
-    print(f'  Feature columns: {len(FEATURE_COLUMNS)} (all extracted features)')
+    # Curated feature set — proven to distinguish all 25 drivers
+    FEATURE_COLUMNS = [
+        # Zone context — one-hot booleans (dominant zone in the 10s window)
+        'is_straight', 'is_eingang', 'is_mitte', 'is_apex',
+
+        # Vehicle speed before / in / after corner
+        'v_car_mean', 'v_car_std', 'v_car_min', 'v_car_max',
+        # Speed variation (how much the driver varies speed through a segment)
+        'speed_cv',
+
+        # Lateral G-force (Querbeschleunigung)
+        'g_lat_mean', 'g_lat_std', 'g_lat_min', 'g_lat_max',
+        'g_lat_extreme_pct',    # fraction of time with >1G lateral
+        'corner_count',          # how many corners per segment
+
+        # Longitudinal G / Brake behaviour (wann und wie hart gebremst wird)
+        'g_long_mean', 'g_long_std', 'g_long_min', 'g_long_max',
+        'jerk_mean', 'jerk_max',   # rate of change of longitudinal G
+
+        # Throttle application (aggressiv vs. smooth aus der Kurve)
+        'percent_throttle_mean', 'percent_throttle_std',
+        'throttle_changes',      # number of throttle transitions
+        'throttle_smoothness',   # std of throttle change rate
+        'throttle_aggressive',   # large, rapid throttle inputs
+
+        # Engine RPM behaviour (jeder Fahrer schaltet bei anderen RPM)
+        'n_engine_mean', 'n_engine_std', 'n_engine_max',
+
+        # Gear-ratio proxy: speed / RPM — encodes driving-line and shift style
+        'gear_ratio_mean', 'gear_ratio_std',
+
+        # Tyre temperature differential (front vs rear — driving style signature)
+        'tire_temp_diff_fr',
+        # Tyre pressure differential (left vs right — cornering asymmetry)
+        'tire_pressure_diff_lr',
+
+        # Rear tyre pressure/temp per wheel — key discriminators for FARC062 vs SOMD122
+        # and ISMS130 vs THTH312 (highest z-score differences in feature analysis)
+        'p_tyreRL_min', 'p_tyreRL_mean', 'p_tyreRL_max',
+        'p_tyreRR_min', 'p_tyreRR_mean', 'p_tyreRR_max',
+        't_tyreRL_min', 't_tyreRL_mean', 't_tyreRL_max',
+        't_tyreRR_min', 't_tyreRR_mean', 't_tyreRR_max',
+    ]
+    print(f'  Feature columns: {len(FEATURE_COLUMNS)} (curated + rear tyre features)')
 
     # -----------------------------------------------------------------------
     # 2. Round-based train / test split

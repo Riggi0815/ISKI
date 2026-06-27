@@ -11,7 +11,7 @@ Predicted driver:   _KEPD180_
 Accuracy:           CORRECT
 
 Agreement:   100.0%  (22/22 segments voted for true driver)
-Confidence:  67.7%  (mean RF tree posterior probability per segment)
+Confidence:  67.2%  (mean RF tree posterior probability per segment)
 
 Weighted Vote Distribution:
 ----------------------------------------
@@ -21,25 +21,25 @@ Per-Segment Predictions:
 ----------------------------------------
     #  Zone     Weight  Predicted        Confidence  Correct?
   ---  -------- ------  ---------------  ----------  --------
-    1  apex        3.0  _KEPD180_             72.0%  yes
-    2  apex        3.0  _KEPD180_             75.8%  yes
-    3  straight    1.0  _KEPD180_             84.4%  yes
-    4  straight    1.0  _KEPD180_             81.0%  yes
-    5  eingang     1.5  _KEPD180_             78.5%  yes
-    6  apex        3.0  _KEPD180_             76.0%  yes
-    7  straight    1.0  _KEPD180_             68.6%  yes
-    8  straight    1.0  _KEPD180_             59.4%  yes
-    9  straight    1.0  _KEPD180_             60.8%  yes
-   10  straight    1.0  _KEPD180_             68.1%  yes
-   11  straight    1.0  _KEPD180_             70.3%  yes
-   12  apex        3.0  _KEPD180_             64.8%  yes
-   13  apex        3.0  _KEPD180_             67.4%  yes
-   14  mitte       2.0  _KEPD180_             61.6%  yes
-   15  mitte       2.0  _KEPD180_             54.1%  yes
-   16  apex        3.0  _KEPD180_             65.8%  yes
-   17  straight    1.0  _KEPD180_             59.5%  yes
-   18  apex        3.0  _KEPD180_             47.9%  yes
-   19  apex        3.0  _KEPD180_             51.3%  yes
-   20  straight    1.0  _KEPD180_             77.8%  yes
-   21  straight    1.0  _KEPD180_             69.3%  yes
-   22  straight    1.0  _KEPD180_             75.7%  yes
+    1  apex        3.0  _KEPD180_             75.3%  yes
+    2  apex        3.0  _KEPD180_             78.0%  yes
+    3  straight    1.0  _KEPD180_             94.6%  yes
+    4  straight    1.0  _KEPD180_             83.1%  yes
+    5  eingang     1.5  _KEPD180_             81.0%  yes
+    6  apex        3.0  _KEPD180_             76.9%  yes
+    7  straight    1.0  _KEPD180_             71.6%  yes
+    8  straight    1.0  _KEPD180_             63.1%  yes
+    9  straight    1.0  _KEPD180_             57.1%  yes
+   10  straight    1.0  _KEPD180_             56.3%  yes
+   11  straight    1.0  _KEPD180_             71.5%  yes
+   12  apex        3.0  _KEPD180_             71.2%  yes
+   13  apex        3.0  _KEPD180_             60.3%  yes
+   14  mitte       2.0  _KEPD180_             59.3%  yes
+   15  mitte       2.0  _KEPD180_             54.6%  yes
+   16  apex        3.0  _KEPD180_             63.8%  yes
+   17  straight    1.0  _KEPD180_             51.0%  yes
+   18  apex        3.0  _KEPD180_             43.2%  yes
+   19  apex        3.0  _KEPD180_             47.6%  yes
+   20  straight    1.0  _KEPD180_             65.6%  yes
+   21  straight    1.0  _KEPD180_             65.0%  yes
+   22  straight    1.0  _KEPD180_             87.5%  yes

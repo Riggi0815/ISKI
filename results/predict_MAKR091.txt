@@ -10,38 +10,42 @@ Segments evaluated: 24
 Predicted driver:   _MAKR091_
 Accuracy:           CORRECT
 
-Agreement:   100.0%  (24/24 segments voted for true driver)
-Confidence:  33.8%  (mean RF tree posterior probability per segment)
+Agreement:   79.2%  (19/24 segments voted for true driver)
+Confidence:  32.5%  (mean RF tree posterior probability per segment)
 
 Weighted Vote Distribution:
 ----------------------------------------
-  _MAKR091_      :   42.5 pts  (100.0%)  ####################
+  _MAKR091_      :   33.5 pts  ( 78.8%)  ###############
+  _ALAD201_      :    4.0 pts  (  9.4%)  #
+  _BRIG160_      :    3.0 pts  (  7.1%)  #
+  _MIBE102_      :    1.0 pts  (  2.4%)  
+  _FARC062_      :    1.0 pts  (  2.4%)  
 
 Per-Segment Predictions:
 ----------------------------------------
     #  Zone     Weight  Predicted        Confidence  Correct?
   ---  -------- ------  ---------------  ----------  --------
-    1  straight    1.0  _MAKR091_             47.6%  yes
-    2  straight    1.0  _MAKR091_             29.7%  yes
-    3  apex        3.0  _MAKR091_             33.3%  yes
-    4  straight    1.0  _MAKR091_             34.6%  yes
-    5  straight    1.0  _MAKR091_             31.6%  yes
-    6  straight    1.0  _MAKR091_             27.4%  yes
-    7  straight    1.0  _MAKR091_             29.5%  yes
-    8  straight    1.0  _MAKR091_             33.4%  yes
-    9  apex        3.0  _MAKR091_             43.3%  yes
-   10  mitte       2.0  _MAKR091_             44.7%  yes
-   11  apex        3.0  _MAKR091_             32.3%  yes
-   12  apex        3.0  _MAKR091_             38.2%  yes
-   13  straight    1.0  _MAKR091_             48.1%  yes
-   14  straight    1.0  _MAKR091_             45.1%  yes
-   15  eingang     1.5  _MAKR091_             24.0%  yes
-   16  apex        3.0  _MAKR091_             25.3%  yes
-   17  straight    1.0  _MAKR091_             39.6%  yes
-   18  straight    1.0  _MAKR091_             33.2%  yes
-   19  straight    1.0  _MAKR091_             25.6%  yes
-   20  straight    1.0  _MAKR091_             20.2%  yes
-   21  mitte       2.0  _MAKR091_             30.5%  yes
-   22  apex        3.0  _MAKR091_             23.1%  yes
-   23  apex        3.0  _MAKR091_             23.2%  yes
-   24  apex        3.0  _MAKR091_             47.2%  yes
+    1  straight    1.0  _MAKR091_             42.2%  yes
+    2  straight    1.0  _MIBE102_             24.0%  no
+    3  apex        3.0  _ALAD201_             28.7%  no
+    4  straight    1.0  _MAKR091_             31.3%  yes
+    5  straight    1.0  _ALAD201_             23.9%  no
+    6  straight    1.0  _MAKR091_             20.8%  yes
+    7  straight    1.0  _MAKR091_             24.2%  yes
+    8  straight    1.0  _MAKR091_             31.0%  yes
+    9  apex        3.0  _MAKR091_             46.0%  yes
+   10  mitte       2.0  _MAKR091_             43.2%  yes
+   11  apex        3.0  _MAKR091_             33.1%  yes
+   12  apex        3.0  _MAKR091_             38.9%  yes
+   13  straight    1.0  _MAKR091_             44.0%  yes
+   14  straight    1.0  _MAKR091_             42.7%  yes
+   15  eingang     1.5  _MAKR091_             22.2%  yes
+   16  apex        3.0  _BRIG160_             20.4%  no
+   17  straight    1.0  _MAKR091_             37.4%  yes
+   18  straight    1.0  _MAKR091_             37.0%  yes
+   19  straight    1.0  _MAKR091_             30.8%  yes
+   20  straight    1.0  _FARC062_             19.7%  no
+   21  mitte       2.0  _MAKR091_             29.0%  yes
+   22  apex        3.0  _MAKR091_             23.0%  yes
+   23  apex        3.0  _MAKR091_             32.6%  yes
+   24  apex        3.0  _MAKR091_             55.1%  yes

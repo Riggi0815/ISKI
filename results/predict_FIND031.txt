@@ -11,35 +11,35 @@ Predicted driver:   _FIND031_
 Accuracy:           CORRECT
 
 Agreement:   90.0%  (18/20 segments voted for true driver)
-Confidence:  38.1%  (mean RF tree posterior probability per segment)
+Confidence:  37.3%  (mean RF tree posterior probability per segment)
 
 Weighted Vote Distribution:
 ----------------------------------------
   _FIND031_      :   29.5 pts  ( 92.2%)  ##################
   _JORC051_      :    1.5 pts  (  4.7%)  
-  _NIMB230_      :    1.0 pts  (  3.1%)  
+  _RINE150_      :    1.0 pts  (  3.1%)  
 
 Per-Segment Predictions:
 ----------------------------------------
     #  Zone     Weight  Predicted        Confidence  Correct?
   ---  -------- ------  ---------------  ----------  --------
-    1  mitte       2.0  _FIND031_             27.7%  yes
-    2  apex        3.0  _FIND031_             32.3%  yes
-    3  straight    1.0  _FIND031_             47.9%  yes
-    4  straight    1.0  _FIND031_             56.0%  yes
-    5  apex        3.0  _FIND031_             28.7%  yes
-    6  straight    1.0  _FIND031_             54.2%  yes
-    7  straight    1.0  _FIND031_             57.1%  yes
-    8  straight    1.0  _FIND031_             44.4%  yes
-    9  straight    1.0  _FIND031_             29.0%  yes
-   10  eingang     1.5  _FIND031_             31.8%  yes
-   11  eingang     1.5  _JORC051_             29.9%  no
-   12  mitte       2.0  _FIND031_             42.7%  yes
-   13  apex        3.0  _FIND031_             36.4%  yes
-   14  apex        3.0  _FIND031_             31.0%  yes
-   15  straight    1.0  _FIND031_             44.8%  yes
-   16  straight    1.0  _FIND031_             41.2%  yes
-   17  mitte       2.0  _FIND031_             28.1%  yes
-   18  straight    1.0  _NIMB230_             29.6%  no
-   19  straight    1.0  _FIND031_             30.0%  yes
-   20  straight    1.0  _FIND031_             39.6%  yes
+    1  mitte       2.0  _FIND031_             34.5%  yes
+    2  apex        3.0  _FIND031_             48.7%  yes
+    3  straight    1.0  _FIND031_             40.4%  yes
+    4  straight    1.0  _FIND031_             45.2%  yes
+    5  apex        3.0  _FIND031_             28.0%  yes
+    6  straight    1.0  _FIND031_             51.5%  yes
+    7  straight    1.0  _FIND031_             38.9%  yes
+    8  straight    1.0  _RINE150_             29.3%  no
+    9  straight    1.0  _FIND031_             19.8%  yes
+   10  eingang     1.5  _FIND031_             22.5%  yes
+   11  eingang     1.5  _JORC051_             22.4%  no
+   12  mitte       2.0  _FIND031_             39.7%  yes
+   13  apex        3.0  _FIND031_             30.4%  yes
+   14  apex        3.0  _FIND031_             37.8%  yes
+   15  straight    1.0  _FIND031_             43.9%  yes
+   16  straight    1.0  _FIND031_             41.0%  yes
+   17  mitte       2.0  _FIND031_             43.1%  yes
+   18  straight    1.0  _FIND031_             32.2%  yes
+   19  straight    1.0  _FIND031_             41.7%  yes
+   20  straight    1.0  _FIND031_             55.6%  yes

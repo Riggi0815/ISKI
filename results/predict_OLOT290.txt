@@ -11,7 +11,7 @@ Predicted driver:   _OLOT290_
 Accuracy:           CORRECT
 
 Agreement:   100.0%  (42/42 segments voted for true driver)
-Confidence:  88.2%  (mean RF tree posterior probability per segment)
+Confidence:  81.1%  (mean RF tree posterior probability per segment)
 
 Weighted Vote Distribution:
 ----------------------------------------
@@ -21,45 +21,45 @@ Per-Segment Predictions:
 ----------------------------------------
     #  Zone     Weight  Predicted        Confidence  Correct?
   ---  -------- ------  ---------------  ----------  --------
-    1  straight    1.0  _OLOT290_             90.6%  yes
-    2  straight    1.0  _OLOT290_             86.3%  yes
-    3  straight    1.0  _OLOT290_             88.8%  yes
-    4  straight    1.0  _OLOT290_             89.6%  yes
-    5  straight    1.0  _OLOT290_             83.0%  yes
-    6  eingang     1.5  _OLOT290_             77.9%  yes
-    7  apex        3.0  _OLOT290_             85.0%  yes
-    8  apex        3.0  _OLOT290_             93.1%  yes
-    9  eingang     1.5  _OLOT290_             84.8%  yes
-   10  apex        3.0  _OLOT290_             93.7%  yes
-   11  apex        3.0  _OLOT290_             91.3%  yes
-   12  apex        3.0  _OLOT290_             86.5%  yes
-   13  apex        3.0  _OLOT290_             83.6%  yes
-   14  straight    1.0  _OLOT290_             84.3%  yes
-   15  straight    1.0  _OLOT290_             87.4%  yes
-   16  mitte       2.0  _OLOT290_             92.7%  yes
-   17  apex        3.0  _OLOT290_             90.3%  yes
-   18  apex        3.0  _OLOT290_             87.0%  yes
-   19  straight    1.0  _OLOT290_             88.9%  yes
-   20  straight    1.0  _OLOT290_             78.3%  yes
-   21  apex        3.0  _OLOT290_             77.5%  yes
-   22  straight    1.0  _OLOT290_             89.6%  yes
-   23  straight    1.0  _OLOT290_             91.9%  yes
-   24  straight    1.0  _OLOT290_             79.0%  yes
-   25  eingang     1.5  _OLOT290_             87.4%  yes
-   26  apex        3.0  _OLOT290_             89.2%  yes
-   27  apex        3.0  _OLOT290_             84.8%  yes
-   28  eingang     1.5  _OLOT290_             82.8%  yes
-   29  apex        3.0  _OLOT290_             89.4%  yes
-   30  apex        3.0  _OLOT290_             87.9%  yes
-   31  apex        3.0  _OLOT290_             91.6%  yes
-   32  apex        3.0  _OLOT290_             92.0%  yes
-   33  straight    1.0  _OLOT290_             89.7%  yes
-   34  mitte       2.0  _OLOT290_             90.1%  yes
-   35  apex        3.0  _OLOT290_             93.7%  yes
-   36  mitte       2.0  _OLOT290_             92.7%  yes
-   37  mitte       2.0  _OLOT290_             93.1%  yes
-   38  straight    1.0  _OLOT290_             90.8%  yes
-   39  straight    1.0  _OLOT290_             82.9%  yes
-   40  straight    1.0  _OLOT290_             94.4%  yes
-   41  straight    1.0  _OLOT290_             96.0%  yes
-   42  straight    1.0  _OLOT290_             96.5%  yes
+    1  straight    1.0  _OLOT290_             91.9%  yes
+    2  straight    1.0  _OLOT290_             88.4%  yes
+    3  straight    1.0  _OLOT290_             82.4%  yes
+    4  straight    1.0  _OLOT290_             83.1%  yes
+    5  straight    1.0  _OLOT290_             87.6%  yes
+    6  eingang     1.5  _OLOT290_             75.4%  yes
+    7  apex        3.0  _OLOT290_             72.7%  yes
+    8  apex        3.0  _OLOT290_             78.2%  yes
+    9  eingang     1.5  _OLOT290_             72.3%  yes
+   10  apex        3.0  _OLOT290_             78.4%  yes
+   11  apex        3.0  _OLOT290_             77.3%  yes
+   12  apex        3.0  _OLOT290_             69.7%  yes
+   13  apex        3.0  _OLOT290_             74.0%  yes
+   14  straight    1.0  _OLOT290_             91.5%  yes
+   15  straight    1.0  _OLOT290_             92.8%  yes
+   16  mitte       2.0  _OLOT290_             94.9%  yes
+   17  apex        3.0  _OLOT290_             91.8%  yes
+   18  apex        3.0  _OLOT290_             82.8%  yes
+   19  straight    1.0  _OLOT290_             86.3%  yes
+   20  straight    1.0  _OLOT290_             85.5%  yes
+   21  apex        3.0  _OLOT290_             87.0%  yes
+   22  straight    1.0  _OLOT290_             90.0%  yes
+   23  straight    1.0  _OLOT290_             91.5%  yes
+   24  straight    1.0  _OLOT290_             75.8%  yes
+   25  eingang     1.5  _OLOT290_             82.7%  yes
+   26  apex        3.0  _OLOT290_             85.8%  yes
+   27  apex        3.0  _OLOT290_             77.6%  yes
+   28  eingang     1.5  _OLOT290_             74.9%  yes
+   29  apex        3.0  _OLOT290_             72.1%  yes
+   30  apex        3.0  _OLOT290_             50.8%  yes
+   31  apex        3.0  _OLOT290_             68.3%  yes
+   32  apex        3.0  _OLOT290_             73.6%  yes
+   33  straight    1.0  _OLOT290_             78.9%  yes
+   34  mitte       2.0  _OLOT290_             77.0%  yes
+   35  apex        3.0  _OLOT290_             80.8%  yes
+   36  mitte       2.0  _OLOT290_             83.4%  yes
+   37  mitte       2.0  _OLOT290_             77.8%  yes
+   38  straight    1.0  _OLOT290_             66.2%  yes
+   39  straight    1.0  _OLOT290_             80.1%  yes
+   40  straight    1.0  _OLOT290_             88.7%  yes
+   41  straight    1.0  _OLOT290_             91.6%  yes
+   42  straight    1.0  _OLOT290_             95.8%  yes

@@ -7,41 +7,42 @@ Model:              random_forest
 Test rounds:        6 & 7
 Segments evaluated: 22
 
-Predicted driver:   _ISMS130_
-Accuracy:           WRONG
+Predicted driver:   _NIDL241_
+Accuracy:           CORRECT
 
-Agreement:   4.5%  (1/22 segments voted for true driver)
-Confidence:  45.4%  (mean RF tree posterior probability per segment)
+Agreement:   50.0%  (11/22 segments voted for true driver)
+Confidence:  41.9%  (mean RF tree posterior probability per segment)
 
 Weighted Vote Distribution:
 ----------------------------------------
-  _ISMS130_      :   31.0 pts  ( 88.6%)  #################
-  _NIDL241_      :    2.0 pts  (  5.7%)  #
+  _NIDL241_      :   23.0 pts  ( 65.7%)  #############
+  _ISMS130_      :    6.0 pts  ( 17.1%)  ###
+  _TOMS241_      :    4.0 pts  ( 11.4%)  ##
   _LIAZ070_      :    2.0 pts  (  5.7%)  #
 
 Per-Segment Predictions:
 ----------------------------------------
     #  Zone     Weight  Predicted        Confidence  Correct?
   ---  -------- ------  ---------------  ----------  --------
-    1  mitte       2.0  _NIDL241_             36.0%  yes
-    2  straight    1.0  _ISMS130_             51.5%  no
-    3  straight    1.0  _ISMS130_             59.4%  no
-    4  straight    1.0  _ISMS130_             52.0%  no
-    5  apex        3.0  _ISMS130_             54.3%  no
-    6  straight    1.0  _ISMS130_             50.7%  no
-    7  straight    1.0  _ISMS130_             38.6%  no
-    8  straight    1.0  _ISMS130_             44.9%  no
-    9  straight    1.0  _ISMS130_             36.2%  no
-   10  mitte       2.0  _ISMS130_             39.2%  no
-   11  apex        3.0  _ISMS130_             37.4%  no
-   12  apex        3.0  _ISMS130_             37.2%  no
-   13  apex        3.0  _ISMS130_             42.0%  no
-   14  apex        3.0  _ISMS130_             54.5%  no
-   15  straight    1.0  _ISMS130_             63.4%  no
-   16  straight    1.0  _ISMS130_             43.5%  no
-   17  mitte       2.0  _ISMS130_             43.8%  no
-   18  straight    1.0  _ISMS130_             56.9%  no
-   19  straight    1.0  _ISMS130_             51.4%  no
-   20  straight    1.0  _ISMS130_             42.7%  no
-   21  straight    1.0  _LIAZ070_             34.4%  no
-   22  straight    1.0  _LIAZ070_             29.9%  no
+    1  mitte       2.0  _NIDL241_             34.5%  yes
+    2  straight    1.0  _ISMS130_             48.7%  no
+    3  straight    1.0  _ISMS130_             54.7%  no
+    4  straight    1.0  _ISMS130_             47.3%  no
+    5  apex        3.0  _NIDL241_             47.7%  yes
+    6  straight    1.0  _NIDL241_             41.6%  yes
+    7  straight    1.0  _NIDL241_             47.4%  yes
+    8  straight    1.0  _NIDL241_             54.7%  yes
+    9  straight    1.0  _NIDL241_             48.3%  yes
+   10  mitte       2.0  _NIDL241_             49.6%  yes
+   11  apex        3.0  _NIDL241_             38.8%  yes
+   12  apex        3.0  _NIDL241_             28.0%  yes
+   13  apex        3.0  _NIDL241_             34.6%  yes
+   14  apex        3.0  _NIDL241_             29.9%  yes
+   15  straight    1.0  _TOMS241_             41.2%  no
+   16  straight    1.0  _ISMS130_             36.1%  no
+   17  mitte       2.0  _ISMS130_             27.5%  no
+   18  straight    1.0  _TOMS241_             49.9%  no
+   19  straight    1.0  _TOMS241_             36.6%  no
+   20  straight    1.0  _TOMS241_             32.0%  no
+   21  straight    1.0  _LIAZ070_             46.9%  no
+   22  straight    1.0  _LIAZ070_             45.3%  no

@@ -5,32 +5,32 @@ Test rounds: 6 & 7
 Weighting:   corner=2.0x  straight=1.0x
 ============================================================
 
-Overall accuracy: 23/25 (92.0%)
+Overall accuracy: 24/25 (96.0%)
 
   Driver          Accuracy  Predicted        Agreement  Confidence  Segs
   --------------- --------  ---------------  ---------  ----------  ----
-  _ALAD201_       CORRECT   _ALAD201_           100.0%       56.7%  28
-  _ANIC011_       CORRECT   _ANIC011_           100.0%       74.4%  28
-  _BRIG160_       CORRECT   _BRIG160_           100.0%       42.8%  20
-  _CHKA302_       WRONG     _ISMS130_             0.0%       24.6%  4
-  _FARC062_       CORRECT   _FARC062_            62.5%       34.9%  24
-  _FEFH030_       CORRECT   _FEFH030_            96.2%       43.5%  26
-  _FIND031_       CORRECT   _FIND031_            90.0%       38.1%  20
-  _ISMS130_       CORRECT   _ISMS130_            54.2%       49.7%  24
+  _ALAD201_       CORRECT   _ALAD201_           100.0%       57.2%  28
+  _ANIC011_       CORRECT   _ANIC011_           100.0%       78.1%  28
+  _BRIG160_       CORRECT   _BRIG160_           100.0%       56.7%  20
+  _CHKA302_       WRONG     _ISMS130_             0.0%       26.8%  4
+  _FARC062_       CORRECT   _FARC062_            62.5%       33.4%  24
+  _FEFH030_       CORRECT   _FEFH030_            92.3%       40.4%  26
+  _FIND031_       CORRECT   _FIND031_            90.0%       37.3%  20
+  _ISMS130_       CORRECT   _ISMS130_            37.5%       30.4%  24
   _JADR090_       CORRECT   _JADR090_           100.0%       61.1%  36
-  _JOI033_        CORRECT   _JOI033_            100.0%       75.3%  24
-  _JORC051_       CORRECT   _JORC051_            45.5%       32.5%  22
-  _KEPD180_       CORRECT   _KEPD180_           100.0%       67.7%  22
-  _KETZ160_       CORRECT   _KETZ160_           100.0%       52.1%  20
-  _LIAZ070_       CORRECT   _LIAZ070_            85.0%       54.9%  20
-  _MAKR091_       CORRECT   _MAKR091_           100.0%       33.8%  24
-  _MIBE102_       CORRECT   _MIBE102_           100.0%       65.9%  24
-  _NIDL241_       WRONG     _ISMS130_             4.5%       45.4%  22
-  _NIMB230_       CORRECT   _NIMB230_           100.0%       67.8%  20
-  _OLOT290_       CORRECT   _OLOT290_           100.0%       88.2%  42
-  _RINE150_       CORRECT   _RINE150_           100.0%       61.8%  22
-  _SEMD260_       CORRECT   _SEMD260_            88.5%       67.5%  26
-  _SHMM240_       CORRECT   _SHMM240_            90.9%       45.1%  22
-  _SOMD122_       CORRECT   _SOMD122_            90.9%       46.9%  22
-  _THTH312_       CORRECT   _THTH312_            67.9%       37.1%  28
-  _TOMS241_       CORRECT   _TOMS241_            77.3%       51.0%  22
+  _JOI033_        CORRECT   _JOI033_             83.3%       56.1%  24
+  _JORC051_       CORRECT   _JORC051_            50.0%       33.4%  22
+  _KEPD180_       CORRECT   _KEPD180_           100.0%       67.2%  22
+  _KETZ160_       CORRECT   _KETZ160_            75.0%       40.2%  20
+  _LIAZ070_       CORRECT   _LIAZ070_            90.0%       57.0%  20
+  _MAKR091_       CORRECT   _MAKR091_            79.2%       32.5%  24
+  _MIBE102_       CORRECT   _MIBE102_            95.8%       70.2%  24
+  _NIDL241_       CORRECT   _NIDL241_            50.0%       41.9%  22
+  _NIMB230_       CORRECT   _NIMB230_           100.0%       65.7%  20
+  _OLOT290_       CORRECT   _OLOT290_           100.0%       81.1%  42
+  _RINE150_       CORRECT   _RINE150_            95.5%       48.1%  22
+  _SEMD260_       CORRECT   _SEMD260_            84.6%       72.5%  26
+  _SHMM240_       CORRECT   _SHMM240_            95.5%       40.5%  22
+  _SOMD122_       CORRECT   _SOMD122_            81.8%       46.2%  22
+  _THTH312_       CORRECT   _THTH312_            67.9%       38.2%  28
+  _TOMS241_       CORRECT   _TOMS241_            95.5%       51.8%  22

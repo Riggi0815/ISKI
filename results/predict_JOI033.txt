@@ -10,38 +10,39 @@ Segments evaluated: 24
 Predicted driver:   _JOI033_
 Accuracy:           CORRECT
 
-Agreement:   100.0%  (24/24 segments voted for true driver)
-Confidence:  75.3%  (mean RF tree posterior probability per segment)
+Agreement:   83.3%  (20/24 segments voted for true driver)
+Confidence:  56.1%  (mean RF tree posterior probability per segment)
 
 Weighted Vote Distribution:
 ----------------------------------------
-  _JOI033_       :   41.0 pts  (100.0%)  ####################
+  _JOI033_       :   36.0 pts  ( 87.8%)  #################
+  _KEPD180_      :    5.0 pts  ( 12.2%)  ##
 
 Per-Segment Predictions:
 ----------------------------------------
     #  Zone     Weight  Predicted        Confidence  Correct?
   ---  -------- ------  ---------------  ----------  --------
-    1  apex        3.0  _JOI033_              54.8%  yes
-    2  apex        3.0  _JOI033_              72.6%  yes
-    3  straight    1.0  _JOI033_              85.3%  yes
-    4  straight    1.0  _JOI033_              77.1%  yes
-    5  mitte       2.0  _JOI033_              62.2%  yes
-    6  straight    1.0  _JOI033_              65.6%  yes
-    7  straight    1.0  _JOI033_              60.4%  yes
-    8  straight    1.0  _JOI033_              65.1%  yes
-    9  straight    1.0  _JOI033_              76.2%  yes
-   10  straight    1.0  _JOI033_              83.5%  yes
-   11  mitte       2.0  _JOI033_              86.0%  yes
-   12  apex        3.0  _JOI033_              78.7%  yes
-   13  apex        3.0  _JOI033_              68.2%  yes
-   14  apex        3.0  _JOI033_              74.0%  yes
-   15  apex        3.0  _JOI033_              80.6%  yes
-   16  apex        3.0  _JOI033_              88.9%  yes
-   17  straight    1.0  _JOI033_              93.1%  yes
-   18  straight    1.0  _JOI033_              89.4%  yes
-   19  mitte       2.0  _JOI033_              87.0%  yes
-   20  straight    1.0  _JOI033_              64.6%  yes
-   21  straight    1.0  _JOI033_              57.4%  yes
-   22  straight    1.0  _JOI033_              70.0%  yes
-   23  straight    1.0  _JOI033_              81.0%  yes
-   24  straight    1.0  _JOI033_              84.7%  yes
+    1  apex        3.0  _JOI033_              48.1%  yes
+    2  apex        3.0  _JOI033_              45.7%  yes
+    3  straight    1.0  _JOI033_              45.8%  yes
+    4  straight    1.0  _KEPD180_             34.5%  no
+    5  mitte       2.0  _KEPD180_             55.3%  no
+    6  straight    1.0  _JOI033_              59.6%  yes
+    7  straight    1.0  _JOI033_              39.2%  yes
+    8  straight    1.0  _JOI033_              55.4%  yes
+    9  straight    1.0  _JOI033_              74.0%  yes
+   10  straight    1.0  _JOI033_              63.5%  yes
+   11  mitte       2.0  _JOI033_              56.2%  yes
+   12  apex        3.0  _JOI033_              57.8%  yes
+   13  apex        3.0  _JOI033_              42.3%  yes
+   14  apex        3.0  _JOI033_              40.4%  yes
+   15  apex        3.0  _JOI033_              50.4%  yes
+   16  apex        3.0  _JOI033_              65.2%  yes
+   17  straight    1.0  _JOI033_              78.6%  yes
+   18  straight    1.0  _JOI033_              74.0%  yes
+   19  mitte       2.0  _JOI033_              77.6%  yes
+   20  straight    1.0  _KEPD180_             40.8%  no
+   21  straight    1.0  _KEPD180_             42.8%  no
+   22  straight    1.0  _JOI033_              59.2%  yes
+   23  straight    1.0  _JOI033_              69.9%  yes
+   24  straight    1.0  _JOI033_              69.1%  yes

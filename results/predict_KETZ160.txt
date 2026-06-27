@@ -10,34 +10,35 @@ Segments evaluated: 20
 Predicted driver:   _KETZ160_
 Accuracy:           CORRECT
 
-Agreement:   100.0%  (20/20 segments voted for true driver)
-Confidence:  52.1%  (mean RF tree posterior probability per segment)
+Agreement:   75.0%  (15/20 segments voted for true driver)
+Confidence:  40.2%  (mean RF tree posterior probability per segment)
 
 Weighted Vote Distribution:
 ----------------------------------------
-  _KETZ160_      :   31.0 pts  (100.0%)  ####################
+  _KETZ160_      :   23.0 pts  ( 74.2%)  ##############
+  _JORC051_      :    8.0 pts  ( 25.8%)  #####
 
 Per-Segment Predictions:
 ----------------------------------------
     #  Zone     Weight  Predicted        Confidence  Correct?
   ---  -------- ------  ---------------  ----------  --------
-    1  apex        3.0  _KETZ160_             24.3%  yes
-    2  straight    1.0  _KETZ160_             46.8%  yes
-    3  straight    1.0  _KETZ160_             68.6%  yes
-    4  mitte       2.0  _KETZ160_             68.3%  yes
-    5  straight    1.0  _KETZ160_             39.5%  yes
-    6  straight    1.0  _KETZ160_             51.4%  yes
-    7  straight    1.0  _KETZ160_             63.0%  yes
-    8  straight    1.0  _KETZ160_             44.2%  yes
-    9  straight    1.0  _KETZ160_             41.9%  yes
-   10  apex        3.0  _KETZ160_             47.8%  yes
-   11  mitte       2.0  _KETZ160_             53.1%  yes
-   12  apex        3.0  _KETZ160_             51.9%  yes
-   13  apex        3.0  _KETZ160_             24.5%  yes
-   14  straight    1.0  _KETZ160_             52.2%  yes
-   15  straight    1.0  _KETZ160_             75.6%  yes
-   16  mitte       2.0  _KETZ160_             66.3%  yes
-   17  straight    1.0  _KETZ160_             57.2%  yes
-   18  straight    1.0  _KETZ160_             53.9%  yes
-   19  straight    1.0  _KETZ160_             46.9%  yes
-   20  straight    1.0  _KETZ160_             63.6%  yes
+    1  apex        3.0  _KETZ160_             27.8%  yes
+    2  straight    1.0  _KETZ160_             54.1%  yes
+    3  straight    1.0  _KETZ160_             59.4%  yes
+    4  mitte       2.0  _KETZ160_             45.0%  yes
+    5  straight    1.0  _KETZ160_             44.4%  yes
+    6  straight    1.0  _KETZ160_             34.1%  yes
+    7  straight    1.0  _JORC051_             33.2%  no
+    8  straight    1.0  _JORC051_             34.7%  no
+    9  straight    1.0  _KETZ160_             42.7%  yes
+   10  apex        3.0  _JORC051_             35.6%  no
+   11  mitte       2.0  _JORC051_             38.5%  no
+   12  apex        3.0  _KETZ160_             29.8%  yes
+   13  apex        3.0  _KETZ160_             19.5%  yes
+   14  straight    1.0  _JORC051_             34.2%  no
+   15  straight    1.0  _KETZ160_             60.8%  yes
+   16  mitte       2.0  _KETZ160_             51.0%  yes
+   17  straight    1.0  _KETZ160_             41.9%  yes
+   18  straight    1.0  _KETZ160_             44.8%  yes
+   19  straight    1.0  _KETZ160_             30.8%  yes
+   20  straight    1.0  _KETZ160_             41.1%  yes
