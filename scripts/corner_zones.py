@@ -9,9 +9,6 @@ import json
 from pathlib import Path
 import numpy as np
 
-sys.path.insert(0, str(Path(__file__).parent.parent))
-from ldparser import ldData
-
 N_GRID = 3000
 SMOOTH_W = 80
 APEX_PCTILE = 85
@@ -26,17 +23,14 @@ ZONE_APEX = 3
 ZONE_NAMES = {0: 'straight', 1: 'eingang', 2: 'mitte', 3: 'apex'}
 
 
-def _load_ld_first_lap(ld_path):
-    """Load pos_norm, coord_x, coord_y from first clean lap of an LD file."""
-    ld = ldData.fromfile(str(ld_path))
-    available = list(ld)
-    required = ['Car Pos Norm', 'Car Coord X', 'Car Coord Y']
-    if not all(c in available for c in required):
+def _first_lap_from_driver(driver_df):
+    """Extract pos_norm, coord_x, coord_y for the first clean lap of a driver."""
+    required = {'pos_norm', 'coord_x', 'coord_y'}
+    if not required.issubset(driver_df.columns):
         return None, None, None
-    pos = np.array(ld['Car Pos Norm'].data, dtype=float)
-    x   = np.array(ld['Car Coord X'].data,  dtype=float)
-    y   = np.array(ld['Car Coord Y'].data,  dtype=float)
-    # Truncate to first complete lap (before first pos_norm wrap)
+    pos = driver_df['pos_norm'].values.astype(float)
+    x   = driver_df['coord_x'].values.astype(float)
+    y   = driver_df['coord_y'].values.astype(float)
     wraps = np.where(np.diff(pos) < -0.5)[0]
     if len(wraps) > 0:
         pos = pos[:wraps[0] + 1]
@@ -59,19 +53,19 @@ def _compute_curvature(x, y):
     return num / denom
 
 
-def _build_average_line(ld_files):
+def _build_average_line(telemetry_df):
     """Interpolate all drivers' first laps onto a common pos_norm grid and average."""
     pos_grid = np.linspace(0.02, 0.98, N_GRID)
     all_x, all_y = [], []
-    for path in ld_files:
-        pos, x, y = _load_ld_first_lap(path)
+    for driver_id, driver_df in telemetry_df.groupby('driver_id'):
+        pos, x, y = _first_lap_from_driver(driver_df)
         if pos is None or len(pos) < 100:
             continue
         idx = np.argsort(pos)
         all_x.append(np.interp(pos_grid, pos[idx], x[idx]))
         all_y.append(np.interp(pos_grid, pos[idx], y[idx]))
     if not all_x:
-        raise ValueError("No valid LD files found to build corner zone map.")
+        raise ValueError("No pos_norm/coord_x/coord_y data found in telemetry.")
     return pos_grid, np.mean(all_x, axis=0), np.mean(all_y, axis=0)
 
 
@@ -97,24 +91,26 @@ def _find_apex_positions(curv, pos_grid):
     return apexes
 
 
-def build_corner_zone_map(ld_files):
+def build_corner_zone_map(telemetry_df):
     """
-    Build corner zone boundaries from a list of LD file paths.
+    Build corner zone boundaries from a parsed telemetry DataFrame.
+    DataFrame must have columns: driver_id, pos_norm, coord_x, coord_y.
 
     Returns a list of corner dicts:
     [
       {
         'corner_id':     0,
         'apex_pos':      0.123,
-        'eingang_start': 0.073,   # start of entry approach
-        'eingang_end':   0.098,   # midpoint of approach
-        'mitte_end':     0.123,   # = apex_pos
-        'exit_end':      0.148    # apex + exit zone
+        'eingang_start': 0.073,
+        'eingang_end':   0.098,
+        'mitte_end':     0.123,
+        'exit_end':      0.148
       }, ...
     ]
     """
-    print(f"Building corner zone map from {len(ld_files)} LD files...")
-    pos_grid, avg_x, avg_y = _build_average_line(ld_files)
+    n_drivers = telemetry_df['driver_id'].nunique()
+    print(f"Building corner zone map from {n_drivers} drivers...")
+    pos_grid, avg_x, avg_y = _build_average_line(telemetry_df)
     curv = _compute_curvature(avg_x, avg_y)
     apex_positions = _find_apex_positions(curv, pos_grid)
     print(f"  Found {len(apex_positions)} apexes")
@@ -186,16 +182,34 @@ def load_corner_zones(load_path):
 
 
 if __name__ == '__main__':
+    import pandas as pd
     sys.path.append(str(Path(__file__).parent))
-    from utils import get_raw_data_path, get_features_path
+    from utils import get_processed_data_path, get_features_path
 
-    ld_files = sorted(get_raw_data_path().glob('*.ld'))
-    if not ld_files:
-        print("No .ld files in raw_data/ - trying training_data/")
-        from utils import get_training_data_path
-        ld_files = sorted(get_training_data_path().glob('*.ld'))
+    processed = get_processed_data_path()
 
-    corners = build_corner_zone_map(ld_files)
+    # Load best available telemetry that has track position columns.
+    # Priority: combined > ld-only > htf-only (HTF usually lacks pos_norm/coords).
+    REQUIRED = {'pos_norm', 'coord_x', 'coord_y'}
+    telemetry_df = None
+    for candidate in ['telemetry_combined', 'telemetry_ld', 'telemetry_all']:
+        pkl = processed / f'{candidate}.pkl'
+        if not pkl.exists():
+            continue
+        df = pd.read_pickle(pkl)
+        if REQUIRED.issubset(df.columns):
+            print(f"Loading {pkl.name}...")
+            telemetry_df = df
+            break
+        else:
+            print(f"  Skipping {pkl.name} (no track position columns)")
+
+    if telemetry_df is None:
+        print("No telemetry with pos_norm/coord_x/coord_y found.")
+        print("Run 02_parse_ld.py first — HTF data does not contain track position data.")
+        sys.exit(1)
+
+    corners = build_corner_zone_map(telemetry_df)
     save_corner_zones(corners, get_features_path() / 'corner_zones.json')
 
     print("\nCorner zone boundaries (pos_norm):")
