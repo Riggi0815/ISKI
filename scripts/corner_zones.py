@@ -24,19 +24,43 @@ ZONE_NAMES = {0: 'straight', 1: 'eingang', 2: 'mitte', 3: 'apex'}
 
 
 def _first_lap_from_driver(driver_df):
-    """Extract pos_norm, coord_x, coord_y for the first clean lap of a driver."""
-    required = {'pos_norm', 'coord_x', 'coord_y'}
-    if not required.issubset(driver_df.columns):
-        return None, None, None
-    pos = driver_df['pos_norm'].values.astype(float)
-    x   = driver_df['coord_x'].values.astype(float)
-    y   = driver_df['coord_y'].values.astype(float)
-    wraps = np.where(np.diff(pos) < -0.5)[0]
-    if len(wraps) > 0:
-        pos = pos[:wraps[0] + 1]
-        x   = x  [:wraps[0] + 1]
-        y   = y  [:wraps[0] + 1]
-    return pos, x, y
+    """Extract (pos_norm, x, y) for the first clean lap of a driver.
+
+    LD path:  pos_norm + coord_x/coord_y  — direct, wrap-detected.
+    HTF path: gps_lat/gps_long            — first lap via n_lap_number,
+              pos_norm derived from cumulative GPS distance.
+    """
+    # --- LD path ---
+    if {'pos_norm', 'coord_x', 'coord_y'}.issubset(driver_df.columns):
+        pos = driver_df['pos_norm'].values.astype(float)
+        x   = driver_df['coord_x'].values.astype(float)
+        y   = driver_df['coord_y'].values.astype(float)
+        wraps = np.where(np.diff(pos) < -0.5)[0]
+        if len(wraps) > 0:
+            pos, x, y = pos[:wraps[0]+1], x[:wraps[0]+1], y[:wraps[0]+1]
+        return pos, x, y
+
+    # --- HTF path: GPS coordinates ---
+    if {'gps_lat', 'gps_long'}.issubset(driver_df.columns):
+        if 'n_lap_number' in driver_df.columns:
+            first_lap_num = driver_df['n_lap_number'].min()
+            lap_df = driver_df[driver_df['n_lap_number'] == first_lap_num]
+        else:
+            lap_df = driver_df
+        x = lap_df['gps_long'].values.astype(float)
+        y = lap_df['gps_lat'].values.astype(float)
+        if len(x) < 100:
+            return None, None, None
+        # Cumulative distance along GPS path → normalized 0-1 pos_norm
+        dx = np.diff(x, prepend=x[0])
+        dy = np.diff(y, prepend=y[0])
+        cum_dist = np.cumsum(np.sqrt(dx**2 + dy**2))
+        total = cum_dist[-1]
+        if total < 1e-6:
+            return None, None, None
+        return cum_dist / total, x, y
+
+    return None, None, None
 
 
 def _rolling_mean(arr, w):
@@ -65,7 +89,7 @@ def _build_average_line(telemetry_df):
         all_x.append(np.interp(pos_grid, pos[idx], x[idx]))
         all_y.append(np.interp(pos_grid, pos[idx], y[idx]))
     if not all_x:
-        raise ValueError("No pos_norm/coord_x/coord_y data found in telemetry.")
+        raise ValueError("No coordinate data found in telemetry (need LD or GPS columns).")
     return pos_grid, np.mean(all_x, axis=0), np.mean(all_y, axis=0)
 
 
@@ -188,25 +212,27 @@ if __name__ == '__main__':
 
     processed = get_processed_data_path()
 
-    # Load best available telemetry that has track position columns.
-    # Priority: combined > ld-only > htf-only (HTF usually lacks pos_norm/coords).
-    REQUIRED = {'pos_norm', 'coord_x', 'coord_y'}
+    # Load best available telemetry. Accepts LD (pos_norm/coord_x/coord_y) or
+    # HTF (gps_lat/gps_long). Priority: combined > ld-only > htf-only.
+    LD_COLS  = {'pos_norm', 'coord_x', 'coord_y'}
+    GPS_COLS = {'gps_lat', 'gps_long'}
     telemetry_df = None
     for candidate in ['telemetry_combined', 'telemetry_ld', 'telemetry_all']:
         pkl = processed / f'{candidate}.pkl'
         if not pkl.exists():
             continue
         df = pd.read_pickle(pkl)
-        if REQUIRED.issubset(df.columns):
-            print(f"Loading {pkl.name}...")
+        if LD_COLS.issubset(df.columns) or GPS_COLS.issubset(df.columns):
+            src = 'LD coords' if LD_COLS.issubset(df.columns) else 'GPS coords'
+            print(f"Loading {pkl.name}... ({src})")
             telemetry_df = df
             break
         else:
-            print(f"  Skipping {pkl.name} (no track position columns)")
+            print(f"  Skipping {pkl.name} (no usable coordinate columns)")
 
     if telemetry_df is None:
-        print("No telemetry with pos_norm/coord_x/coord_y found.")
-        print("Run 02_parse_ld.py first — HTF data does not contain track position data.")
+        print("No telemetry with coordinate data found.")
+        print("Need either LD (pos_norm/coord_x/coord_y) or HTF (gps_lat/gps_long).")
         sys.exit(1)
 
     corners = build_corner_zone_map(telemetry_df)

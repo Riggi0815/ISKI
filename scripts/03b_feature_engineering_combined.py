@@ -265,16 +265,19 @@ def main():
     print(f"FEATURE ENGINEERING - Combined HTF + LD Data")
     print(f"{'='*60}\n")
     
-    # Load combined telemetry data (fall back to LD-only if no combined exists)
-    print("Loading combined telemetry data...")
-    telemetry_file = processed_path / "telemetry_combined"
-    if not (telemetry_file.with_suffix('.pkl')).exists():
-        telemetry_file = processed_path / "telemetry_ld"
-    telemetry_df = load_dataframe(telemetry_file)
-    
+    # Load best available telemetry. Priority: combined > ld-only > htf-only.
+    print("Loading telemetry data...")
+    telemetry_df = None
+    for candidate in ['telemetry_combined', 'telemetry_ld', 'telemetry_all']:
+        f = processed_path / candidate
+        if f.with_suffix('.pkl').exists():
+            print(f"  Using {candidate}.pkl")
+            telemetry_df = load_dataframe(f)
+            break
+
     if telemetry_df is None or len(telemetry_df) == 0:
-        print("\n⚠ No combined telemetry data found!")
-        print("Please run: py -3 scripts\\03a_combine_data.py first")
+        print("\nNo telemetry data found.")
+        print("Run 02_parse_ld.py and/or 01_parse_htf.py first.")
         return
     
     print_dataframe_info(telemetry_df)
