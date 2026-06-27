@@ -1,0 +1,47 @@
+============================================================
+DRIVER PREDICTION REPORT
+============================================================
+
+True driver:        _KEPD180_
+Model:              random_forest
+Test rounds:        6 & 7
+Segments evaluated: 22
+
+Predicted driver:   _KEPD180_
+Accuracy:           CORRECT
+
+Agreement:   86.4%  (19/22 segments voted for true driver)
+Confidence:  41.2%  (mean RF tree posterior probability per segment)
+
+Weighted Vote Distribution:
+----------------------------------------
+  _KEPD180_      :   35.5 pts  ( 87.7%)  #################
+  _ANIC011_      :    4.0 pts  (  9.9%)  #
+  _SOMD122_      :    1.0 pts  (  2.5%)  
+
+Per-Segment Predictions:
+----------------------------------------
+    #  Zone     Weight  Predicted        Confidence  Correct?
+  ---  -------- ------  ---------------  ----------  --------
+    1  apex        3.0  _KEPD180_             47.9%  yes
+    2  apex        3.0  _KEPD180_             36.4%  yes
+    3  straight    1.0  _KEPD180_             70.3%  yes
+    4  straight    1.0  _KEPD180_             83.6%  yes
+    5  eingang     1.5  _KEPD180_             84.3%  yes
+    6  apex        3.0  _KEPD180_             57.7%  yes
+    7  straight    1.0  _KEPD180_             26.4%  yes
+    8  straight    1.0  _KEPD180_             40.2%  yes
+    9  straight    1.0  _KEPD180_             23.8%  yes
+   10  straight    1.0  _KEPD180_             24.1%  yes
+   11  straight    1.0  _ANIC011_             45.0%  no
+   12  apex        3.0  _ANIC011_             23.3%  no
+   13  apex        3.0  _KEPD180_             33.2%  yes
+   14  mitte       2.0  _KEPD180_             31.6%  yes
+   15  mitte       2.0  _KEPD180_             42.0%  yes
+   16  apex        3.0  _KEPD180_             41.8%  yes
+   17  straight    1.0  _SOMD122_             19.0%  no
+   18  apex        3.0  _KEPD180_             18.3%  yes
+   19  apex        3.0  _KEPD180_             30.1%  yes
+   20  straight    1.0  _KEPD180_             51.3%  yes
+   21  straight    1.0  _KEPD180_             20.1%  yes
+   22  straight    1.0  _KEPD180_             55.1%  yes

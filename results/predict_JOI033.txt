@@ -1,0 +1,51 @@
+============================================================
+DRIVER PREDICTION REPORT
+============================================================
+
+True driver:        _JOI033_
+Model:              random_forest
+Test rounds:        6 & 7
+Segments evaluated: 24
+
+Predicted driver:   _JOI033_
+Accuracy:           CORRECT
+
+Agreement:   79.2%  (19/24 segments voted for true driver)
+Confidence:  38.2%  (mean RF tree posterior probability per segment)
+
+Weighted Vote Distribution:
+----------------------------------------
+  _JOI033_       :   27.0 pts  ( 65.9%)  #############
+  _OLOT290_      :    5.0 pts  ( 12.2%)  ##
+  _LIAZ070_      :    3.0 pts  (  7.3%)  #
+  _JORC051_      :    3.0 pts  (  7.3%)  #
+  _TOMS241_      :    3.0 pts  (  7.3%)  #
+
+Per-Segment Predictions:
+----------------------------------------
+    #  Zone     Weight  Predicted        Confidence  Correct?
+  ---  -------- ------  ---------------  ----------  --------
+    1  apex        3.0  _JOI033_              37.1%  yes
+    2  apex        3.0  _JOI033_              42.1%  yes
+    3  straight    1.0  _JOI033_              32.9%  yes
+    4  straight    1.0  _JOI033_              36.0%  yes
+    5  mitte       2.0  _OLOT290_             28.2%  no
+    6  straight    1.0  _JOI033_              60.4%  yes
+    7  straight    1.0  _JOI033_              46.2%  yes
+    8  straight    1.0  _JOI033_              35.9%  yes
+    9  straight    1.0  _JOI033_              48.2%  yes
+   10  straight    1.0  _JOI033_              40.7%  yes
+   11  mitte       2.0  _JOI033_              38.0%  yes
+   12  apex        3.0  _LIAZ070_             15.1%  no
+   13  apex        3.0  _JORC051_             18.1%  no
+   14  apex        3.0  _TOMS241_             19.3%  no
+   15  apex        3.0  _OLOT290_             36.3%  no
+   16  apex        3.0  _JOI033_              43.1%  yes
+   17  straight    1.0  _JOI033_              52.4%  yes
+   18  straight    1.0  _JOI033_              60.1%  yes
+   19  mitte       2.0  _JOI033_              56.5%  yes
+   20  straight    1.0  _JOI033_              43.8%  yes
+   21  straight    1.0  _JOI033_              31.7%  yes
+   22  straight    1.0  _JOI033_              26.2%  yes
+   23  straight    1.0  _JOI033_              27.7%  yes
+   24  straight    1.0  _JOI033_              40.7%  yes

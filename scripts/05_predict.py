@@ -475,17 +475,18 @@ def run_test_round_evaluation(model_name: str = 'random_forest'):
             weighted_votes[label] = weighted_votes.get(label, 0.0) + w
         total_weight = seg_zone_weights.sum()
 
-        top_driver  = max(weighted_votes, key=weighted_votes.get)
-        confidence  = weighted_votes[top_driver] / total_weight * 100
+        top_driver       = max(weighted_votes, key=weighted_votes.get)
+        weighted_vote_pct = weighted_votes[top_driver] / total_weight * 100
+        is_correct        = (top_driver == driver_id)
 
-        # Raw unweighted agreement
+        # Agreement = % of segments that voted for the TRUE driver
         vote_counts = {}
         for label in pred_labels:
             vote_counts[label] = vote_counts.get(label, 0) + 1
-        n_correct  = vote_counts.get(top_driver, 0)
-        agreement  = n_correct / len(pred_labels) * 100
-        is_correct = (top_driver == driver_id)
+        n_correct = vote_counts.get(driver_id, 0)
+        agreement = n_correct / len(pred_labels) * 100
 
+        # Confidence = mean RF posterior probability across segments
         avg_rf_conf = float(seg_confidence.mean())
 
         result = {
@@ -494,7 +495,7 @@ def run_test_round_evaluation(model_name: str = 'random_forest'):
             'predicted_driver': top_driver,
             'is_correct':       is_correct,
             'agreement':        agreement,
-            'confidence':       confidence,
+            'weighted_vote_pct': weighted_vote_pct,
             'avg_rf_conf':      avg_rf_conf,
             'weighted_votes':   weighted_votes,
             'total_weight':     total_weight,
@@ -517,13 +518,11 @@ def run_test_round_evaluation(model_name: str = 'random_forest'):
             f.write(f"Test rounds:        6 & 7\n")
             f.write(f"Segments evaluated: {len(test_df)}\n\n")
             f.write(f"Predicted driver:   {top_driver}\n")
-            f.write(f"Result:             {'CORRECT' if is_correct else 'WRONG'}\n\n")
-            f.write(f"Segment Accuracy:         {agreement:.1f}%"
-                    f"  ({n_correct}/{len(pred_labels)} segments correct, unweighted)\n")
-            f.write(f"Weighted Vote Confidence: {confidence:.1f}%"
-                    f"  (zone-weighted majority vote: apex=3.0x, mitte=2.0x, eingang=1.5x, straight=1.0x)\n")
-            f.write(f"Mean Posterior Prob.:     {avg_rf_conf:.1f}%"
-                    f"  (mean predict_proba per segment, independent of zone weights)\n\n")
+            f.write(f"Accuracy:           {'CORRECT' if is_correct else 'WRONG'}\n\n")
+            f.write(f"Agreement:   {agreement:.1f}%"
+                    f"  ({n_correct}/{len(pred_labels)} segments voted for true driver)\n")
+            f.write(f"Confidence:  {avg_rf_conf:.1f}%"
+                    f"  (mean RF tree posterior probability per segment)\n\n")
 
             f.write('Weighted Vote Distribution:\n')
             f.write('-' * 40 + '\n')
@@ -534,7 +533,7 @@ def run_test_round_evaluation(model_name: str = 'random_forest'):
 
             f.write('\nPer-Segment Predictions:\n')
             f.write('-' * 40 + '\n')
-            f.write(f"  {'#':>3}  {'Zone':<8} {'Weight':>6}  {'Predicted':<15}  {'Post.Prob.':>10}  Correct?\n")
+            f.write(f"  {'#':>3}  {'Zone':<8} {'Weight':>6}  {'Predicted':<15}  {'Confidence':>10}  Correct?\n")
             f.write(f"  {'-'*3}  {'-'*8} {'-'*6}  {'-'*15}  {'-'*10}  --------\n")
             for i, (pred, conf, zname, zw) in enumerate(
                     zip(pred_labels, seg_confidence, seg_zone_names, seg_zone_weights), 1):
@@ -543,7 +542,7 @@ def run_test_round_evaluation(model_name: str = 'random_forest'):
 
         status = 'OK' if is_correct else 'WRONG'
         print(f"  [{status}] {driver_id}: predicted={top_driver}  "
-              f"seg_acc={agreement:.1f}%  wt_conf={confidence:.1f}%  post_prob={avg_rf_conf:.1f}%  "
+              f"agreement={agreement:.1f}%  confidence={avg_rf_conf:.1f}%  "
               f"({len(test_df)} segs)  -> {out_file.name}")
 
     # --- Summary ---
@@ -562,13 +561,12 @@ def run_test_round_evaluation(model_name: str = 'random_forest'):
         f.write(f"Weighting:   corner=2.0x  straight=1.0x\n")
         f.write('=' * 60 + '\n\n')
         f.write(f"Overall accuracy: {correct}/{total} ({100*correct/total:.1f}%)\n\n")
-        f.write(f"  {'Driver':<15} {'Result':<6}  {'Predicted':<15}  {'Seg.Acc.':>8}  {'Wt.Conf.':>8}  {'Mean Post.Prob.':>15}  Segs\n")
-        f.write(f"  {'-'*15} {'-'*6}  {'-'*15}  {'-'*8}  {'-'*8}  {'-'*15}  ----\n")
+        f.write(f"  {'Driver':<15} {'Accuracy':<8}  {'Predicted':<15}  {'Agreement':>9}  {'Confidence':>10}  Segs\n")
+        f.write(f"  {'-'*15} {'-'*8}  {'-'*15}  {'-'*9}  {'-'*10}  ----\n")
         for r in all_results:
-            status = 'OK   ' if r['is_correct'] else 'WRONG'
-            f.write(f"  {r['driver_id']:<15} {status}  {r['predicted_driver']:<15}  "
-                    f"{r['agreement']:7.1f}%  {r['confidence']:7.1f}%  "
-                    f"{r['avg_rf_conf']:14.1f}%  {r['n_segments']}\n")
+            accuracy_str = 'CORRECT' if r['is_correct'] else 'WRONG'
+            f.write(f"  {r['driver_id']:<15} {accuracy_str:<8}  {r['predicted_driver']:<15}  "
+                    f"{r['agreement']:8.1f}%  {r['avg_rf_conf']:9.1f}%  {r['n_segments']}\n")
 
     print(f"\nSummary:          {summary_file.name}")
     print(f"Per-driver files: {results_path}")

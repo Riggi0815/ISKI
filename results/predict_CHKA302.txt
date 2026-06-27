@@ -1,0 +1,30 @@
+============================================================
+DRIVER PREDICTION REPORT
+============================================================
+
+True driver:        _CHKA302_
+Model:              random_forest
+Test rounds:        6 & 7
+Segments evaluated: 6
+
+Predicted driver:   _CHKA302_
+Accuracy:           CORRECT
+
+Agreement:   66.7%  (4/6 segments voted for true driver)
+Confidence:  46.3%  (mean RF tree posterior probability per segment)
+
+Weighted Vote Distribution:
+----------------------------------------
+  _CHKA302_      :    8.0 pts  ( 66.7%)  #############
+  _JADR090_      :    4.0 pts  ( 33.3%)  ######
+
+Per-Segment Predictions:
+----------------------------------------
+    #  Zone     Weight  Predicted        Confidence  Correct?
+  ---  -------- ------  ---------------  ----------  --------
+    1  mitte       2.0  _JADR090_             14.2%  no
+    2  mitte       2.0  _JADR090_             33.1%  no
+    3  mitte       2.0  _CHKA302_             43.5%  yes
+    4  mitte       2.0  _CHKA302_             58.1%  yes
+    5  mitte       2.0  _CHKA302_             60.7%  yes
+    6  mitte       2.0  _CHKA302_             68.2%  yes

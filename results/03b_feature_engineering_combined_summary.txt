@@ -18,17 +18,17 @@ Feature sets per driver:
   _FARC062_: 101 segments
   _JOI033_: 100 segments
   _MIBE102_: 98 segments
-  _MAKR091_: 96 segments
   _ISMS130_: 96 segments
+  _MAKR091_: 96 segments
   _KEPD180_: 95 segments
   _JORC051_: 94 segments
   _SOMD122_: 93 segments
   _NIDL241_: 91 segments
-  _TOMS241_: 91 segments
   _RINE150_: 91 segments
+  _TOMS241_: 91 segments
   _FIND031_: 90 segments
-  _LIAZ070_: 89 segments
   _KETZ160_: 89 segments
+  _LIAZ070_: 89 segments
   _SHMM240_: 89 segments
   _NIMB230_: 84 segments
   _BRIG160_: 83 segments

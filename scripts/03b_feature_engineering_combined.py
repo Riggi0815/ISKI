@@ -85,13 +85,20 @@ class FeatureEngineer:
         return features_df
 
     def _create_segments(self, driver_data):
-        """Sliding window with 50% overlap."""
+        """Sliding window with 50% overlap. Skips stationary segments (v_car_mean < 5 km/h)."""
         segments = []
+        skipped = 0
         total_samples = len(driver_data)
         for start_idx in range(0, total_samples, self.stride):
             segment = driver_data.iloc[start_idx: start_idx + self.segment_size]
-            if len(segment) >= self.min_segment_size:
-                segments.append(segment)
+            if len(segment) < self.min_segment_size:
+                continue
+            if 'v_car' in segment.columns and segment['v_car'].mean() < 5:
+                skipped += 1
+                continue
+            segments.append(segment)
+        if skipped > 0:
+            print(f'    [filter] skipped {skipped} stationary segments (v_car < 5 km/h)')
         return segments
 
     def _extract_segment_features(self, segment, driver_id, segment_idx, zone_labels=None):
@@ -119,11 +126,17 @@ class FeatureEngineer:
                 
                 with np.errstate(invalid='ignore', divide='ignore'):
                     features[f'{channel}_mean'] = np.mean(data)
-                    features[f'{channel}_std'] = np.std(data)
+                    std = np.std(data)
+                    features[f'{channel}_std'] = std
                     features[f'{channel}_min'] = np.min(data)
                     features[f'{channel}_max'] = np.max(data)
-                    features[f'{channel}_skew'] = stats.skew(data, nan_policy='omit')
-                    features[f'{channel}_kurtosis'] = stats.kurtosis(data, nan_policy='omit')
+                    if std < 1e-8:
+                        print(f'    [skip skew/kurtosis] segment {segment_idx}, channel {channel}: nearly constant')
+                        features[f'{channel}_skew'] = 0.0
+                        features[f'{channel}_kurtosis'] = 0.0
+                    else:
+                        features[f'{channel}_skew'] = stats.skew(data, nan_policy='omit')
+                        features[f'{channel}_kurtosis'] = stats.kurtosis(data, nan_policy='omit')
         
         # 2. Behavioral features
         features.update(self._extract_behavioral_features(segment))

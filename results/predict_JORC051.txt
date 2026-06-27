@@ -1,0 +1,53 @@
+============================================================
+DRIVER PREDICTION REPORT
+============================================================
+
+True driver:        _JORC051_
+Model:              random_forest
+Test rounds:        6 & 7
+Segments evaluated: 22
+
+Predicted driver:   _JORC051_
+Accuracy:           CORRECT
+
+Agreement:   50.0%  (11/22 segments voted for true driver)
+Confidence:  23.9%  (mean RF tree posterior probability per segment)
+
+Weighted Vote Distribution:
+----------------------------------------
+  _JORC051_      :   16.0 pts  ( 45.7%)  #########
+  _ISMS130_      :    6.0 pts  ( 17.1%)  ###
+  _RINE150_      :    3.0 pts  (  8.6%)  #
+  _KETZ160_      :    3.0 pts  (  8.6%)  #
+  _NIMB230_      :    3.0 pts  (  8.6%)  #
+  _TOMS241_      :    1.0 pts  (  2.9%)  
+  _THTH312_      :    1.0 pts  (  2.9%)  
+  _FIND031_      :    1.0 pts  (  2.9%)  
+  _LIAZ070_      :    1.0 pts  (  2.9%)  
+
+Per-Segment Predictions:
+----------------------------------------
+    #  Zone     Weight  Predicted        Confidence  Correct?
+  ---  -------- ------  ---------------  ----------  --------
+    1  apex        3.0  _ISMS130_             15.5%  no
+    2  straight    1.0  _JORC051_             21.5%  yes
+    3  straight    1.0  _TOMS241_             24.6%  no
+    4  mitte       2.0  _RINE150_             15.6%  no
+    5  straight    1.0  _JORC051_             42.6%  yes
+    6  straight    1.0  _JORC051_             24.4%  yes
+    7  straight    1.0  _THTH312_             22.2%  no
+    8  straight    1.0  _JORC051_             32.6%  yes
+    9  straight    1.0  _JORC051_             24.7%  yes
+   10  apex        3.0  _JORC051_             26.5%  yes
+   11  apex        3.0  _ISMS130_             20.2%  no
+   12  apex        3.0  _JORC051_             43.1%  yes
+   13  mitte       2.0  _KETZ160_             21.7%  no
+   14  straight    1.0  _FIND031_             18.8%  no
+   15  straight    1.0  _JORC051_             20.2%  yes
+   16  straight    1.0  _RINE150_             17.2%  no
+   17  apex        3.0  _NIMB230_             24.9%  no
+   18  straight    1.0  _KETZ160_             18.4%  no
+   19  straight    1.0  _JORC051_             21.8%  yes
+   20  straight    1.0  _JORC051_             29.6%  yes
+   21  straight    1.0  _LIAZ070_             15.0%  no
+   22  mitte       2.0  _JORC051_             24.7%  yes

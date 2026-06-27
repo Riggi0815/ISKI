@@ -1,0 +1,49 @@
+============================================================
+DRIVER PREDICTION REPORT
+============================================================
+
+True driver:        _FIND031_
+Model:              random_forest
+Test rounds:        6 & 7
+Segments evaluated: 22
+
+Predicted driver:   _FIND031_
+Accuracy:           CORRECT
+
+Agreement:   68.2%  (15/22 segments voted for true driver)
+Confidence:  24.8%  (mean RF tree posterior probability per segment)
+
+Weighted Vote Distribution:
+----------------------------------------
+  _FIND031_      :   23.0 pts  ( 67.6%)  #############
+  _KETZ160_      :    6.0 pts  ( 17.6%)  ###
+  _ISMS130_      :    3.0 pts  (  8.8%)  #
+  _FARC062_      :    1.0 pts  (  2.9%)  
+  _SHMM240_      :    1.0 pts  (  2.9%)  
+
+Per-Segment Predictions:
+----------------------------------------
+    #  Zone     Weight  Predicted        Confidence  Correct?
+  ---  -------- ------  ---------------  ----------  --------
+    1  straight    1.0  _FIND031_             32.8%  yes
+    2  straight    1.0  _FIND031_             29.8%  yes
+    3  straight    1.0  _FARC062_             22.3%  no
+    4  straight    1.0  _SHMM240_             14.8%  no
+    5  eingang     1.5  _ISMS130_             15.8%  no
+    6  eingang     1.5  _ISMS130_             10.5%  no
+    7  mitte       2.0  _KETZ160_             20.9%  no
+    8  apex        3.0  _KETZ160_             20.6%  no
+    9  apex        3.0  _FIND031_             17.9%  yes
+   10  straight    1.0  _FIND031_             23.7%  yes
+   11  straight    1.0  _FIND031_             29.0%  yes
+   12  mitte       2.0  _FIND031_             27.9%  yes
+   13  straight    1.0  _FIND031_             22.9%  yes
+   14  straight    1.0  _FIND031_             26.8%  yes
+   15  straight    1.0  _FIND031_             35.6%  yes
+   16  straight    1.0  _KETZ160_             24.5%  no
+   17  straight    1.0  _FIND031_             24.7%  yes
+   18  apex        3.0  _FIND031_             20.7%  yes
+   19  apex        3.0  _FIND031_             24.4%  yes
+   20  mitte       2.0  _FIND031_             32.1%  yes
+   21  straight    1.0  _FIND031_             32.5%  yes
+   22  straight    1.0  _FIND031_             35.7%  yes

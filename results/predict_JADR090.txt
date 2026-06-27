@@ -1,0 +1,62 @@
+============================================================
+DRIVER PREDICTION REPORT
+============================================================
+
+True driver:        _JADR090_
+Model:              random_forest
+Test rounds:        6 & 7
+Segments evaluated: 36
+
+Predicted driver:   _JADR090_
+Accuracy:           CORRECT
+
+Agreement:   77.8%  (28/36 segments voted for true driver)
+Confidence:  38.2%  (mean RF tree posterior probability per segment)
+
+Weighted Vote Distribution:
+----------------------------------------
+  _JADR090_      :   48.0 pts  ( 73.8%)  ##############
+  _ALAD201_      :   10.0 pts  ( 15.4%)  ###
+  _SEMD260_      :    5.0 pts  (  7.7%)  #
+  _ISMS130_      :    2.0 pts  (  3.1%)  
+
+Per-Segment Predictions:
+----------------------------------------
+    #  Zone     Weight  Predicted        Confidence  Correct?
+  ---  -------- ------  ---------------  ----------  --------
+    1  straight    1.0  _JADR090_             37.7%  yes
+    2  mitte       2.0  _JADR090_             24.0%  yes
+    3  eingang     1.5  _JADR090_             20.4%  yes
+    4  apex        3.0  _JADR090_             30.7%  yes
+    5  apex        3.0  _JADR090_             10.7%  yes
+    6  apex        3.0  _JADR090_             21.8%  yes
+    7  apex        3.0  _JADR090_             63.6%  yes
+    8  apex        3.0  _JADR090_             24.0%  yes
+    9  straight    1.0  _JADR090_             57.4%  yes
+   10  straight    1.0  _JADR090_             75.2%  yes
+   11  straight    1.0  _JADR090_             42.1%  yes
+   12  straight    1.0  _JADR090_             29.3%  yes
+   13  apex        3.0  _SEMD260_             23.0%  no
+   14  straight    1.0  _ALAD201_             16.7%  no
+   15  straight    1.0  _JADR090_             74.2%  yes
+   16  straight    1.0  _JADR090_             71.7%  yes
+   17  straight    1.0  _JADR090_             51.1%  yes
+   18  straight    1.0  _JADR090_             38.0%  yes
+   19  eingang     1.5  _JADR090_             22.0%  yes
+   20  apex        3.0  _JADR090_             31.9%  yes
+   21  mitte       2.0  _JADR090_             56.1%  yes
+   22  mitte       2.0  _SEMD260_             20.5%  no
+   23  apex        3.0  _ALAD201_             19.0%  no
+   24  apex        3.0  _JADR090_             52.5%  yes
+   25  apex        3.0  _JADR090_             20.8%  yes
+   26  straight    1.0  _JADR090_             35.5%  yes
+   27  straight    1.0  _JADR090_             36.9%  yes
+   28  apex        3.0  _ALAD201_             18.4%  no
+   29  apex        3.0  _ALAD201_             20.1%  no
+   30  straight    1.0  _JADR090_             79.4%  yes
+   31  mitte       2.0  _JADR090_             77.4%  yes
+   32  straight    1.0  _JADR090_             71.7%  yes
+   33  straight    1.0  _JADR090_             26.0%  yes
+   34  straight    1.0  _ISMS130_             23.1%  no
+   35  straight    1.0  _ISMS130_             23.9%  no
+   36  straight    1.0  _JADR090_             29.1%  yes

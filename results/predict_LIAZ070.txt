@@ -1,0 +1,50 @@
+============================================================
+DRIVER PREDICTION REPORT
+============================================================
+
+True driver:        _LIAZ070_
+Model:              random_forest
+Test rounds:        6 & 7
+Segments evaluated: 22
+
+Predicted driver:   _LIAZ070_
+Accuracy:           CORRECT
+
+Agreement:   40.9%  (9/22 segments voted for true driver)
+Confidence:  26.0%  (mean RF tree posterior probability per segment)
+
+Weighted Vote Distribution:
+----------------------------------------
+  _LIAZ070_      :   15.0 pts  ( 41.7%)  ########
+  _JORC051_      :   12.5 pts  ( 34.7%)  ######
+  _TOMS241_      :    3.0 pts  (  8.3%)  #
+  _BRIG160_      :    3.0 pts  (  8.3%)  #
+  _KETZ160_      :    1.5 pts  (  4.2%)  
+  _FIND031_      :    1.0 pts  (  2.8%)  
+
+Per-Segment Predictions:
+----------------------------------------
+    #  Zone     Weight  Predicted        Confidence  Correct?
+  ---  -------- ------  ---------------  ----------  --------
+    1  straight    1.0  _LIAZ070_             44.5%  yes
+    2  straight    1.0  _JORC051_             33.1%  no
+    3  straight    1.0  _TOMS241_             18.0%  no
+    4  straight    1.0  _FIND031_             25.6%  no
+    5  eingang     1.5  _JORC051_             12.5%  no
+    6  eingang     1.5  _JORC051_             19.6%  no
+    7  apex        3.0  _JORC051_             17.8%  no
+    8  eingang     1.5  _KETZ160_             24.4%  no
+    9  apex        3.0  _LIAZ070_             15.7%  yes
+   10  straight    1.0  _LIAZ070_             37.3%  yes
+   11  straight    1.0  _LIAZ070_             28.5%  yes
+   12  mitte       2.0  _LIAZ070_             31.9%  yes
+   13  straight    1.0  _LIAZ070_             31.2%  yes
+   14  straight    1.0  _TOMS241_             24.1%  no
+   15  straight    1.0  _TOMS241_             24.4%  no
+   16  straight    1.0  _JORC051_             13.4%  no
+   17  eingang     1.5  _JORC051_             18.9%  no
+   18  apex        3.0  _JORC051_             24.3%  no
+   19  apex        3.0  _BRIG160_             17.2%  no
+   20  mitte       2.0  _LIAZ070_             30.3%  yes
+   21  apex        3.0  _LIAZ070_             38.4%  yes
+   22  straight    1.0  _LIAZ070_             41.5%  yes

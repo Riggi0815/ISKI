@@ -1,0 +1,52 @@
+============================================================
+DRIVER PREDICTION REPORT
+============================================================
+
+True driver:        _NIDL241_
+Model:              random_forest
+Test rounds:        6 & 7
+Segments evaluated: 22
+
+Predicted driver:   _NIDL241_
+Accuracy:           CORRECT
+
+Agreement:   54.5%  (12/22 segments voted for true driver)
+Confidence:  29.8%  (mean RF tree posterior probability per segment)
+
+Weighted Vote Distribution:
+----------------------------------------
+  _NIDL241_      :   18.0 pts  ( 51.4%)  ##########
+  _JORC051_      :    4.0 pts  ( 11.4%)  ##
+  _KETZ160_      :    3.0 pts  (  8.6%)  #
+  _SOMD122_      :    3.0 pts  (  8.6%)  #
+  _RINE150_      :    2.0 pts  (  5.7%)  #
+  _TOMS241_      :    2.0 pts  (  5.7%)  #
+  _NIMB230_      :    2.0 pts  (  5.7%)  #
+  _FIND031_      :    1.0 pts  (  2.9%)  
+
+Per-Segment Predictions:
+----------------------------------------
+    #  Zone     Weight  Predicted        Confidence  Correct?
+  ---  -------- ------  ---------------  ----------  --------
+    1  mitte       2.0  _NIDL241_             31.6%  yes
+    2  straight    1.0  _NIDL241_             49.4%  yes
+    3  straight    1.0  _NIDL241_             42.9%  yes
+    4  straight    1.0  _NIDL241_             43.9%  yes
+    5  apex        3.0  _NIDL241_             32.9%  yes
+    6  straight    1.0  _NIDL241_             31.3%  yes
+    7  straight    1.0  _NIDL241_             40.4%  yes
+    8  straight    1.0  _NIDL241_             45.8%  yes
+    9  straight    1.0  _NIDL241_             23.3%  yes
+   10  mitte       2.0  _NIDL241_             37.8%  yes
+   11  apex        3.0  _NIDL241_             23.9%  yes
+   12  apex        3.0  _JORC051_             26.1%  no
+   13  apex        3.0  _KETZ160_             11.7%  no
+   14  apex        3.0  _SOMD122_             15.8%  no
+   15  straight    1.0  _JORC051_             16.9%  no
+   16  straight    1.0  _NIDL241_             17.4%  yes
+   17  mitte       2.0  _RINE150_             31.6%  no
+   18  straight    1.0  _TOMS241_             17.3%  no
+   19  straight    1.0  _NIMB230_             31.4%  no
+   20  straight    1.0  _NIMB230_             48.2%  no
+   21  straight    1.0  _FIND031_             20.0%  no
+   22  straight    1.0  _TOMS241_             14.9%  no

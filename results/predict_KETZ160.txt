@@ -1,0 +1,50 @@
+============================================================
+DRIVER PREDICTION REPORT
+============================================================
+
+True driver:        _KETZ160_
+Model:              random_forest
+Test rounds:        6 & 7
+Segments evaluated: 22
+
+Predicted driver:   _KETZ160_
+Accuracy:           CORRECT
+
+Agreement:   68.2%  (15/22 segments voted for true driver)
+Confidence:  27.1%  (mean RF tree posterior probability per segment)
+
+Weighted Vote Distribution:
+----------------------------------------
+  _KETZ160_      :   25.0 pts  ( 67.6%)  #############
+  _JORC051_      :    4.0 pts  ( 10.8%)  ##
+  _TOMS241_      :    3.0 pts  (  8.1%)  #
+  _SOMD122_      :    3.0 pts  (  8.1%)  #
+  _FIND031_      :    1.0 pts  (  2.7%)  
+  _RINE150_      :    1.0 pts  (  2.7%)  
+
+Per-Segment Predictions:
+----------------------------------------
+    #  Zone     Weight  Predicted        Confidence  Correct?
+  ---  -------- ------  ---------------  ----------  --------
+    1  straight    1.0  _TOMS241_             25.6%  no
+    2  straight    1.0  _KETZ160_             25.9%  yes
+    3  straight    1.0  _JORC051_             19.8%  no
+    4  straight    1.0  _KETZ160_             36.4%  yes
+    5  apex        3.0  _KETZ160_             32.0%  yes
+    6  mitte       2.0  _KETZ160_             31.9%  yes
+    7  apex        3.0  _KETZ160_             31.0%  yes
+    8  apex        3.0  _SOMD122_             11.0%  no
+    9  straight    1.0  _FIND031_             17.1%  no
+   10  straight    1.0  _KETZ160_             29.9%  yes
+   11  mitte       2.0  _KETZ160_             37.7%  yes
+   12  straight    1.0  _KETZ160_             24.7%  yes
+   13  straight    1.0  _KETZ160_             27.4%  yes
+   14  straight    1.0  _RINE150_             13.1%  no
+   15  straight    1.0  _KETZ160_             17.1%  yes
+   16  straight    1.0  _KETZ160_             36.6%  yes
+   17  apex        3.0  _JORC051_             24.4%  no
+   18  apex        3.0  _KETZ160_             36.9%  yes
+   19  mitte       2.0  _TOMS241_             36.6%  no
+   20  apex        3.0  _KETZ160_             21.5%  yes
+   21  straight    1.0  _KETZ160_             28.1%  yes
+   22  straight    1.0  _KETZ160_             31.6%  yes
