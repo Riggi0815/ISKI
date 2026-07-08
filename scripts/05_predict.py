@@ -277,10 +277,11 @@ class DriverPredictor:
                 features_df[f] = 0
 
         # Apply round-based split if test_rounds_only requested
+        '''
         if getattr(self, 'test_rounds_only', False):
             n_segs = len(features_df)
             n_rounds = 8
-            test_rounds = [6, 7]
+            test_rounds = list(range(1, 9))
             segs_per_round = max(1, n_segs // n_rounds)
             test_mask = []
             for pos in range(n_segs):
@@ -291,7 +292,7 @@ class DriverPredictor:
             print(f"  Using test rounds (6+7) only: {n_test}/{n_segs} segments")
             if n_test == 0:
                 return {'success': False, 'error': 'No test segments after round split', 'file': str(ld_path)}
-
+        '''
         X = features_df[self.feature_names].copy()
         X = X.replace([np.inf, -np.inf], np.nan).fillna(0)
         X_values = X.values
@@ -405,7 +406,7 @@ def run_test_round_evaluation(model_name: str = 'random_forest'):
     results_path.mkdir(exist_ok=True)
 
     print('=' * 60)
-    print('DRIVER PREDICTION — Test Rounds 6 & 7 (per driver)')
+    print('DRIVER PREDICTION — All Rounds (per driver)')  
     print(f'Model: {model_name}  |  Weighting: apex=3.0x  mitte=2.0x  eingang=1.5x  straight=1.0x')
     print('=' * 60)
 
@@ -423,21 +424,13 @@ def run_test_round_evaluation(model_name: str = 'random_forest'):
         metadata = json.load(f)
     feature_names = metadata['feature_names']
 
-    TEST_ROUNDS = [6, 7]
-    N_ROUNDS    = 8
-
+    # Verwende ALLE Segmente - kein Round-Splitting mehr
     all_results = []
 
     for driver_id in sorted(features_df['driver_id'].unique()):
         mask       = features_df['driver_id'] == driver_id
-        driver_idx = features_df.index[mask].tolist()
-        n_segs     = len(driver_idx)
-        segs_per_round = max(1, n_segs // N_ROUNDS)
-
-        test_indices = [
-            idx for pos, idx in enumerate(driver_idx)
-            if min(pos // segs_per_round + 1, N_ROUNDS) in TEST_ROUNDS
-        ]
+        test_indices = features_df.index[mask].tolist()  # ALLE Segmente
+        
         if not test_indices:
             print(f"  {driver_id}: no test segments found")
             continue
@@ -526,7 +519,7 @@ def run_test_round_evaluation(model_name: str = 'random_forest'):
             f.write('=' * 60 + '\n\n')
             f.write(f"True driver:        {driver_id}\n")
             f.write(f"Model:              {model_name}\n")
-            f.write(f"Test rounds:        6 & 7\n")
+            f.write(f"Test rounds:        ALL\n") 
             f.write(f"Segments evaluated: {len(test_df)}\n\n")
             f.write(f"Predicted driver:   {top_driver}\n")
             f.write(f"Accuracy:           {'100%' if is_correct else '0%'}"
@@ -571,7 +564,7 @@ def run_test_round_evaluation(model_name: str = 'random_forest'):
         f.write('=' * 60 + '\n')
         f.write('TEST ROUND EVALUATION — SUMMARY\n')
         f.write(f"Model:       {model_name}\n")
-        f.write(f"Test rounds: 6 & 7\n")
+        f.write(f"Test rounds: ALL\n")
         f.write(f"Weighting:   corner=2.0x  straight=1.0x\n")
         f.write('=' * 60 + '\n\n')
         f.write(f"Overall accuracy: {correct}/{total} ({100*correct/total:.1f}%)\n\n")
@@ -596,7 +589,7 @@ def main():
         nargs='?',
         type=str,
         help='Pfad zur Telemetrie-Datei (.ld oder .htf). '
-             'Ohne Datei: Auswertung aller Fahrer auf Test-Runden 6 & 7.'
+             'Ohne Datei: Auswertung aller Fahrer auf allen verfügbaren Runden.'
     )
     parser.add_argument(
         '--model',

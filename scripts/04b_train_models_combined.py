@@ -36,21 +36,33 @@ from utils import get_project_root, get_features_path, get_models_path, get_resu
 
 def split_by_rounds(
     features_df: pd.DataFrame,
-    train_rounds: list = [1, 2, 3, 4, 5, 8],
-    test_rounds: list = [6, 7],
     n_rounds: int = 8,
+    n_test_rounds: int = 2,
 ) -> tuple:
     """
     Divide each driver's segments into n_rounds equal-sized groups,
-    then assign groups to train or test according to round numbers.
+    then use the LAST n_test_rounds for testing and all others for training.
 
     Round numbering is 1-based; segments are ordered sequentially as
     recorded (the order already present in the DataFrame for each driver).
+
+    Args:
+        features_df: DataFrame with driver features
+        n_rounds: Total number of rounds to divide segments into
+        n_test_rounds: Number of final rounds to use for testing (default: 2)
 
     Returns:
         (train_indices, test_indices) — list of DataFrame index values
     """
     train_idx, test_idx = [], []
+    
+    # Calculate which rounds are test rounds (the last n_test_rounds)
+    test_rounds = list(range(n_rounds - n_test_rounds + 1, n_rounds + 1))
+    train_rounds = [r for r in range(1, n_rounds + 1) if r not in test_rounds]
+    
+    print(f'  Round distribution:')
+    print(f'    Training rounds: {train_rounds}')
+    print(f'    Test rounds:     {test_rounds}')
 
     for driver_id in features_df['driver_id'].unique():
         mask = features_df['driver_id'] == driver_id
@@ -60,12 +72,12 @@ def split_by_rounds(
         segs_per_round = max(1, n_segs // n_rounds)
 
         for pos, idx in enumerate(driver_idx):
-            # Clamp to n_rounds so the tail goes into round 8
+            # Clamp to n_rounds so the tail goes into the last round
             round_num = min(pos // segs_per_round + 1, n_rounds)
-            if round_num in train_rounds:
-                train_idx.append(idx)
-            else:
+            if round_num in test_rounds:
                 test_idx.append(idx)
+            else:
+                train_idx.append(idx)
 
     return train_idx, test_idx
 
@@ -157,7 +169,7 @@ def main():
 
     print('=' * 70)
     print('RANDOM FOREST — Driver Identification (Combined HTF+LD)')
-    print('Train: Rounds 1,2,3,4,5,8  |  Test: Rounds 6,7')
+    print('Train: First N-2 rounds  |  Test: Last 2 rounds')
     print('=' * 70)
 
     # -----------------------------------------------------------------------
@@ -233,15 +245,14 @@ def main():
     # -----------------------------------------------------------------------
     # 2. Round-based train / test split
     # -----------------------------------------------------------------------
-    print('\n[2] Splitting by rounds (8 rounds per driver)...')
-    TRAIN_ROUNDS = [1, 2, 3, 4, 5, 8]
-    TEST_ROUNDS  = [6, 7]
+    print('\n[2] Splitting by rounds (last 2 rounds for testing)...')
+    N_ROUNDS = 8  # Adjust if your data has more rounds
+    N_TEST_ROUNDS = 2
 
     train_idx, test_idx = split_by_rounds(
         features_df,
-        train_rounds=TRAIN_ROUNDS,
-        test_rounds=TEST_ROUNDS,
-        n_rounds=8,
+        n_rounds=N_ROUNDS,
+        n_test_rounds=N_TEST_ROUNDS,
     )
 
     train_df = features_df.loc[train_idx]
@@ -330,11 +341,13 @@ def main():
         'n_features': len(valid_features),
         'n_drivers': len(class_names),
         'data_source': 'HTF + LD combined',
-        'train_rounds': TRAIN_ROUNDS,
-        'test_rounds': TEST_ROUNDS,
+        'n_rounds': N_ROUNDS,
+        'n_test_rounds': N_TEST_ROUNDS,
+        'train_rounds_description': f'Rounds 1-{N_ROUNDS - N_TEST_ROUNDS}',
+        'test_rounds_description': f'Last {N_TEST_ROUNDS} rounds',
         'train_accuracy': round(train_acc, 4),
         'test_accuracy': round(test_acc, 4),
-    }
+    }   
     with open(combined_models_path / 'model_metadata.json', 'w') as f:
         json.dump(metadata, f, indent=2)
 
@@ -350,8 +363,9 @@ def main():
         '=' * 70,
         '',
         f'Train/Test Split:',
-        f'  Training rounds : {TRAIN_ROUNDS}',
-        f'  Test rounds     : {TEST_ROUNDS}',
+        f'  Total rounds    : {N_ROUNDS}',
+        f'  Training rounds : First {N_ROUNDS - N_TEST_ROUNDS} rounds',
+        f'  Test rounds     : Last {N_TEST_ROUNDS} rounds',
         f'  Train segments  : {len(train_df):,}',
         f'  Test  segments  : {len(test_df):,}',
         '',
